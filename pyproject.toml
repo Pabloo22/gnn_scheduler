@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "alphazero"
+version = "0.1.0"
+description = "An implemenation of AlphaZero algorithm"
+authors = ["Pabloo22 <pablete.arino@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+torch = "^2.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
