@@ -55,6 +55,25 @@ class Connect2(Game):
 
         self.render_mode = render_mode
 
+    def reset(
+        self,
+        *,
+        seed: int | None = None,
+        options: dict[str, Any] | None = None,
+    ) -> tuple[Connect2State, dict[str, int]]:
+        """Resets the environment.
+
+        Args:
+            seed: The seed for the environment's random number generator.
+            options: The options for the environment.
+
+        Returns:
+            The initial state and the information for the initial state.
+        """
+        self.current_state = self.initial_state.copy()
+        self.current_player = 1
+        return self.current_state, self._get_info()
+
     @staticmethod
     def legal_moves(state: Connect2State) -> np.ndarray:
         """Returns the legal moves for the current player."""
