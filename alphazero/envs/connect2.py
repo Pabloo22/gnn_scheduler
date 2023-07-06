@@ -1,7 +1,7 @@
 """Contains the Connect2 class"""
-from typing import Optional, Any
+from __future__ import annotations
+from typing import Any
 
-import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 
