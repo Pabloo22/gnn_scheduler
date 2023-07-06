@@ -102,7 +102,7 @@ class Connect2(Game):
         return state[action] == 0
 
     @staticmethod
-    def is_finished(state: Connect2State) -> bool:
+    def is_over(state: Connect2State) -> bool:
         """Checks if the game is finished."""
         return Connect2.is_winning_state(state) or np.all(state != 0)
 
@@ -168,7 +168,7 @@ class Connect2(Game):
                              f"Current state: {self.current_state}")
 
         self.current_state = Connect2.next_state(self.current_state, action)
-        terminated = Connect2.is_finished(self.current_state)
+        terminated = Connect2.is_over(self.current_state)
         reward = Connect2.get_reward(self.current_state)
         self.current_player = -self.current_player
         if self.render_mode == "human":

@@ -36,5 +36,5 @@ class Game(gym.Env):
 
     @staticmethod
     @abc.abstractmethod
-    def is_finished(state: State) -> bool:
+    def is_over(state: State) -> bool:
         """Returns True if the game is finished."""
