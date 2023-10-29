@@ -8,10 +8,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN pip install --no-cache-dir poetry
 
 # Copy only requirements to cache them in the docker layer
-WORKDIR /app
+WORKDIR /alpha_graph
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies and export them to a requirements.txt file
+# Generate requirements.txt from Poetry configuration
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 
 # Start a new stage for a cleaner image
@@ -22,19 +22,14 @@ LABEL maintainer="pablo.arino@alumnos.upm.es"
 LABEL version="1.0"
 LABEL description="Python image for GNN development with Poetry"
 
-# Create and switch to a non-root user
-RUN useradd --create-home appuser
-USER appuser
-WORKDIR /home/appuser
+# Create and switch to a non-root user and prepare for volume mount
+RUN useradd --create-home newuser
+USER newuser
+WORKDIR /home/newuser
 
 # Copy requirements and install packages
-COPY --from=build /app/requirements.txt .
+COPY --from=build /alpha_graph/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Sample entrypoint script to execute python script or run other commands
-# COPY entrypoint.sh .
-# RUN chmod +x ./entrypoint.sh
-# ENTRYPOINT ["./entrypoint.sh"]
-
-# Uncomment if you need CMD instead
-# CMD ["python", "./your-script.py"]
+# Prepare for volume mount
+RUN chown -R newuser:newuser /home/newuser
