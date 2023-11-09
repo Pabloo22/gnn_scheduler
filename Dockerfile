@@ -1,4 +1,3 @@
-# Start from the PyTorch base image
 FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
 
 # Set a working directory
@@ -18,5 +17,4 @@ RUN pip install --no-cache-dir poetry && \
 # This step will install the dependencies specified in the pyproject.toml file
 RUN poetry install
 
-# If you also want to copy your source code into the container, uncomment the following line
 COPY . /app
