@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
-apt install git-all
+apt update
+apt install -y git
 
 pip install poetry==1.7.0
 
