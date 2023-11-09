@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "alphazero"
+name = "gnn_scheduler"
 version = "0.1.0"
 description = "An implemenation of AlphaZero algorithm"
 authors = ["Pabloo22 <pablete.arino@gmail.com>"]
