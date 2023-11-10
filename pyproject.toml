@@ -11,6 +11,7 @@ python = "^3.9"
 torch = "^2.0.1"
 gymnasium = "^0.28.1"
 numpy = "^1.25.0"
+matplotlib = "^3.8.1"
 
 
 [tool.poetry.group.dev.dependencies]
