@@ -1,7 +1,8 @@
 [tool.poetry]
 name = "gnn_scheduler"
 version = "0.1.0"
-description = "An implemenation of AlphaZero algorithm"
+description = "This repository contains all the code related to solving the 
+Job-Shop Scheduling Problem (JSSP) with Graph Neural Networks (GNNs)."
 authors = ["Pabloo22 <pablete.arino@gmail.com>"]
 license = "MIT"
 readme = "README.md"
