@@ -13,6 +13,7 @@
 		// speeds up pytorch data loading
 		"--ipc=host"
 	  ],
+	"postCreateCommand": "pip install -e .",
 	"customizations": {
 		"vscode": {
 			"extensions": [
