@@ -2,10 +2,11 @@ import __future__
 
 import attrs
 import matplotlib.pyplot as plt
+ 
+from typing import NamedTuple
 
 
-@attrs.define
-class Operation:
+class Operation(NamedTuple):
     """A class representing an operation in a job-shop scheduling problem."""
         
     job: int
@@ -33,3 +34,9 @@ class JSSPInstance:
             both operations are on the same machine and that they cannot be
             executed in parallel.
         """
+
+
+if __name__ == "__main__":
+    print("Matplotlib")
+    plt.plot([1, 2, 3, 4])
+    plt.show()
