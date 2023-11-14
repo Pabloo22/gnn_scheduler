@@ -25,31 +25,14 @@ def create_disjunctive_graph(jssp: JobShopInstance) -> nx.DiGraph:
 
     # Create the graph
     disjunctive_graph = nx.DiGraph()
-    for i, operation in enumerate(jssp.operations):
-        disjunctive_graph.add_node(i,
-                                   duration=operation.duration,
-                                   name=f"O({operation.job}{operation.machine})")
-
-    # Add the duration of each operation as a node attribute
-    for i, operation in enumerate(jssp.operations):
-        disjunctive_graph.nodes[i]["duration"] = operation.duration
-
-    # Add conjunctive arcs
-    for i, _ in enumerate(jssp.operations[:-1]):
-        disjunctive_graph.add_edge(i, i + 1, type="conjunctive")
-
-    # Add disjunctive arcs
-    for i, op1 in enumerate(jssp.operations):
-        for j, op2 in enumerate(jssp.operations[i+1:], start=i+1):
-            if op1.machine == op2.machine:
-                disjunctive_graph.add_edge(i, j, type="disjunctive")
+    
 
     return disjunctive_graph
 
 
 def plot_disjunctive_graph(disjunctive_graph: nx.DiGraph,
                            figsize=(12, 8),
-                           node_size=700,
+                           node_size=1000,
                            layout=nx.spring_layout) -> plt.Figure:
     """
     Returns a matplotlib.Figure object representing the disjunctive graph.
@@ -64,12 +47,12 @@ def plot_disjunctive_graph(disjunctive_graph: nx.DiGraph,
     plt.figure(figsize=figsize)
     plt.title('Disjunctive Graph Visualization')
 
-    # Choose a layout for the graph
-    pos = layout(disjunctive_graph)
-
     # Change node_id to node name
     mapping = {node_id: node["name"] for node_id, node in disjunctive_graph.nodes(data=True)}
     disjunctive_graph = nx.relabel_nodes(disjunctive_graph, mapping)
+
+    # Choose a layout for the graph
+    pos = layout(disjunctive_graph)
 
     # Draw nodes
     nx.draw_networkx_nodes(disjunctive_graph,
@@ -79,14 +62,14 @@ def plot_disjunctive_graph(disjunctive_graph: nx.DiGraph,
 
     # Draw edges
     # Conjunctive arcs (solid line)
-    conjunctive_edges = [(u, v) for (u, v, d) in disjunctive_graph.edges(data=True) 
+    conjunctive_edges = [(u, v) for (u, v, d) in disjunctive_graph.edges(data=True)
                          if d["type"] == "conjuctive"]
     nx.draw_networkx_edges(disjunctive_graph,
                            pos,
                            edgelist=conjunctive_edges,
                            width=2,
                            edge_color="black")
-
+    print(conjunctive_edges)
     # Disjunctive arcs (dashed line)
     disjunctive_edges = [(u, v) for (u, v, d) in disjunctive_graph.edges(data=True)
                          if d["type"] == "disjunctive"]

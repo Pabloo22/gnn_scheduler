@@ -1,2 +1,2 @@
-from .data_structures import Operation, JobShopInstance
-from .utils import create_disjunctive_graph, plot_disjunctive_graph
+from .job_shop_instance import Operation, JobShopInstance
+from .disjunctive_graph import create_disjunctive_graph, plot_disjunctive_graph
