@@ -48,3 +48,5 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi 
 
 USER $USERNAME
+
+RUN poetry config virtualenvs.create false
