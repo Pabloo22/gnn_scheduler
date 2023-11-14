@@ -12,6 +12,7 @@ torch = "^2.0.1"
 gymnasium = "^0.28.1"
 numpy = "^1.25.0"
 matplotlib = "^3.8.1"
+ortools = "^9.7.2996"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
