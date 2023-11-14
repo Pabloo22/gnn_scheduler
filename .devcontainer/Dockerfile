@@ -18,6 +18,7 @@ RUN apt-get update \
     lsb-release \
     sudo \
     wget \
+    tree \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a new user in the container with the same UID as the host user
