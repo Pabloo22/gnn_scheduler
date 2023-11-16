@@ -60,6 +60,4 @@ RUN pip install poetry==1.7.0  --no-cache-dir
 COPY --chown=$USER_UID:$USER_GID pyproject.toml poetry.lock ./
 
 # Install Python dependencies using Poetry
-# Note: PyTorch and PyG should be included in your pyproject.toml dependencies
 RUN poetry install --no-interaction --no-ansi
-# RUN poetry config virtualenvs.create false
