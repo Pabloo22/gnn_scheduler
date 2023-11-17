@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get update \
     && apt-get install -y \
     python3.11 \
-    python3-distutils \
+    python3.11-distutils \
+    python3.11-dev \
     build-essential \
     curl \
     git \
@@ -29,6 +30,9 @@ RUN apt-get update && apt-get install -y \
     sudo \
     wget \
     tree \
+    graphviz \
+    graphviz-dev \
+    libgraphviz-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set python3.11 as the default python3
