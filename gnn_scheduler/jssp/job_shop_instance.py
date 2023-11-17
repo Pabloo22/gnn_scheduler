@@ -320,14 +320,15 @@ class JobShopInstance:
     def load_from_benchmark(path: os.PathLike | str | bytes,
                             instance_name: str,
                             encoding: str = "utf-8",
+                            json_file: str = "instances.json",
                             ) -> JobShopInstance:
         """Loads a job-shop instance from a benchmark file."""
         
         # get metadata from instances.json file
-        instances_path = os.path.join(path, "instances.json")
+        instances_path = os.path.join(path, json_file)
         with open(instances_path, "r", encoding=encoding) as f:
             instances: list[dict] = json.load(f)
-        
+
         optimum = None
         upper_bound = None
         lower_bound = None
@@ -337,10 +338,10 @@ class JobShopInstance:
                 continue
             optimum = instance["optimum"]
             if optimum is None and instance.get("bounds", None) is not None:
-                upper_bound, lower_bound = instance["bounds"]
+                upper_bound, lower_bound = instance["bounds"].values()
             file_path = os.path.join(path, instance["path"])
             break
-        
+
         return JobShopInstance.load_from_file(file_path,
                                               name=instance_name,
                                               optimum=optimum,
@@ -348,6 +349,6 @@ class JobShopInstance:
                                               lower_bound=lower_bound,
                                               encoding=encoding,
                                               )
-    
+
 if __name__ == "__main__":    
     pass
