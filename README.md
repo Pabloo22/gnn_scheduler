@@ -16,7 +16,7 @@ A `.devcontainer` folder in the repository is included. This is set to work with
 3. **NVIDIA Docker Toolkit:** Install the NVIDIA Container Toolkit, which allows Docker to use the GPU.
 
 
-### With Poetry
+### Poetry
 For a simpler installation of the project, [Poetry](https://python-poetry.org/) is recommended, which is a tool for dependency management and packaging in Python. It helps to create and manage virtual environments, streamlining the process of setting up and maintaining project dependencies. Poetry automatically handles dependency resolution and ensures that your project environment is consistent. 
 
 #### Prerequisites:
