@@ -20,7 +20,7 @@ A `.devcontainer` folder in the repository is included. This is set to work with
 For a simpler installation of the project, [Poetry](https://python-poetry.org/) is recommended, which is a tool for dependency management and packaging in Python. It helps to create and manage virtual environments, streamlining the process of setting up and maintaining project dependencies. Poetry automatically handles dependency resolution and ensures that your project environment is consistent. 
 
 #### Prerequisites:
-- **Python 3.11.6**: Although the intention is to be compatible with as may Python versions as possible, currently available code has only been tested with Python 3.11.6.
+- **Python 3.11.6**: Although the intention is to be compatible with as many Python versions as possible, currently available code has only been tested with Python 3.11.6.
 - **Graphviz** (optional): In order to plot the disjunctive graph of a `JobShopInstance` with the default layout you will need to have [PyGraphviz](https://pygraphviz.github.io/documentation/stable/install.html) and its dependencies.
 
 ## Project Structure
