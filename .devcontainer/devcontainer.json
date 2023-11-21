@@ -27,7 +27,8 @@
 				"github.vscode-pull-request-github",
 				"eamodio.gitlens",
 				"ms-azuretools.vscode-docker",
-				"ms-python.pylint"
+				"ms-python.pylint",
+				"ms-python.black-formatter"
 			],
 			"settings": {
 				"python.terminal.activateEnvironment": true
