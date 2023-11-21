@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Optional
 import os
 import json
-import pandas as pd
 
+from gnn_scheduler import get_project_path
 from gnn_scheduler.jssp import JobShopInstance, Operation
 
 
@@ -73,24 +73,44 @@ def load_from_file(
     raise NotImplementedError(f"Specification '{specification}' is not implemented.")
 
 
-def load_from_benchmark(
-    path: os.PathLike | str | bytes,
-    instance_name: str,
+def load_metadata(
+    path: Optional[os.PathLike | str | bytes] = None,
     encoding: str = "utf-8",
     json_file: str = "instances.json",
+) -> list[dict]:
+    """Loads the metadata from a benchmark file."""
+
+    if path is None:
+        path = get_project_path() / "data"
+
+    # get metadata from instances.json file
+    metadata_path = os.path.join(path, json_file)
+    with open(metadata_path, "r", encoding=encoding) as f:
+        metadata: list[dict] = json.load(f)
+
+    return metadata
+
+
+def load_from_benchmark(
+    instance_name: str,
+    path: Optional[os.PathLike | str | bytes] = None,
+    encoding: str = "utf-8",
+    json_file: str = "instances.json",
+    metadata: Optional[list[dict]] = None,
 ) -> JobShopInstance:
     """Loads a job-shop instance from a benchmark file."""
 
-    # get metadata from instances.json file
-    instances_path = os.path.join(path, json_file)
-    with open(instances_path, "r", encoding=encoding) as f:
-        instances: list[dict] = json.load(f)
+    if path is None:
+        path = get_project_path() / "data"
+
+    if metadata is None:
+        metadata = load_metadata(path, encoding, json_file)
 
     optimum = None
     upper_bound = None
     lower_bound = None
     file_path = None
-    for instance in instances:
+    for instance in metadata:
         if instance["name"] != instance_name:
             continue
         optimum = instance["optimum"]
@@ -99,7 +119,7 @@ def load_from_benchmark(
         file_path = os.path.join(path, instance["path"])
         break
 
-    return JobShopInstance.load_from_file(
+    return load_from_file(
         file_path,
         name=instance_name,
         optimum=optimum,
@@ -109,16 +129,26 @@ def load_from_benchmark(
     )
 
 
-def load_metadata(
-    path: os.PathLike | str | bytes,
+def load_all_from_benchmark(
+    path: Optional[os.PathLike | str | bytes] = None,
     encoding: str = "utf-8",
     json_file: str = "instances.json",
-) -> pd.DataFrame:
-    """Loads the metadata from a benchmark file."""
+) -> list[JobShopInstance]:
+    """Loads all job-shop instances."""
 
-    # get metadata from instances.json file
-    instances_path = os.path.join(path, json_file)
-    with open(instances_path, "r", encoding=encoding) as f:
-        instances: list[dict] = json.load(f)
+    if path is None:
+        path = get_project_path() / "data"
 
-    return pd.DataFrame(instances)
+    metadata_path = os.path.join(path, json_file)
+    with open(metadata_path, "r", encoding=encoding) as f:
+        metadata: list[dict] = json.load(f)
+
+    instances_names = [instance["name"] for instance in metadata]
+    instances = []
+    for instance_name in instances_names:
+        instance = load_from_benchmark(
+            instance_name, path, encoding, json_file, metadata
+        )
+        instances.append(instance)
+    
+    return instances

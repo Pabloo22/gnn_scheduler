@@ -2,15 +2,12 @@ from __future__ import annotations
 
 import itertools
 import functools
-from typing import NamedTuple, Optional, Iterable
-import os
+from typing import NamedTuple, Optional
 import warnings
-import json
 
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib
-import pandas as pd
 
 
 class Operation(NamedTuple):
@@ -174,7 +171,8 @@ class JobShopInstance:
 
         # Draw nodes
         # ----------
-        node_colors = [node.get("machine_id", -1) for node in temp_graph.nodes.values()]
+        node_colors = [node.get("machine_id", -1) 
+                       for node in temp_graph.nodes.values()]
 
         nx.draw_networkx_nodes(
             self.disjunctive_graph,
