@@ -6,7 +6,7 @@ For a step-by-step explanation of the source code of this project see the [Tutor
 
 ## Installation
 
-### Visual Studio Code and Dev Containers
+### With Visual Studio Code and Dev Containers
 A `.devcontainer` folder in the repository is included. This is set to work with VisualStudio Code and allows to easily work inside a Docker container and avoid specific machines used. This is the option recommended if you plan to contribute to this repository. For more information about devcontainers click [here](https://code.visualstudio.com/docs/devcontainers/containers).
 
 #### Prerequisites:
@@ -16,7 +16,7 @@ A `.devcontainer` folder in the repository is included. This is set to work with
 3. **NVIDIA Docker Toolkit:** Install the NVIDIA Container Toolkit, which allows Docker to use the GPU.
 
 
-### Poetry
+### With Poetry
 For a simpler installation of the project, [Poetry](https://python-poetry.org/) is recommended, which is a tool for dependency management and packaging in Python. It helps to create and manage virtual environments, streamlining the process of setting up and maintaining project dependencies. Poetry automatically handles dependency resolution and ensures that your project environment is consistent. 
 
 #### Prerequisites:
