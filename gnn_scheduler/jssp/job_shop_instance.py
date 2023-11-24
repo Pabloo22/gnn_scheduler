@@ -84,6 +84,7 @@ class JobShopInstance:
                     duration=operation.duration,
                     machine_id=operation.machine_id,
                     job_id=job_id,
+                    position=position,
                 )
                 disjunctive_graph.add_edge(prev_op, op_id, type="conjunctive")
                 prev_op = op_id
@@ -114,8 +115,8 @@ class JobShopInstance:
         disjunctive_graph = nx.DiGraph()
 
         # Adding source and sink nodes
-        disjunctive_graph.add_node("S", duration=0, machine_id=-1, job_id=-1)
-        disjunctive_graph.add_node("T", duration=0, machine_id=-1, job_id=-1)
+        disjunctive_graph.add_node("S", duration=0, machine_id=-1, job_id=-1, position=-1)
+        disjunctive_graph.add_node("T", duration=0, machine_id=-1, job_id=-1, position=-1)
 
         disjunctive_graph = self._add_conjuctive_edges(disjunctive_graph)
         disjunctive_graph = self._add_disjunctive_edges(disjunctive_graph)
