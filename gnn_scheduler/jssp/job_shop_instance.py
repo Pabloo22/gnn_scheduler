@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import itertools
 import functools
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Callable
 import warnings
 
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib
+
+
+Layout = Callable[[nx.Graph], dict[str, tuple[float, float]]]
 
 
 class Operation(NamedTuple):
@@ -128,7 +131,7 @@ class JobShopInstance:
         figsize: tuple[float, float] = (12, 8),
         node_size: int = 1600,
         title: Optional[str] = None,
-        layout: Optional[callable] = None,
+        layout: Optional[Layout] = None,
         edge_width: int = 2,
         font_size: int = 10,
         arrow_size: int = 35,
