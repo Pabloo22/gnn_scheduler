@@ -133,6 +133,9 @@ def load_all_from_benchmark(
     path: Optional[os.PathLike | str | bytes] = None,
     encoding: str = "utf-8",
     json_file: str = "instances.json",
+    max_jobs: Optional[int] = None,
+    max_machines: Optional[int] = None,
+    list_of_instances: Optional[list[str]] = None,
 ) -> list[JobShopInstance]:
     """Loads all job-shop instances."""
 
@@ -143,12 +146,20 @@ def load_all_from_benchmark(
     with open(metadata_path, "r", encoding=encoding) as f:
         metadata: list[dict] = json.load(f)
 
-    instances_names = [instance["name"] for instance in metadata]
+    if list_of_instances is not None:
+        metadata = [instance for instance in metadata 
+                    if instance["name"] in list_of_instances]
+
     instances = []
-    for instance_name in instances_names:
+    for instance in metadata:
+        if max_jobs is not None and instance["jobs"] > max_jobs:
+            continue
+        if max_machines is not None and instance["machines"] > max_machines:
+            continue
+
+        instance_name = instance["name"]
         instance = load_from_benchmark(
             instance_name, path, encoding, json_file, metadata
         )
         instances.append(instance)
-    
     return instances
