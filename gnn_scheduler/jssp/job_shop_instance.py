@@ -150,7 +150,7 @@ class JobShopInstance:
         # -----------------
         if layout is None:
             try:
-                from networkx.drawing.nx_agraph import graphviz_layout
+                from networkx.drawing.nx_agraph import graphviz_layout  # pylint: disable=import-outside-toplevel
 
                 layout = functools.partial(
                     graphviz_layout, prog="dot", args="-Grankdir=LR"
