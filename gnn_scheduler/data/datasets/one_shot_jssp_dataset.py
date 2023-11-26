@@ -44,7 +44,7 @@ class OptimumPreduction(InMemoryDataset):
         instance_name = instance["name"]
         instance = load_from_benchmark(instance_name, 
                                        self.root,
-                                       metatdata=metadata)
+                                       metadata=metadata)
         return self._process_instance_helper(instance)
     
     def _process_instance_helper(self, instance: JobShopInstance) -> Data:
@@ -61,8 +61,6 @@ class OptimumPreduction(InMemoryDataset):
             edge_index[0, i] = u
             edge_index[1, i] = v
             edge_attr[i] = digraph.edges[u, v]["duration"]
-            
-        
     
     def process(self) -> None:
         metadata = load_metadata(self.root)
