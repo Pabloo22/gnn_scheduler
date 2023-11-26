@@ -1,4 +1,6 @@
 # Solving the Job-Shop Scheduling Problem with Graph Neural Networks
+![](example_disjunctive_graph.png)
+
 This repository contains all the code related to solving the Job-Shop Scheduling 
 Problem (JSSP) with Graph Neural Networks (GNNs). 
 
