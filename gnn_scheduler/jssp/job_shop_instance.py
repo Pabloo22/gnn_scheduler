@@ -220,7 +220,7 @@ class JobShopInstance:
 
         # Draw node labels
         # ----------------
-        durations = nx.get_node_attributes(self.disjunctive_graph, "duration").values()
+        durations = list(nx.get_node_attributes(self.disjunctive_graph, "duration").values())[2:]
         nodes = list(self.disjunctive_graph.nodes.keys())[2:]
 
         labels = {}
