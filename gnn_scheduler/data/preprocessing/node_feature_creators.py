@@ -5,7 +5,10 @@ from typing import Any
 
 import networkx as nx
 
-from gnn_scheduler.data.preprocessing import get_n_jobs, get_n_machines
+from gnn_scheduler.data.preprocessing import (get_n_jobs, 
+                                              get_n_machines,
+                                              get_job_loads,
+                                              )
 
 
 class NodeFeatureCreator(ABC):
@@ -155,6 +158,26 @@ class MachineLoad(NodeFeatureCreator):
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         machine_id = node_data["machine_id"]
         return [self.machines_load[machine_id] / self.max_load]
+
+
+class JobLoad(NodeFeatureCreator):
+    """The cumulative processing time of each job."""
+
+    def __init__(self):
+        super().__init__()
+        self.job_loads = None
+        self.max_load = 0
+
+    def fit(self, graph: nx.DiGraph):
+        """Calculates the maximum load across all jobs."""
+        self.graph = graph
+        job_loads = get_job_loads(graph)
+        self.max_load = max(job_loads.values())
+        self.is_fit = True
+
+    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+        job_id = node_data["job_id"]
+        return [self.job_loads[job_id] / self.max_load]
 
 
 class OperationIndex(NodeFeatureCreator):
