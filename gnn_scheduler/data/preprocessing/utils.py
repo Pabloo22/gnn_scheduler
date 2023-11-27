@@ -58,3 +58,32 @@ def normalize_optimum(optimum: float, graph: nx.DiGraph) -> float:
     problem.
     """
     return optimum / get_min_makespan(graph) - 1
+
+
+def max_graph_duration(graph: nx.DiGraph) -> float:
+    """Calculates the maximum operation time across the graph."""
+    max_duration = 0
+    for _, node_data in graph.nodes(data=True):
+        max_duration = max(max_duration, node_data["duration"])
+    return max_duration
+
+
+def max_job_durations(graph: nx.DiGraph) -> float:
+    """Calculates the maximum operation time across each job."""
+    max_durations = collections.defaultdict(float)
+    for _, node_data in graph.nodes(data=True):
+        duration = node_data["duration"]
+        job_id = node_data["job_id"]
+        max_durations[node_data["job_id"]] = max(max_durations[job_id],
+                                                 duration)
+    return max_durations
+
+
+def max_machine_durations(graph: nx.DiGraph) -> float:
+    """Calculates the maximum operation time across each machine."""
+    max_durations = collections.defaultdict(float)
+    for _, node_data in graph.nodes(data=True):
+        duration = node_data["duration"]
+        machine_id = node_data["machine_id"]
+        max_durations[machine_id] = max(max_durations[machine_id], duration)
+    return max_durations

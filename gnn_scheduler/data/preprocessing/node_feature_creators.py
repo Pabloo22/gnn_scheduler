@@ -5,9 +5,12 @@ from typing import Any
 
 import networkx as nx
 
-from gnn_scheduler.data.preprocessing import (get_n_jobs, 
+from gnn_scheduler.data.preprocessing import (get_n_jobs,
                                               get_job_loads,
-                                              get_machine_loads
+                                              get_machine_loads,
+                                              max_machine_durations,
+                                              max_graph_duration,
+                                              max_job_durations,
                                               )
 
 
@@ -114,21 +117,38 @@ class OneHotEncoding(NodeFeatureCreator):
 class Duration(NodeFeatureCreator):
     """The processing time required for each operation.
 
-    It is normalized by the maximum operation time across the graph to ensure
-    this feature falls within a consistent range."""
+    It is normalized by the maximum operation time across the graph/job/machine 
+    to ensure this feature falls within a consistent range."""
 
-    def __init__(self):
+    def __init__(self, normalize_with: str = "graph"):
         super().__init__()
-        self.max_duration = 0.0
+        self.max_duration = None
+        self.normalize_with = normalize_with
 
     def fit(self, graph: nx.DiGraph):
         """Calculates the maximum operation time across the graph."""
-        for node in graph.nodes:
-            self.max_duration = max(self.max_duration, graph.nodes[node]["duration"])
+        options = {
+            "graph": max_graph_duration,
+            "machine": max_machine_durations,
+            "job": max_job_durations,
+        }
+        self.graph = graph
+        self.max_duration = options[self.normalize_with](graph)
         self.is_fit = True
 
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
-        return [node_data["duration"] / self.max_duration]
+        if self.normalize_with == "graph":
+            max_duration = self.max_duration
+        elif self.normalize_with == "machine":
+            machine_id = node_data["machine_id"]
+            max_duration = self.max_duration[machine_id]
+        elif self.normalize_with == "job":
+            job_id = node_data["job_id"]
+            max_duration = self.max_duration[job_id]
+        else:
+            raise ValueError(f"Unknown normalization option: {self.normalize_with}")
+
+        return [node_data["duration"] / max_duration]
 
 
 class MachineLoad(NodeFeatureCreator):
@@ -147,8 +167,8 @@ class MachineLoad(NodeFeatureCreator):
     def fit(self, graph: nx.DiGraph):
         """Calculates the maximum load across all machines."""
         self.graph = graph
-        machines_load = get_machine_loads(graph)
-        self.max_load = max(machines_load)
+        self.machines_load = get_machine_loads(graph)
+        self.max_load = max(self.machines_load)
         self.is_fit = True
 
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
@@ -167,8 +187,8 @@ class JobLoad(NodeFeatureCreator):
     def fit(self, graph: nx.DiGraph):
         """Calculates the maximum load across all jobs."""
         self.graph = graph
-        job_loads = get_job_loads(graph)
-        self.max_load = max(job_loads.values())
+        self.job_loads = get_job_loads(graph)
+        self.max_load = max(self.job_loads.values())
         self.is_fit = True
 
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
@@ -194,17 +214,14 @@ class OperationIndex(NodeFeatureCreator):
         self.graph = graph
         n_operations_per_job = [0] * get_n_jobs(graph)
         for _, node_data in graph.nodes(data=True):
-            n_operations_per_job[node_data["job_id"]] += 1
-        
+            n_operations_per_job[node_data["job_id"]] += 1 
         self.n_operations_per_job = n_operations_per_job
         self.is_fit = True
-    
+
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         job_id = node_data["job_id"]
         position = node_data["position"] + 1
         return [position / self.n_operations_per_job[job_id]]
-    
-    
 
 
 if __name__ == "__main__":
