@@ -6,8 +6,8 @@ from typing import Any
 import networkx as nx
 
 from gnn_scheduler.data.preprocessing import (get_n_jobs, 
-                                              get_n_machines,
                                               get_job_loads,
+                                              get_machine_loads
                                               )
 
 
@@ -147,11 +147,7 @@ class MachineLoad(NodeFeatureCreator):
     def fit(self, graph: nx.DiGraph):
         """Calculates the maximum load across all machines."""
         self.graph = graph
-        machines_load = [0] * get_n_machines(graph)
-        for _, node_data in graph.nodes(data=True):
-            machines_load[node_data["machine_id"]] += node_data["duration"]
-
-        self.machines_load = machines_load
+        machines_load = get_machine_loads(graph)
         self.max_load = max(machines_load)
         self.is_fit = True
 
