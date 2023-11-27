@@ -1,3 +1,5 @@
+import collections
+
 import networkx as nx
 
 
@@ -25,6 +27,18 @@ def get_total_processing_time(graph: nx.DiGraph) -> float:
     return total_processing_time
 
 
+def get_min_makespan(graph: nx.DiGraph) -> float:
+    """Cumputes the cumulative processing time of each job and return the 
+    maximum.
+    """
+    jobs = collections.defaultdict(int)
+    for _, node_data in graph.nodes(data=True):
+        jobs[node_data["job_id"]] += node_data["duration"]
+    return max(jobs.values())
+
+
 def normalize_optimum(optimum: float, graph: nx.DiGraph) -> float:
-    """Normalizes the optimum by the total processing time of the graph."""
-    return optimum / get_total_processing_time(graph) - 1
+    """Normalizes the optimum by the minimum processing time for solving the
+    problem.
+    """
+    return optimum / get_min_makespan(graph) - 1
