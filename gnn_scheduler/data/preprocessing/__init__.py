@@ -1,6 +1,8 @@
 from .utils import (
     get_n_jobs,
     get_n_machines,
+    get_total_processing_time,
+    normalize_optimum,
 )
 from .node_feature_creators import (
     NodeFeatureCreator,
