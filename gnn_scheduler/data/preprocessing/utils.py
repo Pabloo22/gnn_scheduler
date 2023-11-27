@@ -15,4 +15,3 @@ def get_n_jobs(graph: nx.DiGraph) -> int:
     for _, node_data in graph.nodes(data=True):
         jobs.add(node_data["job_id"])
     return len(jobs)
-
