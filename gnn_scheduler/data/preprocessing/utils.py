@@ -37,6 +37,14 @@ def get_job_loads(graph: nx.DiGraph) -> dict[int, float]:
     return job_loads
 
 
+def get_machine_loads(graph: nx.DiGraph) -> dict[int, float]:
+    """Returns the load of each machine."""
+    machine_loads = collections.defaultdict(float)
+    for _, node_data in graph.nodes(data=True):
+        machine_loads[node_data["machine_id"]] += node_data["duration"]
+    return machine_loads
+
+
 def get_min_makespan(graph: nx.DiGraph) -> float:
     """Cumputes the cumulative processing time of each job and return the 
     maximum.
