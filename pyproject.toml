@@ -20,6 +20,7 @@ graphviz = "^0.20.1"
 pygraphviz = "^1.11"
 python-dotenv = "^1.0.0"
 torch-geometric = "^2.4.0"
+wandb = "^0.16.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
