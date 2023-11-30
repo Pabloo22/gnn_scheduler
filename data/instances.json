@@ -4,21 +4,21 @@
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 1234,
-    "path" : "raw/abz5"
+    "path" : "benchmarks/abz5"
   },
   {
     "name" : "abz6",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 943,
-    "path" : "raw/abz6"
+    "path" : "benchmarks/abz6"
   },
   {
     "name" : "abz7",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 656,
-    "path" : "raw/abz7"
+    "path" : "benchmarks/abz7"
   },
   {
     "name" : "abz8",
@@ -29,420 +29,420 @@
       "upper" : 665,
       "lower" : 645
     },
-    "path" : "raw/abz8"
+    "path" : "benchmarks/abz8"
   },
   {
     "name" : "abz9",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 678,
-    "path" : "raw/abz9"
+    "path" : "benchmarks/abz9"
   },
   {
     "name" : "ft06",
     "jobs" : 6,
     "machines" : 6,
     "optimum" : 55,
-    "path" : "raw/ft06"
+    "path" : "benchmarks/ft06"
   },
   {
     "name" : "ft10",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 930,
-    "path" : "raw/ft10"
+    "path" : "benchmarks/ft10"
   },
   {
     "name" : "ft20",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1165,
-    "path" : "raw/ft20"
+    "path" : "benchmarks/ft20"
   },
   {
     "name" : "la01",
     "jobs" : 10,
     "machines" : 5,
     "optimum" : 666,
-    "path" : "raw/la01"
+    "path" : "benchmarks/la01"
   },
   {
     "name" : "la02",
     "jobs" : 10,
     "machines" : 5,
     "optimum" : 655,
-    "path" : "raw/la02"
+    "path" : "benchmarks/la02"
   },
   {
     "name" : "la03",
     "jobs" : 10,
     "machines" : 5,
     "optimum" : 597,
-    "path" : "raw/la03"
+    "path" : "benchmarks/la03"
   },
   {
     "name" : "la04",
     "jobs" : 10,
     "machines" : 5,
     "optimum" : 590,
-    "path" : "raw/la04"
+    "path" : "benchmarks/la04"
   },
   {
     "name" : "la05",
     "jobs" : 10,
     "machines" : 5,
     "optimum" : 593,
-    "path" : "raw/la05"
+    "path" : "benchmarks/la05"
   },
   {
     "name" : "la06",
     "jobs" : 15,
     "machines" : 5,
     "optimum" : 926,
-    "path" : "raw/la06"
+    "path" : "benchmarks/la06"
   },
   {
     "name" : "la07",
     "jobs" : 15,
     "machines" : 5,
     "optimum" : 890,
-    "path" : "raw/la07"
+    "path" : "benchmarks/la07"
   },
   {
     "name" : "la08",
     "jobs" : 15,
     "machines" : 5,
     "optimum" : 863,
-    "path" : "raw/la08"
+    "path" : "benchmarks/la08"
   },
   {
     "name" : "la09",
     "jobs" : 15,
     "machines" : 5,
     "optimum" : 951,
-    "path" : "raw/la09"
+    "path" : "benchmarks/la09"
   },
   {
     "name" : "la10",
     "jobs" : 15,
     "machines" : 5,
     "optimum" : 958,
-    "path" : "raw/la10"
+    "path" : "benchmarks/la10"
   },
   {
     "name" : "la11",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1222,
-    "path" : "raw/la11"
+    "path" : "benchmarks/la11"
   },
   {
     "name" : "la12",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1039,
-    "path" : "raw/la12"
+    "path" : "benchmarks/la12"
   },
   {
     "name" : "la13",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1150,
-    "path" : "raw/la13"
+    "path" : "benchmarks/la13"
   },
   {
     "name" : "la14",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1292,
-    "path" : "raw/la14"
+    "path" : "benchmarks/la14"
   },
   {
     "name" : "la15",
     "jobs" : 20,
     "machines" : 5,
     "optimum" : 1207,
-    "path" : "raw/la15"
+    "path" : "benchmarks/la15"
   },
   {
     "name" : "la16",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 945,
-    "path" : "raw/la16"
+    "path" : "benchmarks/la16"
   },
   {
     "name" : "la17",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 784,
-    "path" : "raw/la17"
+    "path" : "benchmarks/la17"
   },
   {
     "name" : "la18",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 848,
-    "path" : "raw/la18"
+    "path" : "benchmarks/la18"
   },
   {
     "name" : "la19",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 842,
-    "path" : "raw/la19"
+    "path" : "benchmarks/la19"
   },
   {
     "name" : "la20",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 902,
-    "path" : "raw/la20"
+    "path" : "benchmarks/la20"
   },
   {
     "name" : "la21",
     "jobs" : 15,
     "machines" : 10,
     "optimum" : 1046,
-    "path" : "raw/la21"
+    "path" : "benchmarks/la21"
   },
   {
     "name" : "la22",
     "jobs" : 15,
     "machines" : 10,
     "optimum" : 927,
-    "path" : "raw/la22"
+    "path" : "benchmarks/la22"
   },
   {
     "name" : "la23",
     "jobs" : 15,
     "machines" : 10,
     "optimum" : 1032,
-    "path" : "raw/la23"
+    "path" : "benchmarks/la23"
   },
   {
     "name" : "la24",
     "jobs" : 15,
     "machines" : 10,
     "optimum" : 935,
-    "path" : "raw/la24"
+    "path" : "benchmarks/la24"
   },
   {
     "name" : "la25",
     "jobs" : 15,
     "machines" : 10,
     "optimum" : 977,
-    "path" : "raw/la25"
+    "path" : "benchmarks/la25"
   },
   {
     "name" : "la26",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1218,
-    "path" : "raw/la26"
+    "path" : "benchmarks/la26"
   },
   {
     "name" : "la27",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1235,
-    "path" : "raw/la27"
+    "path" : "benchmarks/la27"
   },
   {
     "name" : "la28",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1216,
-    "path" : "raw/la28"
+    "path" : "benchmarks/la28"
   },
   {
     "name" : "la29",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1152,
-    "path" : "raw/la29"
+    "path" : "benchmarks/la29"
   },
   {
     "name" : "la30",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1355,
-    "path" : "raw/la30"
+    "path" : "benchmarks/la30"
   },
   {
     "name" : "la31",
     "jobs" : 30,
     "machines" : 10,
     "optimum" : 1784,
-    "path" : "raw/la31"
+    "path" : "benchmarks/la31"
   },
   {
     "name" : "la32",
     "jobs" : 30,
     "machines" : 10,
     "optimum" : 1850,
-    "path" : "raw/la32"
+    "path" : "benchmarks/la32"
   },
   {
     "name" : "la33",
     "jobs" : 30,
     "machines" : 10,
     "optimum" : 1719,
-    "path" : "raw/la33"
+    "path" : "benchmarks/la33"
   },
   {
     "name" : "la34",
     "jobs" : 30,
     "machines" : 10,
     "optimum" : 1721,
-    "path" : "raw/la34"
+    "path" : "benchmarks/la34"
   },
   {
     "name" : "la35",
     "jobs" : 30,
     "machines" : 10,
     "optimum" : 1888,
-    "path" : "raw/la35"
+    "path" : "benchmarks/la35"
   },
   {
     "name" : "la36",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1268,
-    "path" : "raw/la36"
+    "path" : "benchmarks/la36"
   },
   {
     "name" : "la37",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1397,
-    "path" : "raw/la37"
+    "path" : "benchmarks/la37"
   },
   {
     "name" : "la38",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1196,
-    "path" : "raw/la38"
+    "path" : "benchmarks/la38"
   },
   {
     "name" : "la39",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1233,
-    "path" : "raw/la39"
+    "path" : "benchmarks/la39"
   },
   {
     "name" : "la40",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1222,
-    "path" : "raw/la40"
+    "path" : "benchmarks/la40"
   },
   {
     "name" : "orb01",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 1059,
-    "path" : "raw/orb01"
+    "path" : "benchmarks/orb01"
   },
   {
     "name" : "orb02",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 888,
-    "path" : "raw/orb02"
+    "path" : "benchmarks/orb02"
   },
   {
     "name" : "orb03",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 1005,
-    "path" : "raw/orb03"
+    "path" : "benchmarks/orb03"
   },
   {
     "name" : "orb04",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 1005,
-    "path" : "raw/orb04"
+    "path" : "benchmarks/orb04"
   },
   {
     "name" : "orb05",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 887,
-    "path" : "raw/orb05"
+    "path" : "benchmarks/orb05"
   },
   {
     "name" : "orb06",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 1010,
-    "path" : "raw/orb06"
+    "path" : "benchmarks/orb06"
   },
   {
     "name" : "orb07",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 397,
-    "path" : "raw/orb07"
+    "path" : "benchmarks/orb07"
   },
   {
     "name" : "orb08",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 899,
-    "path" : "raw/orb08"
+    "path" : "benchmarks/orb08"
   },
   {
     "name" : "orb09",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 934,
-    "path" : "raw/orb09"
+    "path" : "benchmarks/orb09"
   },
   {
     "name" : "orb10",
     "jobs" : 10,
     "machines" : 10,
     "optimum" : 944,
-    "path" : "raw/orb10"
+    "path" : "benchmarks/orb10"
   },
   {
     "name" : "swv01",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1407,
-    "path" : "raw/swv01"
+    "path" : "benchmarks/swv01"
   },
   {
     "name" : "swv02",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1475,
-    "path" : "raw/swv02"
+    "path" : "benchmarks/swv02"
   },
   {
     "name" : "swv03",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1398,
-    "path" : "raw/swv03"
+    "path" : "benchmarks/swv03"
   },
   {
     "name" : "swv04",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1464,
-    "path" : "raw/swv04"
+    "path" : "benchmarks/swv04"
   },
   {
     "name" : "swv05",
     "jobs" : 20,
     "machines" : 10,
     "optimum" : 1424,
-    "path" : "raw/swv05"
+    "path" : "benchmarks/swv05"
   },
   {
     "name" : "swv06",
@@ -453,7 +453,7 @@
       "upper" : 1671,
       "lower" : 1630
     },
-    "path" : "raw/swv06"
+    "path" : "benchmarks/swv06"
   },
   {
     "name" : "swv07",
@@ -464,7 +464,7 @@
       "upper" : 1594,
       "lower" : 1513
     },
-    "path" : "raw/swv07"
+    "path" : "benchmarks/swv07"
   },
   {
     "name" : "swv08",
@@ -475,7 +475,7 @@
       "upper" : 1752,
       "lower" : 1671
     },
-    "path" : "raw/swv08"
+    "path" : "benchmarks/swv08"
   },
   {
     "name" : "swv09",
@@ -486,7 +486,7 @@
       "upper" : 1655,
       "lower" : 1633
     },
-    "path" : "raw/swv09"
+    "path" : "benchmarks/swv09"
   },
   {
     "name" : "swv10",
@@ -497,14 +497,14 @@
       "upper" : 1743,
       "lower" : 1663
     },
-    "path" : "raw/swv10"
+    "path" : "benchmarks/swv10"
   },
   {
     "name" : "swv11",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2983,
-    "path" : "raw/swv11"
+    "path" : "benchmarks/swv11"
   },
   {
     "name" : "swv12",
@@ -515,70 +515,70 @@
       "upper" : 2977,
       "lower" : 2972
     },
-    "path" : "raw/swv12"
+    "path" : "benchmarks/swv12"
   },
   {
     "name" : "swv13",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 3104,
-    "path" : "raw/swv13"
+    "path" : "benchmarks/swv13"
   },
   {
     "name" : "swv14",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2968,
-    "path" : "raw/swv14"
+    "path" : "benchmarks/swv14"
   },
   {
     "name" : "swv15",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2885,
-    "path" : "raw/swv15"
+    "path" : "benchmarks/swv15"
   },
   {
     "name" : "swv16",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2924,
-    "path" : "raw/swv16"
+    "path" : "benchmarks/swv16"
   },
   {
     "name" : "swv17",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2794,
-    "path" : "raw/swv17"
+    "path" : "benchmarks/swv17"
   },
   {
     "name" : "swv18",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2852,
-    "path" : "raw/swv18"
+    "path" : "benchmarks/swv18"
   },
   {
     "name" : "swv19",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2843,
-    "path" : "raw/swv19"
+    "path" : "benchmarks/swv19"
   },
   {
     "name" : "swv20",
     "jobs" : 50,
     "machines" : 10,
     "optimum" : 2823,
-    "path" : "raw/swv20"
+    "path" : "benchmarks/swv20"
   },
   {
     "name" : "yn1",
     "jobs" : 20,
     "machines" : 20,
     "optimum" : 884,
-    "path" : "raw/yn1"
+    "path" : "benchmarks/yn1"
   },
   {
     "name" : "yn2",
@@ -589,7 +589,7 @@
       "upper" : 904,
       "lower" : 870
     },
-    "path" : "raw/yn2"
+    "path" : "benchmarks/yn2"
   },
   {
     "name" : "yn3",
@@ -600,7 +600,7 @@
       "upper" : 892,
       "lower" : 859
     },
-    "path" : "raw/yn3"
+    "path" : "benchmarks/yn3"
   },
   {
     "name" : "yn4",
@@ -611,126 +611,126 @@
       "upper" : 968,
       "lower" : 929
     },
-    "path" : "raw/yn4"
+    "path" : "benchmarks/yn4"
   },
   {
     "name" : "ta01",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1231,
-    "path" : "raw/ta01"
+    "path" : "benchmarks/ta01"
   },
   {
     "name" : "ta02",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1244,
-    "path" : "raw/ta02"
+    "path" : "benchmarks/ta02"
   },
   {
     "name" : "ta03",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1218,
-    "path" : "raw/ta03"
+    "path" : "benchmarks/ta03"
   },
   {
     "name" : "ta04",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1175,
-    "path" : "raw/ta04"
+    "path" : "benchmarks/ta04"
   },
   {
     "name" : "ta05",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1224,
-    "path" : "raw/ta05"
+    "path" : "benchmarks/ta05"
   },
   {
     "name" : "ta06",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1238,
-    "path" : "raw/ta06"
+    "path" : "benchmarks/ta06"
   },
   {
     "name" : "ta07",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1227,
-    "path" : "raw/ta07"
+    "path" : "benchmarks/ta07"
   },
   {
     "name" : "ta08",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1217,
-    "path" : "raw/ta08"
+    "path" : "benchmarks/ta08"
   },
   {
     "name" : "ta09",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1274,
-    "path" : "raw/ta09"
+    "path" : "benchmarks/ta09"
   },
   {
     "name" : "ta10",
     "jobs" : 15,
     "machines" : 15,
     "optimum" : 1241,
-    "path" : "raw/ta10"
+    "path" : "benchmarks/ta10"
   },
   {
     "name" : "ta11",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1357,
-    "path" : "raw/ta11"
+    "path" : "benchmarks/ta11"
   },
   {
     "name" : "ta12",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1367,
-    "path" : "raw/ta12"
+    "path" : "benchmarks/ta12"
   },
   {
     "name" : "ta13",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1342,
-    "path" : "raw/ta13"
+    "path" : "benchmarks/ta13"
   },
   {
     "name" : "ta14",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1345,
-    "path" : "raw/ta14"
+    "path" : "benchmarks/ta14"
   },
   {
     "name" : "ta15",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1339,
-    "path" : "raw/ta15"
+    "path" : "benchmarks/ta15"
   },
   {
     "name" : "ta16",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1360,
-    "path" : "raw/ta16"
+    "path" : "benchmarks/ta16"
   },
   {
     "name" : "ta17",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1462,
-    "path" : "raw/ta17"
+    "path" : "benchmarks/ta17"
   },
   {
     "name" : "ta18",
@@ -741,28 +741,28 @@
       "upper" : 1396,
       "lower" : 1377
     },
-    "path" : "raw/ta18"
+    "path" : "benchmarks/ta18"
   },
   {
     "name" : "ta19",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1332,
-    "path" : "raw/ta19"
+    "path" : "benchmarks/ta19"
   },
   {
     "name" : "ta20",
     "jobs" : 20,
     "machines" : 15,
     "optimum" : 1348,
-    "path" : "raw/ta20"
+    "path" : "benchmarks/ta20"
   },
   {
     "name" : "ta21",
     "jobs" : 20,
     "machines" : 20,
     "optimum" : 1642,
-    "path" : "raw/ta21"
+    "path" : "benchmarks/ta21"
   },
   {
     "name" : "ta22",
@@ -773,7 +773,7 @@
       "upper" : 1600,
       "lower" : 1561
     },
-    "path" : "raw/ta22"
+    "path" : "benchmarks/ta22"
   },
   {
     "name" : "ta23",
@@ -784,14 +784,14 @@
       "upper" : 1557,
       "lower" : 1518
     },
-    "path" : "raw/ta23"
+    "path" : "benchmarks/ta23"
   },
   {
     "name" : "ta24",
     "jobs" : 20,
     "machines" : 20,
     "optimum" : 1644,
-    "path" : "raw/ta24"
+    "path" : "benchmarks/ta24"
   },
   {
     "name" : "ta25",
@@ -802,7 +802,7 @@
       "upper" : 1595,
       "lower" : 1558
     },
-    "path" : "raw/ta25"
+    "path" : "benchmarks/ta25"
   },
   {
     "name" : "ta26",
@@ -813,7 +813,7 @@
       "upper" : 1643,
       "lower" : 1591
     },
-    "path" : "raw/ta26"
+    "path" : "benchmarks/ta26"
   },
   {
     "name" : "ta27",
@@ -824,14 +824,14 @@
       "upper" : 1680,
       "lower" : 1652
     },
-    "path" : "raw/ta27"
+    "path" : "benchmarks/ta27"
   },
   {
     "name" : "ta28",
     "jobs" : 20,
     "machines" : 20,
     "optimum" : 1603,
-    "path" : "raw/ta28"
+    "path" : "benchmarks/ta28"
   },
   {
     "name" : "ta29",
@@ -842,7 +842,7 @@
       "upper" : 1625,
       "lower" : 1573
     },
-    "path" : "raw/ta29"
+    "path" : "benchmarks/ta29"
   },
   {
     "name" : "ta30",
@@ -853,14 +853,14 @@
       "upper" : 1584,
       "lower" : 1519
     },
-    "path" : "raw/ta30"
+    "path" : "benchmarks/ta30"
   },
   {
     "name" : "ta31",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 1764,
-    "path" : "raw/ta31"
+    "path" : "benchmarks/ta31"
   },
   {
     "name" : "ta32",
@@ -871,7 +871,7 @@
       "upper" : 1784,
       "lower" : 1774
     },
-    "path" : "raw/ta32"
+    "path" : "benchmarks/ta32"
   },
   {
     "name" : "ta33",
@@ -882,7 +882,7 @@
       "upper" : 1791,
       "lower" : 1778
     },
-    "path" : "raw/ta33"
+    "path" : "benchmarks/ta33"
   },
   {
     "name" : "ta34",
@@ -893,42 +893,42 @@
       "upper" : 1829,
       "lower" : 1828
     },
-    "path" : "raw/ta34"
+    "path" : "benchmarks/ta34"
   },
   {
     "name" : "ta35",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 2007,
-    "path" : "raw/ta35"
+    "path" : "benchmarks/ta35"
   },
   {
     "name" : "ta36",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 1819,
-    "path" : "raw/ta36"
+    "path" : "benchmarks/ta36"
   },
   {
     "name" : "ta37",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 1771,
-    "path" : "raw/ta37"
+    "path" : "benchmarks/ta37"
   },
   {
     "name" : "ta38",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 1673,
-    "path" : "raw/ta38"
+    "path" : "benchmarks/ta38"
   },
   {
     "name" : "ta39",
     "jobs" : 30,
     "machines" : 15,
     "optimum" : 1795,
-    "path" : "raw/ta39"
+    "path" : "benchmarks/ta39"
   },
   {
     "name" : "ta40",
@@ -939,7 +939,7 @@
       "upper" : 1669,
       "lower" : 1651
     },
-    "path" : "raw/ta40"
+    "path" : "benchmarks/ta40"
   },
   {
     "name" : "ta41",
@@ -950,7 +950,7 @@
       "upper" : 2005,
       "lower" : 1906
     },
-    "path" : "raw/ta41"
+    "path" : "benchmarks/ta41"
   },
   {
     "name" : "ta42",
@@ -961,7 +961,7 @@
       "upper" : 1937,
       "lower" : 1884
     },
-    "path" : "raw/ta42"
+    "path" : "benchmarks/ta42"
   },
   {
     "name" : "ta43",
@@ -972,7 +972,7 @@
       "upper" : 1846,
       "lower" : 1809
     },
-    "path" : "raw/ta43"
+    "path" : "benchmarks/ta43"
   },
   {
     "name" : "ta44",
@@ -983,7 +983,7 @@
       "upper" : 1979,
       "lower" : 1948
     },
-    "path" : "raw/ta44"
+    "path" : "benchmarks/ta44"
   },
   {
     "name" : "ta45",
@@ -994,7 +994,7 @@
       "upper" : 2000,
       "lower" : 1997
     },
-    "path" : "raw/ta45"
+    "path" : "benchmarks/ta45"
   },
   {
     "name" : "ta46",
@@ -1005,7 +1005,7 @@
       "upper" : 2004,
       "lower" : 1957
     },
-    "path" : "raw/ta46"
+    "path" : "benchmarks/ta46"
   },
   {
     "name" : "ta47",
@@ -1016,7 +1016,7 @@
       "upper" : 1889,
       "lower" : 1807
     },
-    "path" : "raw/ta47"
+    "path" : "benchmarks/ta47"
   },
   {
     "name" : "ta48",
@@ -1027,7 +1027,7 @@
       "upper" : 1937,
       "lower" : 1912
     },
-    "path" : "raw/ta48"
+    "path" : "benchmarks/ta48"
   },
   {
     "name" : "ta49",
@@ -1038,7 +1038,7 @@
       "upper" : 1968,
       "lower" : 1931
     },
-    "path" : "raw/ta49"
+    "path" : "benchmarks/ta49"
   },
   {
     "name" : "ta50",
@@ -1049,216 +1049,216 @@
       "upper" : 1923,
       "lower" : 1833
     },
-    "path" : "raw/ta50"
+    "path" : "benchmarks/ta50"
   },
   {
     "name" : "ta51",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2760,
-    "path" : "raw/ta51"
+    "path" : "benchmarks/ta51"
   },
   {
     "name" : "ta52",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2756,
-    "path" : "raw/ta52"
+    "path" : "benchmarks/ta52"
   },
   {
     "name" : "ta53",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2717,
-    "path" : "raw/ta53"
+    "path" : "benchmarks/ta53"
   },
   {
     "name" : "ta54",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2839,
-    "path" : "raw/ta54"
+    "path" : "benchmarks/ta54"
   },
   {
     "name" : "ta55",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2679,
-    "path" : "raw/ta55"
+    "path" : "benchmarks/ta55"
   },
   {
     "name" : "ta56",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2781,
-    "path" : "raw/ta56"
+    "path" : "benchmarks/ta56"
   },
   {
     "name" : "ta57",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2943,
-    "path" : "raw/ta57"
+    "path" : "benchmarks/ta57"
   },
   {
     "name" : "ta58",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2885,
-    "path" : "raw/ta58"
+    "path" : "benchmarks/ta58"
   },
   {
     "name" : "ta59",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2655,
-    "path" : "raw/ta59"
+    "path" : "benchmarks/ta59"
   },
   {
     "name" : "ta60",
     "jobs" : 50,
     "machines" : 15,
     "optimum" : 2723,
-    "path" : "raw/ta60"
+    "path" : "benchmarks/ta60"
   },
   {
     "name" : "ta61",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2868,
-    "path" : "raw/ta61"
+    "path" : "benchmarks/ta61"
   },
   {
     "name" : "ta62",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2869,
-    "path" : "raw/ta62"
+    "path" : "benchmarks/ta62"
   },
   {
     "name" : "ta63",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2755,
-    "path" : "raw/ta63"
+    "path" : "benchmarks/ta63"
   },
   {
     "name" : "ta64",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2702,
-    "path" : "raw/ta64"
+    "path" : "benchmarks/ta64"
   },
   {
     "name" : "ta65",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2725,
-    "path" : "raw/ta65"
+    "path" : "benchmarks/ta65"
   },
   {
     "name" : "ta66",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2845,
-    "path" : "raw/ta66"
+    "path" : "benchmarks/ta66"
   },
   {
     "name" : "ta67",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2825,
-    "path" : "raw/ta67"
+    "path" : "benchmarks/ta67"
   },
   {
     "name" : "ta68",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2784,
-    "path" : "raw/ta68"
+    "path" : "benchmarks/ta68"
   },
   {
     "name" : "ta69",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 3071,
-    "path" : "raw/ta69"
+    "path" : "benchmarks/ta69"
   },
   {
     "name" : "ta70",
     "jobs" : 50,
     "machines" : 20,
     "optimum" : 2995,
-    "path" : "raw/ta70"
+    "path" : "benchmarks/ta70"
   },
   {
     "name" : "ta71",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5464,
-    "path" : "raw/ta71"
+    "path" : "benchmarks/ta71"
   },
   {
     "name" : "ta72",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5181,
-    "path" : "raw/ta72"
+    "path" : "benchmarks/ta72"
   },
   {
     "name" : "ta73",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5568,
-    "path" : "raw/ta73"
+    "path" : "benchmarks/ta73"
   },
   {
     "name" : "ta74",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5339,
-    "path" : "raw/ta74"
+    "path" : "benchmarks/ta74"
   },
   {
     "name" : "ta75",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5392,
-    "path" : "raw/ta75"
+    "path" : "benchmarks/ta75"
   },
   {
     "name" : "ta76",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5342,
-    "path" : "raw/ta76"
+    "path" : "benchmarks/ta76"
   },
   {
     "name" : "ta77",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5436,
-    "path" : "raw/ta77"
+    "path" : "benchmarks/ta77"
   },
   {
     "name" : "ta78",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5394,
-    "path" : "raw/ta78"
+    "path" : "benchmarks/ta78"
   },
   {
     "name" : "ta79",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5358,
-    "path" : "raw/ta79"
+    "path" : "benchmarks/ta79"
   },
   {
     "name" : "ta80",
     "jobs" : 100,
     "machines" : 20,
     "optimum" : 5183,
-    "path" : "raw/ta80"
+    "path" : "benchmarks/ta80"
   }
 ]
