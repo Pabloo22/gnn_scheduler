@@ -177,8 +177,3 @@ def load_all_from_benchmark(
         )
         instances.append(instance)
     return instances
-
-
-if __name__ == "__main__":
-    instances = load_all_from_benchmark(if_has_optimum=True)
-    print(len(instances))
