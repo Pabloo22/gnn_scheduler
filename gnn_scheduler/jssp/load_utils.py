@@ -74,10 +74,14 @@ def load_from_file(
 
 
 def load_metadata(
-    path: Optional[os.PathLike | str | bytes] = None,
-    encoding: str = "utf-8",
-    json_file: str = "instances.json",
-) -> list[dict]:
+        path: Optional[os.PathLike | str | bytes] = None,
+        encoding: str = "utf-8",
+        json_file: str = "instances.json",
+        if_has_optimum: bool = False,
+        list_of_instances: Optional[list[str]] = None,
+        max_jobs: Optional[int] = None,
+        max_machines: Optional[int] = None,
+    ) -> Iterable[dict]:
     """Loads the metadata from a benchmark file."""
 
     if path is None:
@@ -87,6 +91,19 @@ def load_metadata(
     metadata_path = os.path.join(path, json_file)
     with open(metadata_path, "r", encoding=encoding) as f:
         metadata: list[dict] = json.load(f)
+
+    if if_has_optimum:
+        metadata = [instance for instance in metadata
+                    if instance["optimum"] is not None]
+    if list_of_instances is not None:
+        metadata = [instance for instance in metadata
+                    if instance["name"] in list_of_instances]
+    if max_jobs is not None:
+        metadata = [instance for instance in metadata
+                    if instance["jobs"] <= max_jobs]
+    if max_machines is not None:
+        metadata = [instance for instance in metadata
+                    if instance["machines"] <= max_machines]
 
     return metadata
 
@@ -114,7 +131,7 @@ def load_from_benchmark(
         if instance["name"] != instance_name:
             continue
         optimum = instance["optimum"]
-        if optimum is None and instance.get("bounds", None) is not None:
+        if "bounds" in instance:
             upper_bound, lower_bound = instance["bounds"].values()
         file_path = os.path.join(path, instance["path"])
         break
@@ -136,30 +153,32 @@ def load_all_from_benchmark(
     max_jobs: Optional[int] = None,
     max_machines: Optional[int] = None,
     list_of_instances: Optional[list[str]] = None,
+    if_has_optimum: bool = False,
+    metadata: Optional[list[dict]] = None,
 ) -> list[JobShopInstance]:
     """Loads all job-shop instances."""
 
     if path is None:
         path = get_project_path() / "data"
-
-    metadata_path = os.path.join(path, json_file)
-    with open(metadata_path, "r", encoding=encoding) as f:
-        metadata: list[dict] = json.load(f)
-
-    if list_of_instances is not None:
-        metadata = [instance for instance in metadata 
-                    if instance["name"] in list_of_instances]
+    if metadata is None:
+        metadata = load_metadata(path=path,
+                                 encoding=encoding,
+                                 json_file=json_file,
+                                 if_has_optimum=if_has_optimum,
+                                 list_of_instances=list_of_instances,
+                                 max_jobs=max_jobs,
+                                 max_machines=max_machines)
 
     instances = []
     for instance in metadata:
-        if max_jobs is not None and instance["jobs"] > max_jobs:
-            continue
-        if max_machines is not None and instance["machines"] > max_machines:
-            continue
-
         instance_name = instance["name"]
         instance = load_from_benchmark(
             instance_name, path, encoding, json_file, metadata
         )
         instances.append(instance)
     return instances
+
+
+if __name__ == "__main__":
+    instances = load_all_from_benchmark(if_has_optimum=True)
+    print(len(instances))

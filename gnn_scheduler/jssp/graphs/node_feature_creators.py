@@ -3,15 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-import networkx as nx
-
-from gnn_scheduler.data.preprocessing import (get_n_jobs,
-                                              get_job_loads,
-                                              get_machine_loads,
-                                              max_machine_durations,
-                                              max_graph_duration,
-                                              max_job_durations,
-                                              )
+from gnn_scheduler.jssp import DisjunctiveGraph
 
 
 class NodeFeatureCreator(ABC):
@@ -22,7 +14,7 @@ class NodeFeatureCreator(ABC):
         self.is_fit = False
         self.name = self.__class__.__name__
 
-    def fit(self, graph: nx.DiGraph):
+    def fit(self, graph: DisjunctiveGraph):
         """Used to fit the feature creator to the graph.
 
         Stores the graph.
@@ -35,7 +27,9 @@ class NodeFeatureCreator(ABC):
 
     @abstractmethod
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
-        """_summary_
+        """Creates the features of a node.
+        
+        This method should be implemented by sub-classes.
 
         Args:
             node_name (str): name of the node
@@ -58,10 +52,6 @@ class NodeFeatureCreator(ABC):
 class InAndOutDegrees(NodeFeatureCreator):
     """The normalized in- and out-degrees of a node."""
 
-    def fit(self, graph: nx.DiGraph):
-        """Stores the graph"""
-        self.graph = graph
-
     def create_node_features(
         self, node_name: str, node_data: dict[str, Any]
     ) -> list[float]:
@@ -70,7 +60,7 @@ class InAndOutDegrees(NodeFeatureCreator):
         Args:
             node_name (str): name of the node
             node_data (dict[str, Any]): data associated with the node
-            graph (nx.DiGraph): the networkx graph
+            graph (DisjunctiveGraph): the networkx graph
 
         Returns:
             list[float]:
@@ -89,7 +79,7 @@ class OneHotEncoding(NodeFeatureCreator):
         NodeFeatureCreator (_type_):
     """
 
-    def __init__(self, feature_name: str, n_values: int = 100):
+    def __init__(self, feature_name: str, n_values: int):
         super().__init__()
         self.feature_name = feature_name
         self.n_values = n_values
@@ -102,49 +92,37 @@ class OneHotEncoding(NodeFeatureCreator):
         Args:
             node_name (str):
             node_data (dict[str, Any]):
-            graph (nx.DiGraph):
+            graph (DisjunctiveGraph):
 
         Returns:
             list[float]:
         """
         zeros = [0.0] * self.n_values
-        machine_id = node_data.get(self.feature_name)
-        if machine_id is not None and 0 <= machine_id < self.n_values:
-            zeros[machine_id] = 1.0
+        feature_id = node_data.get(self.feature_name)
+        if feature_id is not None and 0 <= feature_id < self.n_values:
+            zeros[feature_id] = 1.0
         return zeros
 
 
 class Duration(NodeFeatureCreator):
     """The processing time required for each operation.
 
-    It is normalized by the maximum operation time across the graph/job/machine 
+    It is normalized by the maximum operation time across the graph/job/machine
     to ensure this feature falls within a consistent range."""
 
     def __init__(self, normalize_with: str = "graph"):
         super().__init__()
-        self.max_duration = None
         self.normalize_with = normalize_with
-
-    def fit(self, graph: nx.DiGraph):
-        """Calculates the maximum operation time across the graph."""
-        options = {
-            "graph": max_graph_duration,
-            "machine": max_machine_durations,
-            "job": max_job_durations,
-        }
-        self.graph = graph
-        self.max_duration = options[self.normalize_with](graph)
-        self.is_fit = True
 
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         if self.normalize_with == "graph":
-            max_duration = self.max_duration
+            max_duration = self.graph.max_graph_duration
         elif self.normalize_with == "machine":
             machine_id = node_data["machine_id"]
-            max_duration = self.max_duration[machine_id]
+            max_duration = self.graph.max_machine_durations[machine_id]
         elif self.normalize_with == "job":
             job_id = node_data["job_id"]
-            max_duration = self.max_duration[job_id]
+            max_duration = self.graph.max_job_durations[job_id]
         else:
             raise ValueError(f"Unknown normalization option: {self.normalize_with}")
 
@@ -159,21 +137,11 @@ class MachineLoad(NodeFeatureCreator):
     sense of how utilized each machine is.
     """
 
-    def __init__(self):
-        super().__init__()
-        self.max_load = 0
-        self.machines_load = None
-
-    def fit(self, graph: nx.DiGraph):
-        """Calculates the maximum load across all machines."""
-        self.graph = graph
-        self.machines_load = get_machine_loads(graph)
-        self.max_load = max(self.machines_load)
-        self.is_fit = True
-
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         machine_id = node_data["machine_id"]
-        return [self.machines_load[machine_id] / self.max_load]
+        machine_load = self.graph.machines_load[machine_id]
+        max_load = self.graph.max_machine_load
+        return [machine_load / max_load]
 
 
 class JobLoad(NodeFeatureCreator):
@@ -184,16 +152,11 @@ class JobLoad(NodeFeatureCreator):
         self.job_loads = None
         self.max_load = 0
 
-    def fit(self, graph: nx.DiGraph):
-        """Calculates the maximum load across all jobs."""
-        self.graph = graph
-        self.job_loads = get_job_loads(graph)
-        self.max_load = max(self.job_loads.values())
-        self.is_fit = True
-
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         job_id = node_data["job_id"]
-        return [self.job_loads[job_id] / self.max_load]
+        job_load = self.graph.job_loads[job_id]
+        max_load = self.graph.max_job_load
+        return [job_load / max_load]
 
 
 class OperationIndex(NodeFeatureCreator):
@@ -209,20 +172,8 @@ class OperationIndex(NodeFeatureCreator):
         super().__init__()
         self.n_operations_per_job = None
 
-    def fit(self, graph: nx.DiGraph):
-        """Calculates the number of operations per job."""
-        self.graph = graph
-        n_operations_per_job = [0] * get_n_jobs(graph)
-        for _, node_data in graph.nodes(data=True):
-            n_operations_per_job[node_data["job_id"]] += 1 
-        self.n_operations_per_job = n_operations_per_job
-        self.is_fit = True
-
     def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
         job_id = node_data["job_id"]
         position = node_data["position"] + 1
-        return [position / self.n_operations_per_job[job_id]]
-
-
-if __name__ == "__main__":
-    pass
+        n_operations = self.graph.n_operations_per_job[job_id]
+        return [position / n_operations]

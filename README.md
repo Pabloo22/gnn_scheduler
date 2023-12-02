@@ -4,7 +4,7 @@
 This repository contains all the code related to solving the Job-Shop Scheduling 
 Problem (JSSP) with Graph Neural Networks (GNNs). 
 
-For a step-by-step explanation of the source code of this project see the [Tutorial](notebooks/tutorial).
+For a step-by-step explanation of the source code of this project see the [Tutorials](notebooks/tutorials).
 
 ## Installation
 

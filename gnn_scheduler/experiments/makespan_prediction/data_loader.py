@@ -2,7 +2,7 @@ from torch_geometric.utils import from_networkx
 from torch_geometric.loader import DataLoader
 
 from gnn_scheduler.jssp import load_all_from_benchmark
-from gnn_scheduler.data.preprocessing import (preprocess_graphs,
+from gnn_scheduler.jssp.graphs import (preprocess_graphs,
                                               MachineLoad,
                                               OperationIndex,
                                               Duration,
@@ -12,7 +12,7 @@ from gnn_scheduler.data.preprocessing import (preprocess_graphs,
 
 
 def create_data_loader(batch_size: int = 32):
-    instances = load_all_from_benchmark(max_jobs=20, max_machines=10)
+    instances = load_all_from_benchmark(if_has_optimum=True)
     graphs = [instance.disjunctive_graph for instance in instances]
     graphs = preprocess_graphs(graphs,
                                node_feature_creators=[OperationIndex(),

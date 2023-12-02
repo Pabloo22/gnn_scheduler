@@ -4,7 +4,7 @@ from typing import Optional
 
 import networkx as nx
 
-from gnn_scheduler.data.preprocessing import NodeFeatureCreator
+from gnn_scheduler.jssp.graphs import NodeFeatureCreator
 
 
 def preprocess_graph(

@@ -15,10 +15,10 @@ class GCNRegression(torch.nn.Module):
 
         x = self.conv1(x, edge_index)
         x = F.relu(x)
-        x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training, p=0.5)
         x = self.conv2(x, edge_index)
 
-        x = global_mean_pool(x, batch)  # Global pooling
-        x = self.fc(x)  # Final fully connected layer
+        x = global_mean_pool(x, batch)
+        x = self.fc(x)
 
         return x 
