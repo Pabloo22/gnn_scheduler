@@ -1,12 +1,7 @@
 from __future__ import annotations
 
-import itertools
-from typing import NamedTuple, Optional, Callable
-
-import networkx as nx
-
-
-Layout = Callable[[nx.Graph], dict[str, tuple[float, float]]]
+import functools
+from typing import NamedTuple, Optional
 
 
 class Operation(NamedTuple):
@@ -33,7 +28,6 @@ class JobShopInstance:
         lower_bound: Optional[float] = None,
     ):
         self.jobs = jobs
-        self.n_machines = self._get_n_machines()
         self.name = name
         self.time = 0
 
@@ -44,19 +38,10 @@ class JobShopInstance:
         self.upper_bound = upper_bound
         self.lower_bound = lower_bound
 
-        self._disjunctive_graph = None
-
     @property
     def n_jobs(self) -> int:
         """Returns the number of jobs in the instance."""
         return len(self.jobs)
-
-    @property
-    def disjunctive_graph(self) -> nx.DiGraph:
-        """Returns the disjunctive graph of the instance."""
-        if self._disjunctive_graph is None:
-            self._disjunctive_graph = self._create_disjunctive_graph()
-        return self._disjunctive_graph
 
     @property
     def bounds(self) -> tuple[float, float]:
@@ -71,10 +56,19 @@ class JobShopInstance:
             total_duration += sum(operation.duration for operation in job)
         return total_duration
 
-    def _get_n_machines(self) -> int:
+    @functools.cached_property
+    def n_machines(self) -> int:
         """Returns the number of machines in the instance."""
         mx = 0
         for job in self.jobs:
             mx_machine = max(operation.machine_id for operation in job)
             mx = max(mx, mx_machine)
         return mx + 1
+    
+    @functools.cached_property
+    def disjunctive_graph(self):
+        """Returns the disjunctive graph of the instance."""
+        # Imported here to avoid circular imports
+        from gnn_scheduler.jssp.graphs import DisjunctiveGraph
+        
+        return DisjunctiveGraph.create_graph_from_job_shop_instance(self)
