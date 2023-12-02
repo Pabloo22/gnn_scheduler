@@ -211,7 +211,7 @@ class DisjunctiveGraph(nx.DiGraph):
         # -----------------
         if layout is None:
             try:
-                from networkx.drawing.nx_agraph import (  # pylint: disable=import-outside-toplevel
+                from networkx.drawing.nx_agraph import (
                     graphviz_layout,
                 )
 
