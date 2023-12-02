@@ -64,11 +64,11 @@ class JobShopInstance:
             mx_machine = max(operation.machine_id for operation in job)
             mx = max(mx, mx_machine)
         return mx + 1
-    
+
     @functools.cached_property
     def disjunctive_graph(self):
         """Returns the disjunctive graph of the instance."""
         # Imported here to avoid circular imports
         from gnn_scheduler.jssp.graphs import DisjunctiveGraph
-        
+
         return DisjunctiveGraph.create_graph_from_job_shop_instance(self)
