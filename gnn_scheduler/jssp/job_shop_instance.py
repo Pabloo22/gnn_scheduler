@@ -48,13 +48,25 @@ class JobShopInstance:
         """Returns the lower and upper bounds of the instance."""
         return self.lower_bound, self.upper_bound
 
-    @property
+    @functools.cached_property
+    def disjunctive_graph(self):
+        """Returns the disjunctive graph of the instance."""
+        # Imported here to avoid circular imports
+        from gnn_scheduler.jssp.graphs import DisjunctiveGraph
+
+        return DisjunctiveGraph.from_job_shop_instance(self)
+
+    @functools.cached_property
+    def job_durations(self) -> list[float]:
+        """Returns the duration of each job in the instance."""
+        return [
+            sum(operation.duration for operation in job) for job in self.jobs
+        ]
+
+    @functools.cached_property
     def total_duration(self) -> float:
         """Returns the total duration of the instance."""
-        total_duration = 0
-        for job in self.jobs:
-            total_duration += sum(operation.duration for operation in job)
-        return total_duration
+        return sum(self.job_durations)
 
     @functools.cached_property
     def n_machines(self) -> int:
@@ -75,18 +87,11 @@ class JobShopInstance:
         return mx
 
     @functools.cached_property
-    def disjunctive_graph(self):
-        """Returns the disjunctive graph of the instance."""
-        # Imported here to avoid circular imports
-        from gnn_scheduler.jssp.graphs import DisjunctiveGraph
-
-        return DisjunctiveGraph.from_job_shop_instance(self)
-
-    @functools.cached_property
     def max_job_duration(self) -> float:
         """Returns the maximum duration of a job in the instance."""
-        return max(sum(operation.duration for operation in job) 
-                   for job in self.jobs)
+        return max(
+            sum(operation.duration for operation in job) for job in self.jobs
+        )
 
     @functools.cached_property
     def machine_loads(self) -> list[float]:
