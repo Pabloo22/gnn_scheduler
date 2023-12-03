@@ -16,3 +16,5 @@ from gnn_scheduler.jssp.graphs import (
     Duration,
 )
 from gnn_scheduler.jssp.solvers import CPSolver
+
+from gnn_scheduler.jssp.generators import NaiveGenerator

@@ -1,0 +1,1 @@
+from .naive_generator import NaiveGenerator
