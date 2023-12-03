@@ -106,3 +106,8 @@ class JobShopInstance:
     def max_machine_load(self) -> float:
         """Returns the maximum duration of a machine in the instance."""
         return max(self.machine_loads)
+
+    @functools.cached_property
+    def mean_machine_load(self) -> float:
+        """Returns the mean duration of a machine in the instance."""
+        return self.total_duration / self.n_machines
