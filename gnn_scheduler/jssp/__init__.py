@@ -15,3 +15,4 @@ from gnn_scheduler.jssp.graphs import (
     OperationIndex,
     Duration,
 )
+from gnn_scheduler.jssp.solvers import CPSolver
