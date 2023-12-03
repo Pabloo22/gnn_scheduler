@@ -172,7 +172,7 @@ class DisjunctiveGraph(nx.DiGraph):
         cls, instance: JobShopInstance
     ) -> nx.DiGraph:
         """Creates the disjunctive graph of the instance."""
-        disjunctive_graph = nx.DiGraph()
+        disjunctive_graph = cls(name=instance.name)
 
         # Adding source and sink nodes
         disjunctive_graph.add_node(
@@ -225,12 +225,12 @@ class DisjunctiveGraph(nx.DiGraph):
                 )
                 layout = nx.spring_layout
 
-        temp_graph = self.graph.copy()
+        temp_graph = self.copy()
         # Remove disjunctive edges to get a better layout
         temp_graph.remove_edges_from(
             [
                 (u, v)
-                for u, v, d in self.graph.edges(data=True)
+                for u, v, d in self.edges(data=True)
                 if d["type"] == EdgeType.DISJUNCTIVE
             ]
         )
