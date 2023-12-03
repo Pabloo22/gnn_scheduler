@@ -133,6 +133,9 @@ def load_from_benchmark(
         optimum = instance["optimum"]
         if "bounds" in instance:
             upper_bound, lower_bound = instance["bounds"].values()
+        else:
+            upper_bound = optimum
+            lower_bound = optimum
         file_path = os.path.join(path, instance["path"])
         break
 
