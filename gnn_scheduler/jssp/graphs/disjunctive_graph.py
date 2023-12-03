@@ -168,7 +168,7 @@ class DisjunctiveGraph(nx.DiGraph):
         return disjunctive_graph
 
     @classmethod
-    def create_graph_from_job_shop_instance(
+    def from_job_shop_instance(
         cls, instance: JobShopInstance
     ) -> nx.DiGraph:
         """Creates the disjunctive graph of the instance."""

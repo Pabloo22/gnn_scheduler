@@ -71,4 +71,4 @@ class JobShopInstance:
         # Imported here to avoid circular imports
         from gnn_scheduler.jssp.graphs import DisjunctiveGraph
 
-        return DisjunctiveGraph.create_graph_from_job_shop_instance(self)
+        return DisjunctiveGraph.from_job_shop_instance(self)
