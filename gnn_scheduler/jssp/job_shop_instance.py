@@ -66,9 +66,38 @@ class JobShopInstance:
         return mx + 1
 
     @functools.cached_property
+    def max_duration(self) -> float:
+        """Returns the maximum duration of the instance."""
+        mx = 0
+        for job in self.jobs:
+            mx_duration = max(operation.duration for operation in job)
+            mx = max(mx, mx_duration)
+        return mx
+
+    @functools.cached_property
     def disjunctive_graph(self):
         """Returns the disjunctive graph of the instance."""
         # Imported here to avoid circular imports
         from gnn_scheduler.jssp.graphs import DisjunctiveGraph
 
         return DisjunctiveGraph.from_job_shop_instance(self)
+
+    @functools.cached_property
+    def max_job_duration(self) -> float:
+        """Returns the maximum duration of a job in the instance."""
+        return max(sum(operation.duration for operation in job) 
+                   for job in self.jobs)
+
+    @functools.cached_property
+    def machine_loads(self) -> list[float]:
+        """Returns the total duration of each machine in the instance."""
+        machine_times = [0 for _ in range(self.n_machines)]
+        for job in self.jobs:
+            for operation in job:
+                machine_times[operation.machine_id] += operation.duration
+        return machine_times
+
+    @functools.cached_property
+    def max_machine_load(self) -> float:
+        """Returns the maximum duration of a machine in the instance."""
+        return max(self.machine_loads)
