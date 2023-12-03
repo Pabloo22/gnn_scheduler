@@ -19,7 +19,7 @@ def _read_taillard_file(
         #+++++++++++++++++++++++++++++
         # instance la02
         #+++++++++++++++++++++++++++++
-        # Lawrence 10x5 instance (Table 3, instance 2); also called (setf2) or (F2)
+        # Lawrence 10x5 instance (Table 3, instance 2); also called...
         10 5
         0 20 3 87 1 31 4 76 2 17
         4 25 2 32 0 24 1 18 3 81
@@ -70,18 +70,20 @@ def load_from_file(
     if specification == "taillard":
         return _read_taillard_file(lines, comment_symbol, **kwargs)
 
-    raise NotImplementedError(f"Specification '{specification}' is not implemented.")
+    raise NotImplementedError(
+        f"Specification '{specification}' is not implemented."
+    )
 
 
 def load_metadata(
-        path: Optional[os.PathLike | str | bytes] = None,
-        encoding: str = "utf-8",
-        json_file: str = "instances.json",
-        if_has_optimum: bool = False,
-        list_of_instances: Optional[list[str]] = None,
-        max_jobs: Optional[int] = None,
-        max_machines: Optional[int] = None,
-    ) -> Iterable[dict]:
+    path: Optional[os.PathLike | str | bytes] = None,
+    encoding: str = "utf-8",
+    json_file: str = "instances.json",
+    if_has_optimum: bool = False,
+    list_of_instances: Optional[list[str]] = None,
+    max_jobs: Optional[int] = None,
+    max_machines: Optional[int] = None,
+) -> Iterable[dict]:
     """Loads the metadata from a benchmark file."""
 
     if path is None:
@@ -93,17 +95,27 @@ def load_metadata(
         metadata: list[dict] = json.load(f)
 
     if if_has_optimum:
-        metadata = [instance for instance in metadata
-                    if instance["optimum"] is not None]
+        metadata = [
+            instance
+            for instance in metadata
+            if instance["optimum"] is not None
+        ]
     if list_of_instances is not None:
-        metadata = [instance for instance in metadata
-                    if instance["name"] in list_of_instances]
+        metadata = [
+            instance
+            for instance in metadata
+            if instance["name"] in list_of_instances
+        ]
     if max_jobs is not None:
-        metadata = [instance for instance in metadata
-                    if instance["jobs"] <= max_jobs]
+        metadata = [
+            instance for instance in metadata if instance["jobs"] <= max_jobs
+        ]
     if max_machines is not None:
-        metadata = [instance for instance in metadata
-                    if instance["machines"] <= max_machines]
+        metadata = [
+            instance
+            for instance in metadata
+            if instance["machines"] <= max_machines
+        ]
 
     return metadata
 
@@ -164,13 +176,15 @@ def load_all_from_benchmark(
     if path is None:
         path = get_project_path() / "data"
     if metadata is None:
-        metadata = load_metadata(path=path,
-                                 encoding=encoding,
-                                 json_file=json_file,
-                                 if_has_optimum=if_has_optimum,
-                                 list_of_instances=list_of_instances,
-                                 max_jobs=max_jobs,
-                                 max_machines=max_machines)
+        metadata = load_metadata(
+            path=path,
+            encoding=encoding,
+            json_file=json_file,
+            if_has_optimum=if_has_optimum,
+            list_of_instances=list_of_instances,
+            max_jobs=max_jobs,
+            max_machines=max_machines,
+        )
 
     instances = []
     for instance in metadata:
