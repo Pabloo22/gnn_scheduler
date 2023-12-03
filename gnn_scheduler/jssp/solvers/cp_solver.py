@@ -12,12 +12,13 @@ class CPSolver:
     def __init__(self,
                  job_shop_instance: JobShopInstance,
                  log_search_progress: bool = False,
-                 time_limit: Optional[int] = None):
+                 time_limit: Optional[float] = None):
         self.instance = job_shop_instance
         self.model = cp_model.CpModel()
         self.solver = cp_model.CpSolver()
         self.solver.parameters.log_search_progress = log_search_progress
-        self.solver.parameters.max_time_in_seconds = time_limit
+        if time_limit is not None:
+            self.solver.parameters.max_time_in_seconds = time_limit
         self.operations_start = {}
         self.makespan = None
 
