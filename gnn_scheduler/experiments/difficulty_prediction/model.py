@@ -1,24 +1,78 @@
 import torch
-import torch.nn.functional as F
-from torch_geometric.nn import GCNConv, global_mean_pool
+import torch.nn as nn
+
+from gnn_scheduler.experiments.difficulty_prediction.layers import (
+    GraphAggregationLayer,
+    MultiGraphConvolutionLayers,
+)
 
 
-class GCNRegression(torch.nn.Module):
-    def __init__(self, num_node_features):
+class RelationalGCNRegressor(nn.Module):
+    """
+    A regression model that processes graphs with two types of edges using a
+    relational graph convolutional network (GCN).
+
+    Attributes:
+        graph_conv (MultiGraphConvolutionLayers): The graph convolution layers.
+        aggregation_layer (GraphAggregationLayer): The layer that aggregates node embeddings.
+    """
+
+    def __init__(
+        self,
+        in_features: int,
+        conv_units: list[int],
+        aggregation_units: int,
+        dropout_rate: float = 0.0,
+        leaky_relu_slope: float = 0.1,
+    ):
+        """
+        Initializes the RelationalGCNRegressor model.
+
+        Args:
+            in_features (int): The number of features in each input node
+                embedding.
+            conv_units ([int]): List of units in each graph convolution layer.
+            aggregation_units (int): The number of units in the graph
+                aggregation layer before regression.
+            dropout_rate (float, optional): Dropout rate for the convolution
+                layers. Defaults to 0.
+        """
         super().__init__()
-        self.conv1 = GCNConv(num_node_features, 16)
-        self.conv2 = GCNConv(16, 16)
-        self.fc = torch.nn.Linear(16, 1)  # One output neuron for regression
 
-    def forward(self, data):
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+        # Define the graph convolution layers
+        self.graph_conv = MultiGraphConvolutionLayers(
+            in_features,
+            conv_units,
+            torch.nn.LeakyReLU(leaky_relu_slope),
+            edge_type_num=2,
+            dropout_rate=dropout_rate,
+        )
 
-        x = self.conv1(x, edge_index)
-        x = F.relu(x)
-        x = F.dropout(x, training=self.training, p=0.5)
-        x = self.conv2(x, edge_index)
+        # Define the aggregation layer
+        # The input size is the output size of the last graph convolution layer
+        self.aggregation_layer = GraphAggregationLayer(
+            conv_units[-1], aggregation_units
+        )
 
-        x = global_mean_pool(x, batch)
-        x = self.fc(x)
+    def forward(
+        self, node_features: torch.Tensor, adj_matrices: torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Forward pass through the RelationalGCNRegressor.
 
-        return x 
+        Args:
+            node_features (torch.Tensor): The node features tensor of shape
+                (N, in_features), where N is the number of nodes.
+            adj_matrices ([torch.Tensor]): List of adjacency matrices for each
+                edge type.
+
+        Returns:
+            torch.Tensor: The regression output for the graph.
+        """
+        # Graph convolution layers
+        hidden_features = self.graph_conv(node_features, adj_matrices)
+
+        # Aggregation layer
+        output = self.aggregation_layer(hidden_features)
+
+        return output
