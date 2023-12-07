@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import Optional
 
 import networkx as nx
+import numpy as np
+import torch
 
-from gnn_scheduler.jssp.graphs import NodeFeatureCreator
+from gnn_scheduler.jssp.graphs import NodeFeatureCreator, EdgeType, DisjunctiveGraph
 
 
 def preprocess_graph(
@@ -126,17 +128,43 @@ def preprocess_graphs(
 
 def get_node_features_matrix(
     graph: nx.DiGraph, feature_name: str = "x"
-) -> list[list[float]]:
-    """Returns the node features matrix of a graph.
+) -> torch.Tensor:
+    """Returns a tensor with the node features matrix of a graph.
 
     Args:
         graph (nx.DiGraph): the graph
         feature_name (str, optional): the name of the feature. Defaults to "x".
 
     Returns:
-        list[list[float]]: the node features matrix
+        
     """
     node_features_matrix = []
     for _, node_data in graph.nodes(data=True):
         node_features_matrix.append(node_data[feature_name])
-    return node_features_matrix
+
+    return torch.tensor(node_features_matrix)
+
+
+def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
+    """Returns a tensor of adjacency matrices of a disjunctive graph.
+    
+    The first adjacency matrix is the adjacency matrix of the conjuctive edges
+    and the second adjacency matrix is  of the disjunctive edges.
+    
+    The tensor shape is (num_nodes, num_nodes, 2).
+    Args:
+        graph (DisjunctiveGraph): the disjunctive graph
+    
+    Returns:
+        torch.Tensor: the tensor of adjacency matrices
+    """
+    num_nodes = graph.number_of_nodes()
+    adj_matrices = np.zeros((num_nodes, num_nodes, 2))
+    for u, v, edge_type in graph.edges(data="type"):
+        type_index = edge_type.value
+        # get data from u and v
+        u_index = graph.nodes[u]["node_index"]
+        v_index = graph.nodes[v]["node_index"]
+        adj_matrices[u_index, v_index, type_index] = 1
+
+    return torch.tensor(adj_matrices, dtype=torch.int8)
