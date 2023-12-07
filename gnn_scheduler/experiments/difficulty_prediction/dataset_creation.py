@@ -7,7 +7,6 @@ import tqdm
 from gnn_scheduler import get_project_path
 from gnn_scheduler.jssp import(
     NaiveGenerator,
-    JobShopInstance,
     CPSolver,
 )
 
