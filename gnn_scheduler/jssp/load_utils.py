@@ -4,7 +4,7 @@ from typing import Iterable, Optional
 import os
 import json
 
-from gnn_scheduler import get_project_path
+from gnn_scheduler import get_data_path
 from gnn_scheduler.jssp import JobShopInstance, Operation
 
 
@@ -87,7 +87,7 @@ def load_metadata(
     """Loads the metadata from a benchmark file."""
 
     if path is None:
-        path = get_project_path() / "data"
+        path = get_data_path()
 
     # get metadata from instances.json file
     metadata_path = os.path.join(path, json_file)
@@ -130,7 +130,7 @@ def load_from_benchmark(
     """Loads a job-shop instance from a benchmark file."""
 
     if path is None:
-        path = get_project_path() / "data"
+        path = get_data_path()
 
     if metadata is None:
         metadata = load_metadata(path, encoding, json_file)
@@ -174,7 +174,7 @@ def load_all_from_benchmark(
     """Loads all job-shop instances."""
 
     if path is None:
-        path = get_project_path() / "data"
+        path = get_data_path()
     if metadata is None:
         metadata = load_metadata(
             path=path,
@@ -203,7 +203,7 @@ def load_pickle_instances(
     """Loads all instances from a folder containing pickle files."""
 
     if data_path is None:
-        data_path = get_project_path() / "data"
+        data_path = get_data_path()
 
     instances = []
     for file_name in os.listdir(data_path / folder_name):
