@@ -194,3 +194,22 @@ def load_all_from_benchmark(
         )
         instances.append(instance)
     return instances
+
+
+def load_pickle_instances(
+    folder_name: str,
+    data_path: Optional[os.PathLike | str | bytes] = None,
+):
+    """Loads all instances from a folder containing pickle files."""
+
+    if data_path is None:
+        data_path = get_project_path() / "data"
+
+    instances = []
+    for file_name in os.listdir(data_path / folder_name):
+        if file_name.endswith(".pkl"):
+            instance = JobShopInstance.load(
+                data_path / folder_name / file_name
+            )
+            instances.append(instance)
+    return instances
