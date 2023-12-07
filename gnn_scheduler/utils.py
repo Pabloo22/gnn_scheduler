@@ -15,5 +15,10 @@ def get_project_path() -> pathlib.Path:
     return pathlib.Path(project_path)
 
 
+def get_data_path() -> pathlib.Path:
+    """Gets data path."""
+    return get_project_path() / "data"
+
+
 if __name__ == "__main__":
     print(get_project_path())
