@@ -108,6 +108,8 @@ class CPSolver:
             }
             solution["makespan"] = self.solver.Value(self.makespan)
             solution["elapsed_time"] = elapsed_time
+            status = "optimal" if status == cp_model.OPTIMAL else "feasible"
+            solution["status"] = status
             return solution
 
 
