@@ -176,6 +176,16 @@ class JobLoad(NodeFeatureCreator):
         job_load = self.graph.job_loads[job_id]
         max_load = self.graph.max_job_load
         return [job_load / max_load]
+    
+
+class JobID(NodeFeatureCreator):
+    """The normalized job ID."""
+
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
+        job_id = node_data["job_id"] + 1
+        return [job_id / self.graph.n_jobs]
 
 
 class OperationIndex(NodeFeatureCreator):
@@ -186,10 +196,6 @@ class OperationIndex(NodeFeatureCreator):
     insight into the operation's order without depending on the absolute
     number of operations.
     """
-
-    def __init__(self):
-        super().__init__()
-        self.n_operations_per_job = None
 
     def create_features(
         self, node_name: str, node_data: dict[str, Any]
