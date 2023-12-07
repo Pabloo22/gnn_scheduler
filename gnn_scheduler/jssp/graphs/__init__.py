@@ -9,7 +9,7 @@ from .node_feature_creators import (
     OperationIndex,
     Duration,
 )
-from .preprocessing_pipeline import (
+from .preprocessing import (
     preprocess_graph,
     preprocess_graphs,
 )
