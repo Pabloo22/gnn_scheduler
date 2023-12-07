@@ -14,6 +14,8 @@ from gnn_scheduler.jssp.graphs import (
     JobLoad,
     OperationIndex,
     Duration,
+    get_node_features_matrix,
+    get_adj_matrices,
 )
 from gnn_scheduler.jssp.solvers import CPSolver
 
