@@ -122,3 +122,21 @@ def preprocess_graphs(
             )
         )
     return processed_graphs
+
+
+def get_node_features_matrix(
+    graph: nx.DiGraph, feature_name: str = "x"
+) -> list[list[float]]:
+    """Returns the node features matrix of a graph.
+
+    Args:
+        graph (nx.DiGraph): the graph
+        feature_name (str, optional): the name of the feature. Defaults to "x".
+
+    Returns:
+        list[list[float]]: the node features matrix
+    """
+    node_features_matrix = []
+    for _, node_data in graph.nodes(data=True):
+        node_features_matrix.append(node_data[feature_name])
+    return node_features_matrix
