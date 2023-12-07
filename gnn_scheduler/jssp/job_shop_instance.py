@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import functools
 from typing import NamedTuple, Optional
+import os
+import pickle
 
 
 class Operation(NamedTuple):
@@ -111,3 +113,16 @@ class JobShopInstance:
     def mean_machine_load(self) -> float:
         """Returns the mean duration of a machine in the instance."""
         return self.total_duration / self.n_machines
+
+    def save(self, path: os.PathLike | str | bytes):
+        """Uses pickle to save the instance to a file."""
+        
+        with open(path, "wb") as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def load(path: os.PathLike | str | bytes) -> JobShopInstance:
+        """"Uses pickle to load the instance from a file."""
+        with open(path, "rb") as f:
+            instance = pickle.load(f)
+        return instance
