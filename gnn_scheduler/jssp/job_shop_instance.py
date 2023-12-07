@@ -116,7 +116,6 @@ class JobShopInstance:
 
     def save(self, path: os.PathLike | str | bytes):
         """Uses pickle to save the instance to a file."""
-        
         with open(path, "wb") as f:
             pickle.dump(self, f)
 
