@@ -17,11 +17,11 @@ def preprocess_graph(
     remove_nodes: Optional[list[str]] = None,
 ) -> nx.DiGraph:
     """Preprocesses a graph using a list of node feature creators.
-    
+
     It creates a new feature for each node using the node feature creators.
     The new feature is stored in the node data under the name new_feature_name.
-    If keep_old_features is True, the old features are kept. Otherwise, they 
-    are removed. If exclude_old_features is not None, the old features to 
+    If keep_old_features is True, the old features are kept. Otherwise, they
+    are removed. If exclude_old_features is not None, the old features to
     exclude are specified.
 
     Args:
@@ -36,7 +36,7 @@ def preprocess_graph(
             to exclude if keep_old_features is False. Defaults to None.
         copy (bool, optional): whether to copy the graph before preprocessing.
             Defaults to False.
-        remove_nodes (Optional[list[str]], optional): the nodes names to 
+        remove_nodes (Optional[list[str]], optional): the nodes names to
             remove. Defaults to [].
 
     Returns:
@@ -51,7 +51,9 @@ def preprocess_graph(
     for node_name in remove_nodes:
         graph.remove_node(node_name)
 
-    exclude_old_features = [] if exclude_old_features is None else exclude_old_features
+    exclude_old_features = (
+        [] if exclude_old_features is None else exclude_old_features
+    )
     exclude_old_features = set(exclude_old_features)
     exclude_old_features.add(new_feature_name)
 
