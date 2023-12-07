@@ -1,4 +1,4 @@
-from .disjunctive_graph import DisjunctiveGraph
+from .disjunctive_graph import DisjunctiveGraph, EdgeType
 
 from .node_feature_creators import (
     NodeFeatureCreator,
