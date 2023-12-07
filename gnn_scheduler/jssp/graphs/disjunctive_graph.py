@@ -15,8 +15,8 @@ from gnn_scheduler.jssp.job_shop_instance import JobShopInstance
 
 
 class EdgeType(enum.Enum):
-    CONJUNCTIVE = "conjunctive"
-    DISJUNCTIVE = "disjunctive"
+    CONJUNCTIVE = 0
+    DISJUNCTIVE = 1
 
 
 Layout = Callable[[nx.Graph], dict[str, tuple[float, float]]]
@@ -102,7 +102,9 @@ class DisjunctiveGraph(nx.DiGraph):
         for _, node_data in self.nodes(data=True):
             duration = node_data["duration"]
             job_id = node_data["job_id"]
-            max_durations[node_data["job_id"]] = max(max_durations[job_id], duration)
+            max_durations[node_data["job_id"]] = max(
+                max_durations[job_id], duration
+            )
         return max_durations
 
     @functools.cached_property
@@ -112,7 +114,9 @@ class DisjunctiveGraph(nx.DiGraph):
         for _, node_data in self.nodes(data=True):
             duration = node_data["duration"]
             machine_id = node_data["machine_id"]
-            max_durations[machine_id] = max(max_durations[machine_id], duration)
+            max_durations[machine_id] = max(
+                max_durations[machine_id], duration
+            )
         return max_durations
 
     @functools.cached_property
@@ -127,6 +131,7 @@ class DisjunctiveGraph(nx.DiGraph):
     def add_conjuctive_edges(
         instance: JobShopInstance, disjunctive_graph: nx.DiGraph
     ) -> nx.DiGraph:
+        counter = 0
         # Adding operations as nodes and conjunctive arcs as edges
         for job_id, job in enumerate(instance.jobs):
             prev_op = "S"  # start from source
@@ -139,12 +144,18 @@ class DisjunctiveGraph(nx.DiGraph):
                     machine_id=operation.machine_id,
                     job_id=job_id,
                     position=position,
+                    node_index=counter,
                 )
-                disjunctive_graph.add_edge(prev_op, op_id, type=EdgeType.CONJUNCTIVE)
+                disjunctive_graph.add_edge(
+                    prev_op, op_id, type=EdgeType.CONJUNCTIVE
+                )
                 prev_op = op_id
+                counter += 1
 
             # from last operation to sink
-            disjunctive_graph.add_edge(prev_op, "T", type=EdgeType.CONJUNCTIVE)
+            disjunctive_graph.add_edge(
+                prev_op, "T", type=EdgeType.CONJUNCTIVE
+            )
 
         return disjunctive_graph
 
@@ -162,15 +173,35 @@ class DisjunctiveGraph(nx.DiGraph):
         # Adding disjunctive arcs
         for operations in machine_operations.values():
             for op1, op2 in itertools.combinations(operations, 2):
-                disjunctive_graph.add_edge(op1, op2, type=EdgeType.DISJUNCTIVE)
-                disjunctive_graph.add_edge(op2, op1, type=EdgeType.DISJUNCTIVE)
+                disjunctive_graph.add_edge(
+                    op1, op2, type=EdgeType.DISJUNCTIVE
+                )
+                disjunctive_graph.add_edge(
+                    op2, op1, type=EdgeType.DISJUNCTIVE
+                )
 
         return disjunctive_graph
 
+    @functools.cached_property
+    def disjuncive_edges(self) -> list[tuple[str, str]]:
+        """Returns the disjunctive edges of the graph."""
+        return [
+            (u, v)
+            for u, v, d in self.edges(data=True)
+            if d["type"] == EdgeType.DISJUNCTIVE
+        ]
+
+    @functools.cached_property
+    def conjunctive_edges(self) -> list[tuple[str, str]]:
+        """Returns the conjunctive edges of the graph."""
+        return [
+            (u, v)
+            for u, v, d in self.edges(data=True)
+            if d["type"] == EdgeType.CONJUNCTIVE
+        ]
+
     @classmethod
-    def from_job_shop_instance(
-        cls, instance: JobShopInstance
-    ) -> nx.DiGraph:
+    def from_job_shop_instance(cls, instance: JobShopInstance) -> nx.DiGraph:
         """Creates the disjunctive graph of the instance."""
         disjunctive_graph = cls(name=instance.name)
 
@@ -182,8 +213,12 @@ class DisjunctiveGraph(nx.DiGraph):
             "T", duration=0, machine_id=-1, job_id=-1, position=-1
         )
 
-        disjunctive_graph = cls.add_conjuctive_edges(instance, disjunctive_graph)
-        disjunctive_graph = cls.add_disjunctive_edges(instance, disjunctive_graph)
+        disjunctive_graph = cls.add_conjuctive_edges(
+            instance, disjunctive_graph
+        )
+        disjunctive_graph = cls.add_disjunctive_edges(
+            instance, disjunctive_graph
+        )
 
         return disjunctive_graph
 
@@ -238,7 +273,9 @@ class DisjunctiveGraph(nx.DiGraph):
 
         # Draw nodes
         # ----------
-        node_colors = [node.get("machine_id", -1) for node in temp_graph.nodes.values()]
+        node_colors = [
+            node.get("machine_id", -1) for node in temp_graph.nodes.values()
+        ]
 
         nx.draw_networkx_nodes(
             self,
@@ -315,7 +352,14 @@ class DisjunctiveGraph(nx.DiGraph):
         # Add to the legend the meaning of m and d
         text = "m = machine_id\nd = duration"
         extra = matplotlib.patches.Rectangle(
-            (0, 0), 1, 1, fc="w", fill=False, edgecolor="none", linewidth=0, label=text
+            (0, 0),
+            1,
+            1,
+            fc="w",
+            fill=False,
+            edgecolor="none",
+            linewidth=0,
+            label=text,
         )
         plt.legend(
             handles=[conjunctive_patch, disjunctive_patch, extra],
