@@ -6,7 +6,7 @@ from torch_geometric.loader import DataLoader
 
 import wandb
 
-from gnn_scheduler.experiments.makespan_prediction import (
+from gnn_scheduler.experiments.difficulty_prediction import (
     GCNRegression
 )
 from gnn_scheduler.jssp import load_all_from_benchmark
