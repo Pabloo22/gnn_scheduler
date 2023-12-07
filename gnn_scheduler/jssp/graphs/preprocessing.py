@@ -136,7 +136,7 @@ def get_node_features_matrix(
         feature_name (str, optional): the name of the feature. Defaults to "x".
 
     Returns:
-        
+
     """
     node_features_matrix = []
     for _, node_data in graph.nodes(data=True):
@@ -147,14 +147,14 @@ def get_node_features_matrix(
 
 def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
     """Returns a tensor of adjacency matrices of a disjunctive graph.
-    
+
     The first adjacency matrix is the adjacency matrix of the conjuctive edges
     and the second adjacency matrix is  of the disjunctive edges.
-    
+
     The tensor shape is (num_nodes, num_nodes, 2).
     Args:
         graph (DisjunctiveGraph): the disjunctive graph
-    
+
     Returns:
         torch.Tensor: the tensor of adjacency matrices
     """
@@ -168,3 +168,36 @@ def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
         adj_matrices[u_index, v_index, type_index] = 1
 
     return torch.tensor(adj_matrices, dtype=torch.int8)
+
+
+def disjunctive_graph_to_tensors(
+    disjunctive_graph: DisjunctiveGraph,
+    node_feature_creators: list[NodeFeatureCreator],
+    copy: bool = False,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Returns the node features and adjacency matrices of a job-shop instance.
+
+    Args:
+        disjunctive_graph (DisjunctiveGraph): the disjunctive graph of the
+            instance.
+        node_feature_creators (list[NodeFeatureCreator]): the node feature
+            creators to use.
+
+    Returns:
+        tuple[torch.Tensor]: the node features and adjacency matrices
+    """
+
+    disjunctive_graph = preprocess_graph(
+        disjunctive_graph,
+        node_feature_creators=node_feature_creators,
+        new_feature_name="x",
+        keep_old_features=False,
+        exclude_old_features=None,
+        copy=copy,
+        remove_nodes=["T", "S"],
+    )
+
+    node_features = get_node_features_matrix(disjunctive_graph)
+    adj_matrices = get_adj_matrices(disjunctive_graph)
+
+    return node_features, adj_matrices
