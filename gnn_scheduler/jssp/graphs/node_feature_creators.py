@@ -26,9 +26,11 @@ class NodeFeatureCreator(ABC):
         self.is_fit = True
 
     @abstractmethod
-    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         """Creates the features of a node.
-        
+
         This method should be implemented by sub-classes.
 
         Args:
@@ -42,7 +44,9 @@ class NodeFeatureCreator(ABC):
     def __str__(self) -> str:
         return f"{self.name}()"
 
-    def __call__(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def __call__(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         if not self.is_fit:
             raise RuntimeError(f"{self.name} is not fit.")
 
@@ -65,7 +69,9 @@ class InAndOutDegrees(NodeFeatureCreator):
         Returns:
             list[float]:
         """
-        in_degree = self.graph.in_degree(node_name) / (self.graph.number_of_nodes() - 1)
+        in_degree = self.graph.in_degree(node_name) / (
+            self.graph.number_of_nodes() - 1
+        )
         out_degree = self.graph.out_degree(node_name) / (
             self.graph.number_of_nodes() - 1
         )
@@ -73,11 +79,7 @@ class InAndOutDegrees(NodeFeatureCreator):
 
 
 class OneHotEncoding(NodeFeatureCreator):
-    """One-hot encoding of a node attribute.
-
-    Args:
-        NodeFeatureCreator (_type_):
-    """
+    """One-hot encoding of a node attribute."""
 
     def __init__(self, feature_name: str, n_values: int):
         super().__init__()
@@ -110,11 +112,20 @@ class Duration(NodeFeatureCreator):
     It is normalized by the maximum operation time across the graph/job/machine
     to ensure this feature falls within a consistent range."""
 
-    def __init__(self, normalize_with: str = "graph"):
+    def __init__(
+        self,
+        normalize_with: str = "graph",
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+    ):
         super().__init__()
         self.normalize_with = normalize_with
+        self.min_value = min_value
+        self.max_value = max_value
 
-    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         if self.normalize_with == "graph":
             max_duration = self.graph.max_graph_duration
         elif self.normalize_with == "machine":
@@ -124,9 +135,13 @@ class Duration(NodeFeatureCreator):
             job_id = node_data["job_id"]
             max_duration = self.graph.max_job_durations[job_id]
         else:
-            raise ValueError(f"Unknown normalization option: {self.normalize_with}")
-
-        return [node_data["duration"] / max_duration]
+            raise ValueError(
+                f"Unknown normalization option: {self.normalize_with}"
+            )
+        percentage = node_data["duration"] / max_duration
+        return [
+            self.min_value + percentage * (self.max_value - self.min_value)
+        ]
 
 
 class MachineLoad(NodeFeatureCreator):
@@ -137,7 +152,9 @@ class MachineLoad(NodeFeatureCreator):
     sense of how utilized each machine is.
     """
 
-    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         machine_id = node_data["machine_id"]
         machine_load = self.graph.machines_load[machine_id]
         max_load = self.graph.max_machine_load
@@ -152,7 +169,9 @@ class JobLoad(NodeFeatureCreator):
         self.job_loads = None
         self.max_load = 0
 
-    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         job_id = node_data["job_id"]
         job_load = self.graph.job_loads[job_id]
         max_load = self.graph.max_job_load
@@ -172,7 +191,9 @@ class OperationIndex(NodeFeatureCreator):
         super().__init__()
         self.n_operations_per_job = None
 
-    def create_features(self, node_name: str, node_data: dict[str, Any]) -> list[float]:
+    def create_features(
+        self, node_name: str, node_data: dict[str, Any]
+    ) -> list[float]:
         job_id = node_data["job_id"]
         position = node_data["position"] + 1
         n_operations = self.graph.n_operations_per_job[job_id]
