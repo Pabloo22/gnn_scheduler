@@ -182,6 +182,7 @@ def disjunctive_graph_to_tensors(
             instance.
         node_feature_creators (list[NodeFeatureCreator]): the node feature
             creators to use.
+        copy (bool, optional): whether to copy the graph before preprocessing.
 
     Returns:
         tuple[torch.Tensor]: the node features and adjacency matrices
