@@ -44,30 +44,33 @@ class RemoveMachines(Transformation):
         super().__init__(suffix=suffix)
         self.n_machines = n_machines
 
-    @staticmethod
-    def remove_machine(
-        instance: JobShopInstance, machine_id: int
-    ) -> JobShopInstance:
-        machine_id = random.choice(range(instance.n_machines))
+    def apply(self, instance: JobShopInstance) -> JobShopInstance:
+        if instance.n_machines <= self.n_machines:
+            return instance  # No need to remove machines
+
+        # Select machine indices to keep
+        machines_to_keep = set(
+            random.sample(range(instance.n_machines), self.n_machines)
+        )
+
+        # Re-index machines
+        machine_reindex_map = {
+            old_id: new_id
+            for new_id, old_id in enumerate(sorted(machines_to_keep))
+        }
+
         new_jobs = []
         for job in instance.jobs:
-            new_jobs.append([op for op in job if op.machine_id != machine_id])
-
-        # Adjust the machine indices
-        for job in new_jobs:
-            for op in job:
-                if op.machine_id > machine_id:
-                    op.machine_id -= 1
-
-        return JobShopInstance(new_jobs, instance.name)
-
-    def apply(self, instance: JobShopInstance) -> JobShopInstance:
-        while instance.n_machines > self.n_machines:
-            instance = RemoveMachines.remove_machine(
-                instance, random.choice(range(instance.n_machines))
+            # Keep operations whose machine_id is in machines_to_keep and re-index them
+            new_jobs.append(
+                [
+                    Operation(machine_reindex_map[op.machine_id], op.duration)
+                    for op in job
+                    if op.machine_id in machines_to_keep
+                ]
             )
 
-        return instance
+        return JobShopInstance(new_jobs, instance.name)
 
 
 class AddDurationNoise(Transformation):
