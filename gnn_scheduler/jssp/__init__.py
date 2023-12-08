@@ -5,6 +5,8 @@ from .load_utils import (load_from_file,
                          load_all_from_benchmark,
                          load_pickle_instances,
                          )
+from .utils import get_stat_dataframe
+
 from gnn_scheduler.jssp.graphs import (
     DisjunctiveGraph,
     preprocess_graph,
