@@ -26,7 +26,6 @@ from .solvers import CPSolver
 
 from .generators import (
     NaiveGenerator,
-    DataAugmentator,
     Transformation,
     AddDurationNoise,
     RemoveMachines,

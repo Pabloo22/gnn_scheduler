@@ -5,4 +5,3 @@ from .transformations import (
     AddDurationNoise,
     RemoveJobs
 )
-from gnn_scheduler.jssp.generators import DataAugmentator
