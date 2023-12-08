@@ -5,24 +5,45 @@ from typing import Optional
 import tqdm
 
 from gnn_scheduler import get_project_path
-from gnn_scheduler.jssp import(
+from gnn_scheduler.jssp import (
     NaiveGenerator,
     CPSolver,
+    JobShopInstance,
 )
 
 
-def create_dataset(folder_name: str = "diff_prediction_instances",
-                   n_instances: int = 50_000,
-                   min_jobs: int = 10,
-                   max_jobs: int = 20,
-                   machines: int = 10,
-                   min_duration: int = 1,
-                   max_duration: int = 100,
-                   time_limit: float = 0.1,
-                   seed: int = 0,
-                   path: Optional[os.PathLike | str | bytes] = None,
-                   show_progress: bool = True,
-                   ) -> None:
+def set_instance_attributes(
+    instance: JobShopInstance, time_limit: float = 0.1
+) -> JobShopInstance:
+    """Sets the lower and upper bounds of the instance."""
+
+    solver = CPSolver(instance, time_limit=time_limit)
+    solution = solver.solve()
+    instance.lower_bound = instance.max_machine_load
+
+    if solution is not None:
+        instance.upper_bound = solution["makespan"]
+        if solution["status"] == "optimal":
+            instance.optimum = solution["makespan"]
+    else:
+        instance.upper_bound = instance.max_machine_load * 2
+
+    return instance
+
+
+def create_dataset(
+    folder_name: str = "diff_prediction_instances",
+    n_instances: int = 50_000,
+    min_jobs: int = 10,
+    max_jobs: int = 20,
+    machines: int = 10,
+    min_duration: int = 1,
+    max_duration: int = 100,
+    time_limit: float = 0.1,
+    seed: int = 0,
+    path: Optional[os.PathLike | str | bytes] = None,
+    show_progress: bool = True,
+) -> None:
     """Creates a dataset of job-shop instances."""
 
     generator = NaiveGenerator(
@@ -40,17 +61,7 @@ def create_dataset(folder_name: str = "diff_prediction_instances",
 
     for _ in tqdm.tqdm(range(n_instances), disable=not show_progress):
         instance = generator.generate(n_machines=machines)
-        solver = CPSolver(instance, time_limit=time_limit)
-        solution = solver.solve()
-        instance.lower_bound = instance.max_machine_load
-
-        if solution is not None:
-            instance.upper_bound = solution["makespan"]
-            if solution["status"] == "optimal":
-                instance.optimum = solution["makespan"]
-        else:
-            instance.upper_bound = instance.max_machine_load * 2
-
+        set_instance_attributes(instance, time_limit=time_limit)
         instance_path = os.path.join(path_with_folder, instance.name + ".pkl")
         instance.save(instance_path)
 
