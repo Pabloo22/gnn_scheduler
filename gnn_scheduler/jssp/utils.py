@@ -24,6 +24,14 @@ def set_instance_attributes(
     return instance
 
 
+def get_difficulty_score(instance: JobShopInstance) -> float:
+    """Returns the difficulty score of an instance."""
+
+    if instance.upper_bound is None:
+        return 1
+    return instance.upper_bound / instance.lower_bound - 1
+
+
 def get_stat_dataframe(instances: list[JobShopInstance]):
     names = []
     lower_bounds = []
