@@ -28,6 +28,7 @@ MANIFEST
 
 # Data
 data/diff_prediction_instances/
+data/augmented_benchmark_10machines/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
