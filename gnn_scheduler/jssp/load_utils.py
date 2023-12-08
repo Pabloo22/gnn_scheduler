@@ -4,6 +4,8 @@ from typing import Iterable, Optional
 import os
 import json
 
+import tqdm
+
 from gnn_scheduler import get_data_path
 from gnn_scheduler.jssp import JobShopInstance, Operation
 
@@ -199,6 +201,7 @@ def load_all_from_benchmark(
 def load_pickle_instances(
     folder_name: str,
     data_path: Optional[os.PathLike | str | bytes] = None,
+    show_progress: bool = True,
 ):
     """Loads all instances from a folder containing pickle files."""
 
@@ -206,7 +209,11 @@ def load_pickle_instances(
         data_path = get_data_path()
 
     instances = []
-    for file_name in os.listdir(data_path / folder_name):
+    for file_name in tqdm.tqdm(
+        os.listdir(data_path / folder_name),
+        disable=not show_progress,
+        desc="Loading instances",
+    ):
         if file_name.endswith(".pkl"):
             instance = JobShopInstance.load(
                 data_path / folder_name / file_name
