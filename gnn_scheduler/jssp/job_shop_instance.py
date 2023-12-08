@@ -11,7 +11,7 @@ class Operation(NamedTuple):
     problem."""
 
     machine_id: int
-    duration: float
+    duration: int
 
     def get_id(self, job_id: int, position: int) -> str:
         """Returns the id of the operation."""
