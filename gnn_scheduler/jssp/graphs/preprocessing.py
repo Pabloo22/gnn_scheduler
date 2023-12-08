@@ -6,7 +6,11 @@ import networkx as nx
 import numpy as np
 import torch
 
-from gnn_scheduler.jssp.graphs import NodeFeatureCreator, DisjunctiveGraph
+from gnn_scheduler.jssp.graphs import (
+    NodeFeatureCreator,
+    DisjunctiveGraph,
+    AdjData,
+)
 
 
 def preprocess_graph(
@@ -202,3 +206,30 @@ def disjunctive_graph_to_tensors(
     adj_matrices = get_adj_matrices(disjunctive_graph)
 
     return node_features, adj_matrices
+
+
+def disjunctive_graph_to_adj_data(
+    disjunctive_graph: DisjunctiveGraph,
+    node_feature_creators: list[NodeFeatureCreator],
+    copy: bool = False,
+) -> AdjData:
+    """Returns the node features and adjacency matrices of a job-shop instance.
+
+    Args:
+        disjunctive_graph (DisjunctiveGraph): the disjunctive graph of the
+            instance.
+        node_feature_creators (list[NodeFeatureCreator]): the node feature
+            creators to use.
+        copy (bool, optional): whether to copy the graph before preprocessing.
+
+    Returns:
+        AdjData: the node features and adjacency matrices
+    """
+
+    node_features, adj_matrices = disjunctive_graph_to_tensors(
+        disjunctive_graph,
+        node_feature_creators=node_feature_creators,
+        copy=copy,
+    )
+
+    return AdjData(adj_matrix=adj_matrices, node_features=node_features)
