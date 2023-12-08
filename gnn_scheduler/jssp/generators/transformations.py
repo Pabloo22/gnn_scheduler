@@ -78,8 +78,8 @@ class AddDurationNoise(Transformation):
 
     def __init__(
         self,
-        min_duration: float = 1.0,
-        max_duration: float = 100.0,
+        min_duration: int = 1,
+        max_duration: int = 100,
         noise_level: int = 10,
         suffix: Optional[str] = None,
     ):
