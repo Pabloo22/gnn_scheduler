@@ -11,6 +11,10 @@ from gnn_scheduler.jssp import JobShopInstance, Operation
 class Transformation(abc.ABC):
     """Base class for transformations applied to JobShopInstance objects."""
 
+    def __init__(self, suffix: str = ""):
+        self.suffix = suffix
+        self.counter = 0
+
     @abc.abstractmethod
     def apply(self, instance: JobShopInstance) -> JobShopInstance:
         """Applies the transformation to a given JobShopInstance.
@@ -23,14 +27,21 @@ class Transformation(abc.ABC):
         """
 
     def __call__(self, instance: JobShopInstance) -> JobShopInstance:
-        return self.apply(instance)
+        instance = self.apply(instance)
+        suffix = f"{self.suffix}_id={self.counter}"
+        instance.name += suffix
+        self.counter += 1
+        return instance
 
 
 class RemoveMachines(Transformation):
     """Removes operations associated with randomly selected machines until
     there are exactly n_machines machines left."""
 
-    def __init__(self, n_machines: int):
+    def __init__(self, n_machines: int, suffix: Optional[str] = None):
+        if suffix is None:
+            suffix = f"_machines={n_machines}"
+        super().__init__(suffix=suffix)
         self.n_machines = n_machines
 
     @staticmethod
@@ -67,7 +78,11 @@ class AddDurationNoise(Transformation):
         min_duration: float = 1.0,
         max_duration: float = 100.0,
         noise_level: int = 10,
+        suffix: Optional[str] = None,
     ):
+        if suffix is None:
+            suffix = f"_noise={noise_level}"
+        super().__init__(suffix=suffix)
         self.min_duration = min_duration
         self.max_duration = max_duration
         self.noise_level = noise_level
@@ -94,7 +109,11 @@ class RemoveJobs(Transformation):
     range."""
 
     def __init__(
-        self, min_jobs: int, max_jobs: int, target_jobs: Optional[int] = None
+        self,
+        min_jobs: int,
+        max_jobs: int,
+        target_jobs: Optional[int] = None,
+        suffix: Optional[str] = None,
     ):
         """
         Args:
@@ -103,6 +122,9 @@ class RemoveJobs(Transformation):
             target_jobs: If specified, the number of jobs to remain in the
                 instance. Overrides min_jobs and max_jobs.
         """
+        if suffix is None:
+            suffix = f"_jobs={min_jobs}-{max_jobs}"
+        super().__init__(suffix=suffix)
         self.min_jobs = min_jobs
         self.max_jobs = max_jobs
         self.target_jobs = target_jobs
