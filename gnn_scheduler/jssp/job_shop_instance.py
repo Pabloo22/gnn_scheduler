@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import functools
-from typing import NamedTuple, Optional
+import dataclasses
+from typing import Optional
 import os
 import pickle
 
 
-class Operation(NamedTuple):
+@dataclasses.dataclass(slots=True)
+class Operation:
     """Stores information about an operation in a job-shop scheduling
     problem."""
 
