@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import functools
-import dataclasses
-from typing import Optional
+from typing import Optional, NamedTuple
 import os
 import pickle
 
 
-@dataclasses.dataclass(slots=True)
-class Operation:
+class Operation(NamedTuple):
     """Stores information about an operation in a job-shop scheduling
     problem."""
 
@@ -123,7 +121,7 @@ class JobShopInstance:
 
     @staticmethod
     def load(path: os.PathLike | str | bytes) -> JobShopInstance:
-        """"Uses pickle to load the instance from a file."""
+        """ "Uses pickle to load the instance from a file."""
         with open(path, "rb") as f:
             instance = pickle.load(f)
         return instance
