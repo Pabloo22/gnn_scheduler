@@ -21,6 +21,8 @@ from .graphs import (
     Duration,
     get_node_features_matrix,
     get_adj_matrices,
+    JobID,
+    AdjData,
 )
 from .solvers import CPSolver
 

@@ -8,7 +8,9 @@ from .node_feature_creators import (
     JobLoad,
     OperationIndex,
     Duration,
+    JobID,
 )
+from .adj_data import AdjData
 from .preprocessing import (
     preprocess_graph,
     preprocess_graphs,
