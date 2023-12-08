@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import tqdm
-import multiprocessing
-from tqdm.contrib.concurrent import process_map
 import random
+
+import tqdm
 
 from gnn_scheduler import get_data_path
 from gnn_scheduler.jssp import (
