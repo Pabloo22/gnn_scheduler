@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from gnn_scheduler.experiments.difficulty_prediction.layers import (
+from gnn_scheduler.gnns.layers import (
     GraphAggregationLayer,
     MultiGraphConvolutionLayers,
 )
