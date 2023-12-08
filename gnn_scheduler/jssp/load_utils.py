@@ -220,3 +220,19 @@ def load_pickle_instances(
             )
             instances.append(instance)
     return instances
+
+
+def load_pickle_instances_from_folders(
+    folder_names: list[str],
+    show_progress: bool = True,
+    data_path: Optional[os.PathLike | str | bytes] = None,
+) -> list[JobShopInstance]:
+    """Loads all instances from the given folders."""
+    instances = []
+    for folder_name in folder_names:
+        instances.extend(
+            load_pickle_instances(
+                folder_name, show_progress=show_progress, data_path=data_path
+            )
+        )
+    return instances
