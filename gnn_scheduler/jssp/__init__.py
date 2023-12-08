@@ -6,7 +6,7 @@ from .load_utils import (
     load_all_from_benchmark,
     load_pickle_instances,
 )
-from .utils import get_stat_dataframe
+from .utils import get_stat_dataframe, set_instance_attributes
 
 from .graphs import (
     DisjunctiveGraph,

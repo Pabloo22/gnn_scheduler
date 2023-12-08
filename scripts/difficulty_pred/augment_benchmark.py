@@ -13,9 +13,8 @@ from gnn_scheduler.jssp import (
     RemoveMachines,
     AddDurationNoise,
 )
-from gnn_scheduler.experiments.difficulty_prediction.dataset_creation import (
-    set_instance_attributes,
-)
+from gnn_scheduler.jssp import set_instance_attributes
+
 
 
 def augment_instances(

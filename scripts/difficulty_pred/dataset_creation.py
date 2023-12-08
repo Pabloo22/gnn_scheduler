@@ -7,28 +7,8 @@ import tqdm
 from gnn_scheduler import get_project_path
 from gnn_scheduler.jssp import (
     NaiveGenerator,
-    CPSolver,
-    JobShopInstance,
+    set_instance_attributes,
 )
-
-
-def set_instance_attributes(
-    instance: JobShopInstance, time_limit: float = 0.1
-) -> JobShopInstance:
-    """Sets the lower and upper bounds of the instance."""
-
-    solver = CPSolver(instance, time_limit=time_limit)
-    solution = solver.solve()
-    instance.lower_bound = instance.max_machine_load
-
-    if solution is not None:
-        instance.upper_bound = solution["makespan"]
-        if solution["status"] == "optimal":
-            instance.optimum = solution["makespan"]
-    else:
-        instance.upper_bound = instance.max_machine_load * 2
-
-    return instance
 
 
 def create_dataset(
