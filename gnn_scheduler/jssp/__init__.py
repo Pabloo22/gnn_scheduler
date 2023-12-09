@@ -13,7 +13,7 @@ from .utils import (
     get_difficulty_score,
 )
 
-from .graphs import (
+from gnn_scheduler.jssp.graphs import (
     DisjunctiveGraph,
     preprocess_graph,
     preprocess_graphs,
@@ -31,9 +31,9 @@ from .graphs import (
     instance_to_adj_data,
     disjunctive_graph_to_tensors,
 )
-from .solvers import CPSolver
+from gnn_scheduler.jssp.solvers import CPSolver
 
-from .generators import (
+from gnn_scheduler.jssp.generators import (
     NaiveGenerator,
     Transformation,
     AddDurationNoise,
