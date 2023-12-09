@@ -5,6 +5,7 @@ from .load_utils import (
     load_metadata,
     load_all_from_benchmark,
     load_pickle_instances,
+    load_pickle_instances_from_folders
 )
 from .utils import (
     get_stat_dataframe,
