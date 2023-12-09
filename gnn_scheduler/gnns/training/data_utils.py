@@ -55,7 +55,7 @@ def get_names_with_n_machines(n_machines: int = 10, **kwargs) -> list[str]:
     metadata = load_metadata(**kwargs)
     names = []
     for instance in metadata:
-        if instance["n_machines"] == n_machines:
+        if instance["machines"] == n_machines:
             names.append(instance["name"])
     return names
 
