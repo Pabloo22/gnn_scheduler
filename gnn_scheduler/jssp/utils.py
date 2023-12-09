@@ -29,10 +29,44 @@ def get_difficulty_score(instance: JobShopInstance) -> float:
 
     if instance.upper_bound is None:
         return 1
-    return instance.upper_bound / instance.lower_bound - 1
+    lower_bound = max(instance.max_machine_load, instance.max_job_duration)
+    return instance.upper_bound / lower_bound - 1
 
 
 def get_stat_dataframe(instances: list[JobShopInstance]):
+    """Generates a pandas DataFrame summarizing statistics for a list of
+    JobShopInstance objects.
+
+    Warning: This function modifies the instances in place:
+        - instance.lower_bound is set to max(machine_load, max_job_duration)
+        - instance.upper_bound is set to instance.lower_bound * 2 if it is None
+
+    This function takes a list of JobShopInstance objects and processes each
+    instance to extract various statistics, such as the number of jobs,
+    number of machines, upper and lower bounds, and difficulty scores. It
+    also determines whether a solution is optimal or if there is no solution.
+
+    Args:
+        instances (list[JobShopInstance]): A list of JobShopInstance objects
+            to be processed.
+
+    Returns:
+        pd.DataFrame: A pandas DataFrame with columns for each statistic:
+            - 'name': Name of the instance.
+            - 'n_jobs': Number of jobs in the instance.
+            - 'n_machines': Number of machines in the instance.
+            - 'max_machine_load_and_job_duration': Calculated lower bound for
+                each instance.
+            - 'upper_bound': Calculated or assigned upper bound for each
+                instance.
+            - 'is_optimal': Boolean indicating whether an optimal solution
+                exists.
+            - 'no_solution': Boolean indicating if there is no solution.
+                Computed from (instance.upper_bound == instance.lower_bound * 2)
+            - 'difficulty_score': Calculated difficulty score for each instance.
+                Computed from (instance.upper_bound / instance.lower_bound - 1),
+                where lower_bound is max(machine_load, max_job_duration).
+    """
     names = []
     lower_bounds = []
     upper_bounds = []
