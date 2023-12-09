@@ -86,7 +86,7 @@ class OneHotEncoding(NodeFeatureCreator):
         self.feature_name = feature_name
         self.n_values = n_values
 
-    def create_node_fetures(
+    def create_features(
         self, node_name: str, node_data: dict[str, Any]
     ) -> list[float]:
         """Creates the one-hot encoding of the node attribute.
