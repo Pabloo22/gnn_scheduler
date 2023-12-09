@@ -18,4 +18,5 @@ from .preprocessing import (
     get_adj_matrices,
     disjunctive_graph_to_tensors,
     instance_to_adj_data,
+    diff_pred_node_features_creators,
 )

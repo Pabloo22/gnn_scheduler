@@ -30,6 +30,7 @@ from gnn_scheduler.jssp.graphs import (
     AdjData,
     instance_to_adj_data,
     disjunctive_graph_to_tensors,
+    diff_pred_node_features_creators,
 )
 from gnn_scheduler.jssp.solvers import CPSolver
 
