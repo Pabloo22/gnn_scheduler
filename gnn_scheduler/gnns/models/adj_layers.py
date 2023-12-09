@@ -1,4 +1,6 @@
-"""
+"""Layers that are designed to handle graph data with multiple edge types
+and adjacency matrices, instead of edge_index lists.
+
 Code adapted from:
 https://github.com/harutatsuakiyama/Implementation-MolGAN-PyTorch/blob/master/layers.py
 
@@ -13,7 +15,6 @@ from typing import Optional, Callable
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class GraphConvolutionLayer(nn.Module):
@@ -299,7 +300,7 @@ class GraphAggregationLayer(nn.Module):
                 where N is the number of nodes.
 
         Returns:
-            torch.Tensor: The aggregated node features of shape (N, 1).
+            torch.Tensor: The output tensor of shape (1, 1)
         """
 
         # Sum, Mean, and Max Pooling

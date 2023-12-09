@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from gnn_scheduler.gnns.layers import (
+from gnn_scheduler.gnns.models import (
     GraphAggregationLayer,
     MultiGraphConvolutionLayers,
 )
@@ -63,9 +63,7 @@ class RelationalGCNRegressor(nn.Module):
         Args:
             node_features (torch.Tensor): The node features tensor of shape
                 (N, in_features), where N is the number of nodes.
-            adj_matrices ([torch.Tensor]): List of adjacency matrices for each
-                edge type.
-
+            adj_matrices ([torch.Tensor]): The adjacency matrices of the graph.
         Returns:
             torch.Tensor: The regression output for the graph.
         """
