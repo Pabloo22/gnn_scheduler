@@ -17,5 +17,5 @@ from .preprocessing import (
     get_node_features_matrix,
     get_adj_matrices,
     disjunctive_graph_to_tensors,
-    disjunctive_graph_to_adj_data,
+    instance_to_adj_data,
 )

@@ -28,7 +28,7 @@ from .graphs import (
     get_adj_matrices,
     JobID,
     AdjData,
-    disjunctive_graph_to_adj_data,
+    instance_to_adj_data,
     disjunctive_graph_to_tensors,
 )
 from .solvers import CPSolver
