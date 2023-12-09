@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from sklearn.model_selection import train_test_split
 
 from gnn_scheduler.jssp import (
@@ -6,6 +8,7 @@ from gnn_scheduler.jssp import (
     load_metadata,
 )
 
+_T = TypeVar("_T")
 
 def train_test_split_by_name(
     instances: list[JobShopInstance], contains: list[str]
@@ -60,20 +63,51 @@ def get_names_with_n_machines(n_machines: int = 10, **kwargs) -> list[str]:
     return names
 
 
+def train_eval_test_split(
+    instances: list[_T],
+    seed: int = 0,
+    eval_size: float = 0.1,
+    test_size: float = 0.2,
+) -> tuple[list[_T], list[_T], list[_T]]:
+    """Returns the train, eval and test sets of instances.
+
+    The train set is further divided into train and eval sets using the
+    train_test_split function from scikit-learn.
+
+    Args:
+        instances (list[_T]): the instances to split
+        seed (int, optional): the seed for the train test split. Defaults to 0.
+        eval_size (float, optional): the proportion of instances to use for
+            evaluation within the train set. Defaults to 0.1.
+        test_size (float, optional): the proportion of instances to use for
+            testing. Defaults to 0.2.
+
+    Returns:
+        tuple[list[_T], list[_T], list[_T]]: the train, eval and test sets.
+    """
+    train, test = train_test_split(
+        instances, test_size=test_size, random_state=seed
+    )
+    train, evaluation = train_test_split(
+        train, test_size=eval_size, random_state=seed
+    )
+
+    return train, evaluation, test
+
+
 def train_eval_test_split_by_name(
     folder_names: list[str],
     seed: int = 0,
-    test_size: float = 0.2,
+    eval_size: float = 0.2,
     n_machines: int = 10,
 ) -> tuple[
     list[JobShopInstance], list[JobShopInstance], list[JobShopInstance]
 ]:
-    """Returns the train, eval and test sets of instances. Part of the
-    Difficulty Prediction task and GAN tasks.
-    
+    """Returns the train, eval and test sets of instances.
+
     Divides the train and test instances by the name of the benchmark
     instances with the given number of machines.
-    
+
     The train set is further divided into train and eval sets using the
     train_test_split function from scikit-learn.
 
@@ -81,7 +115,7 @@ def train_eval_test_split_by_name(
         folder_names (list[str]): the names of the folders containing the
             instances
         seed (int, optional): the seed for the train test split. Defaults to 0.
-        test_size (float, optional): the proportion of instances to use for
+        eval_size (float, optional): the proportion of instances to use for
             testing. Defaults to 0.2.
         n_machines (int, optional): the number of machines of each instance.
 
@@ -97,7 +131,7 @@ def train_eval_test_split_by_name(
 
     # Divide train into train and eval
     train, evaluation = train_test_split(
-        train, test_size=test_size, random_state=seed
+        train, test_size=eval_size, random_state=seed
     )
 
     return train, evaluation, test
