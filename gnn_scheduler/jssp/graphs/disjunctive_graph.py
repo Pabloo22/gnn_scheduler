@@ -233,6 +233,7 @@ class DisjunctiveGraph(nx.DiGraph):
         arrow_size: int = 35,
         alpha=0.95,
         node_font_color: str = "white",
+        color_map: str = "Dark2_r",
     ) -> plt.Figure:
         """Returns a plot of the disjunctive graph of the instance."""
         # Set up the plot
@@ -283,7 +284,7 @@ class DisjunctiveGraph(nx.DiGraph):
             node_size=node_size,
             node_color=node_colors,
             alpha=alpha,
-            cmap=matplotlib.colormaps.get_cmap("Dark2_r"),
+            cmap=matplotlib.colormaps.get_cmap(color_map),
         )
 
         # Draw edges
