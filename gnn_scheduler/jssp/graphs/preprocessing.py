@@ -6,8 +6,12 @@ import networkx as nx
 import numpy as np
 import torch
 
+from gnn_scheduler.jssp import JobShopInstance, get_difficulty_score
 from gnn_scheduler.jssp.graphs import (
     NodeFeatureCreator,
+    JobID,
+    OperationIndex,
+    OneHotEncoding,
     DisjunctiveGraph,
     AdjData,
 )
@@ -208,16 +212,15 @@ def disjunctive_graph_to_tensors(
     return node_features, adj_matrices
 
 
-def disjunctive_graph_to_adj_data(
-    disjunctive_graph: DisjunctiveGraph,
+def instance_to_adj_data(
+    instance: JobShopInstance,
     node_feature_creators: list[NodeFeatureCreator],
     copy: bool = False,
 ) -> AdjData:
     """Returns the node features and adjacency matrices of a job-shop instance.
 
     Args:
-        disjunctive_graph (DisjunctiveGraph): the disjunctive graph of the
-            instance.
+        instance (JobShopInstance): the instance.
         node_feature_creators (list[NodeFeatureCreator]): the node feature
             creators to use.
         copy (bool, optional): whether to copy the graph before preprocessing.
@@ -225,11 +228,23 @@ def disjunctive_graph_to_adj_data(
     Returns:
         AdjData: the node features and adjacency matrices
     """
-
+    y = get_difficulty_score(instance)
     node_features, adj_matrices = disjunctive_graph_to_tensors(
-        disjunctive_graph,
+        instance.disjunctive_graph,
         node_feature_creators=node_feature_creators,
         copy=copy,
     )
 
-    return AdjData(adj_matrix=adj_matrices, node_features=node_features)
+    return AdjData(
+        adj_matrix=adj_matrices, x=node_features, y=y
+    )
+
+
+def diff_pred_node_features_creators(n_machines: int = 10):
+    """Retuns a OneHotEncoding node feature creator for machine_id,
+    an OperationIndex, and JobID."""
+
+    machine_one_hot = OneHotEncoding("machine_id", n_machines)
+    operation_index = OperationIndex()
+    job_id = JobID()
+    return [machine_one_hot, operation_index, job_id]
