@@ -134,8 +134,6 @@ venv.bak/
 
 wandb/
 
-.pylintrc
-
 # Spyder project settings
 .spyderproject
 .spyproject
