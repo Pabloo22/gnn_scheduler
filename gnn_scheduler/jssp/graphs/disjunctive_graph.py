@@ -234,6 +234,7 @@ class DisjunctiveGraph(nx.DiGraph):
         alpha=0.95,
         node_font_color: str = "white",
         color_map: str = "Dark2_r",
+        draw_disjunctive_edges: bool = True,
     ) -> plt.Figure:
         """Returns a plot of the disjunctive graph of the instance."""
         # Set up the plot
@@ -309,14 +310,15 @@ class DisjunctiveGraph(nx.DiGraph):
             arrowsize=arrow_size,
         )
 
-        nx.draw_networkx_edges(
-            self,
-            pos,
-            edgelist=disjunctive_edges,
-            width=edge_width,
-            edge_color="red",
-            arrowsize=arrow_size,
-        )
+        if draw_disjunctive_edges:
+            nx.draw_networkx_edges(
+                self,
+                pos,
+                edgelist=disjunctive_edges,
+                width=edge_width,
+                edge_color="red",
+                arrowsize=arrow_size,
+            )
 
         # Draw node labels
         # ----------------
