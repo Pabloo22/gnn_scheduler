@@ -56,7 +56,7 @@ class NodeFeatureCreator(ABC):
 class InAndOutDegrees(NodeFeatureCreator):
     """The normalized in- and out-degrees of a node."""
 
-    def create_node_features(
+    def create_features(
         self, node_name: str, node_data: dict[str, Any]
     ) -> list[float]:
         """Returns the normalized in- and out-degrees of a node.
@@ -176,7 +176,7 @@ class JobLoad(NodeFeatureCreator):
         job_load = self.graph.job_loads[job_id]
         max_load = self.graph.max_job_load
         return [job_load / max_load]
-    
+
 
 class JobID(NodeFeatureCreator):
     """The normalized job ID."""
