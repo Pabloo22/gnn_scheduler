@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from gnn_scheduler.jssp import JobShopInstance, CPSolver
+from gnn_scheduler.jssp import JobShopInstance
+from gnn_scheduler.jssp.solvers import CPSolver
 
 
 def set_instance_attributes(
