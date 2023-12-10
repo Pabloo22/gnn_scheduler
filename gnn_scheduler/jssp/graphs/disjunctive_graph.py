@@ -11,7 +11,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from gnn_scheduler.jssp.job_shop_instance import JobShopInstance
+from gnn_scheduler.jssp import JobShopInstance
 
 
 class EdgeType(enum.Enum):
