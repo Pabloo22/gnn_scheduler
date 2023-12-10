@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Any
 import os
 import json
+import pickle
 
 import tqdm
 
@@ -236,3 +237,33 @@ def load_pickle_instances_from_folders(
             )
         )
     return instances
+
+
+def load_pickle_object(file_path: os.PathLike | str | bytes) -> Any:
+    """Loads a single object from a pickle file."""
+    with open(file_path, "rb") as file:
+        return pickle.load(file)
+
+
+def load_pickle_objects_from_folders(
+    folder_names: list[str],
+    show_progress: bool = True,
+    data_path: Optional[os.PathLike | str | bytes] = None,
+) -> list[Any]:
+    """Loads all pickle objects from the given folders."""
+    if data_path is None:
+        data_path = get_data_path()
+
+    objects = []
+    for folder_name in folder_names:
+        folder_path = os.path.join(data_path, folder_name)
+        for file_name in tqdm.tqdm(
+            os.listdir(folder_path),
+            disable=not show_progress,
+            desc=f"Loading objects from {folder_name}",
+        ):
+            if file_name.endswith(".pkl"):
+                object_path = os.path.join(folder_path, file_name)
+                obj = load_pickle_object(object_path)
+                objects.append(obj)
+    return objects
