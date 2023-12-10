@@ -5,4 +5,4 @@ conv_units:
   - 64                 # Add more layers as needed
 aggregation_units: 64  # Number of units in the aggregation layer
 dropout_rate: 0.05     # Dropout rate for convolution layers
-leaky_relu_slope: 0.01 # Slope for the LeakyReLU activation function
+leaky_relu_slope: 0.1 # Slope for the LeakyReLU activation function
