@@ -1,5 +1,7 @@
+from typing import Optional
+
 import torch
-import torch.nn as nn
+from torch import nn
 
 from gnn_scheduler.gnns.models import (
     GraphAggregationLayer,
@@ -50,11 +52,16 @@ class RelationalGCNRegressor(nn.Module):
         # Define the aggregation layer
         # The input size is the output size of the last graph convolution layer
         self.aggregation_layer = GraphAggregationLayer(
-            conv_units[-1], aggregation_units, leaky_relu_slope=leaky_relu_slope
+            conv_units[-1],
+            aggregation_units,
+            leaky_relu_slope=leaky_relu_slope,
         )
 
     def forward(
-        self, node_features: torch.Tensor, adj_matrices: torch.Tensor
+        self,
+        node_features: torch.Tensor,
+        adj_matrices: torch.Tensor,
+        h_tensor: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         """Forward pass through the RelationalGCNRegressor.
 
@@ -66,7 +73,9 @@ class RelationalGCNRegressor(nn.Module):
             torch.Tensor: The regression output for the graph.
         """
         # Graph convolution layers
-        hidden_features = self.graph_conv(node_features, adj_matrices)
+        hidden_features = self.graph_conv(
+            node_features, adj_matrices, h_tensor
+        )
 
         # Aggregation layer
         output = self.aggregation_layer(hidden_features)

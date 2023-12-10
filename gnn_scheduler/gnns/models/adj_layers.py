@@ -40,14 +40,14 @@ class GraphConvolutionLayer(nn.Module):
 
         Args:
             in_features: The number of features for each node in the input graph.
-            u: The number of output features for each node.
+            out_features: The number of output features for each node.
             activation: The activation function to be applied (e.g., ReLU, sigmoid).
             edge_type_num: The number of different types of edges in the graph.
             dropout_rate: The dropout rate for regularization.
         """
         super().__init__()
         self.edge_type_num = edge_type_num
-        self.u = out_features
+        self.out_features = out_features
         self.adj_list = nn.ModuleList()
         for _ in range(self.edge_type_num):
             self.adj_list.append(nn.Linear(in_features, out_features))
@@ -77,7 +77,7 @@ class GraphConvolutionLayer(nn.Module):
         else:
             node_features = n_tensor
         # output is computed by applying each linear transformation in
-        # self.adj_list to annotations. This results in a tensor with a
+        # self.adj_list to node_features. This results in a tensor with a
         # separate set of transformed features for each edge type
         output = torch.stack(
             [
@@ -123,6 +123,10 @@ class MultiGraphConvolutionLayers(nn.Module):
             layer.
         edge_type_num (int, optional): Number of different types of edges in
             the graph. Defaults to 2.
+        with_features (bool, optional): If True, additional features are
+            considered. Defaults to False.
+        feature_dim_size (int, optional): Additional feature dimension size.
+            Defaults to 0.
         dropout_rate (float, optional): Dropout rate for regularization.
             Defaults to 0.
     """
@@ -131,30 +135,32 @@ class MultiGraphConvolutionLayers(nn.Module):
         self,
         in_features: int,
         units: list[int],
-        activation: Callable,
+        activation: callable,
         edge_type_num: int = 2,
+        with_features: bool = False,
+        feature_dim_size: int = 0,
         dropout_rate: float = 0.0,
     ):
         super().__init__()
         self.conv_nets = nn.ModuleList()
+        self.units = units
+        in_units = []
 
-        # Setting the input size for the first layer as in_features
-        # and then it will be updated to the output size of the previous layer
-        input_size = in_features
+        # Adjust input units based on whether additional features are used
+        if with_features:
+            in_units = [x + in_features for x in self.units]
+            input_sizes = [in_features + feature_dim_size] + in_units[:-1]
+        else:
+            in_units = [x + in_features for x in self.units]
+            input_sizes = [in_features] + in_units[:-1]
 
         # Create graph convolution layers
-        for output_size in units:
+        for u0, u1 in zip(input_sizes, self.units):
             self.conv_nets.append(
                 GraphConvolutionLayer(
-                    input_size,
-                    output_size,
-                    activation,
-                    edge_type_num,
-                    dropout_rate,
+                    u0, u1, activation, edge_type_num, dropout_rate
                 )
             )
-            # Updating the input size for the next layer
-            input_size = output_size
 
     def forward(
         self,
@@ -286,8 +292,8 @@ class GraphAggregationLayer(nn.Module):
         """Forward pass through the graph aggregation layer.
 
         Args:
-            node_features (torch.Tensor): The node features tensor of shape (N, in_features),
-                where N is the number of nodes.
+            node_features (torch.Tensor): The node features tensor of shape
+                (N, in_features), where N is the number of nodes.
 
         Returns:
             torch.Tensor: The output tensor of shape (1, 1)
