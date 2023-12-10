@@ -61,7 +61,8 @@ class RemoveMachines(Transformation):
 
         new_jobs = []
         for job in instance.jobs:
-            # Keep operations whose machine_id is in machines_to_keep and re-index them
+            # Keep operations whose machine_id is in machines_to_keep and
+            # re-index them
             new_jobs.append(
                 [
                     Operation(machine_reindex_map[op.machine_id], op.duration)
