@@ -4,3 +4,4 @@ from .data_utils import (
     train_test_split_by_name,
     get_names_with_n_machines,
 )
+from .load_config import load_yaml

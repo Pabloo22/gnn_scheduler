@@ -1,0 +1,7 @@
+folder_names: 
+  - augmented_benchmark_10machines
+  - diff_prediction_instances
+path: /workspaces/gnn_scheduler/data
+seed: 0
+eval_size: 0.1
+test_size: 0.2

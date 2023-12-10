@@ -1,0 +1,6 @@
+n_epochs: 100
+optimizer: 'adam'
+learning_rate: 0.001
+batch_size: 32
+weight_decay: 0.0001
+shuffle: true
