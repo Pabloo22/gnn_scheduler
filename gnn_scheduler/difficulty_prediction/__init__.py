@@ -6,7 +6,9 @@ from .utils import (
 from .prepare_data import (
     diff_pred_node_features_creators,
     instance_to_adj_data,
-    load_data,
+    process_data,
+    save_adj_data_list,
+    load_and_split_data,
 )
 from .configs import (
     LoadDataConfig,
