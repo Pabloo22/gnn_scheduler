@@ -1,10 +1,53 @@
 from gnn_scheduler.jssp import (
+    JobShopInstance,
     load_pickle_instances_from_folders,
-    AdjData,
-    instance_to_adj_data,
-    diff_pred_node_features_creators,
 )
-from gnn_scheduler.gnns import train_eval_test_split
+from gnn_scheduler.jssp.graphs import (
+    NodeFeatureCreator,
+    JobID,
+    OperationIndex,
+    OneHotEncoding,
+    AdjData,
+    disjunctive_graph_to_tensors,
+)
+from gnn_scheduler.gnns.training import train_eval_test_split
+from gnn_scheduler.difficulty_prediction import get_difficulty_score
+
+
+def diff_pred_node_features_creators(n_machines: int = 10):
+    """Retuns a OneHotEncoding node feature creator for machine_id,
+    an OperationIndex, and JobID."""
+
+    machine_one_hot = OneHotEncoding("machine_id", n_machines)
+    operation_index = OperationIndex()
+    job_id = JobID()
+    return [machine_one_hot, operation_index, job_id]
+
+
+def instance_to_adj_data(
+    instance: JobShopInstance,
+    node_feature_creators: list[NodeFeatureCreator],
+    copy: bool = False,
+) -> AdjData:
+    """Returns the node features and adjacency matrices of a job-shop instance.
+
+    Args:
+        instance (JobShopInstance): the instance.
+        node_feature_creators (list[NodeFeatureCreator]): the node feature
+            creators to use.
+        copy (bool, optional): whether to copy the graph before preprocessing.
+
+    Returns:
+        AdjData: the node features and adjacency matrices
+    """
+    y = get_difficulty_score(instance)
+    node_features, adj_matrices = disjunctive_graph_to_tensors(
+        instance.disjunctive_graph,
+        node_feature_creators=node_feature_creators,
+        copy=copy,
+    )
+
+    return AdjData(adj_matrix=adj_matrices, x=node_features, y=y)
 
 
 def load_data(

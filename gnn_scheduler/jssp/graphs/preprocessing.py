@@ -238,13 +238,3 @@ def instance_to_adj_data(
     return AdjData(
         adj_matrix=adj_matrices, x=node_features, y=y
     )
-
-
-def diff_pred_node_features_creators(n_machines: int = 10):
-    """Retuns a OneHotEncoding node feature creator for machine_id,
-    an OperationIndex, and JobID."""
-
-    machine_one_hot = OneHotEncoding("machine_id", n_machines)
-    operation_index = OperationIndex()
-    job_id = JobID()
-    return [machine_one_hot, operation_index, job_id]
