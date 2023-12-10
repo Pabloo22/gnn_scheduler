@@ -196,7 +196,7 @@ def disjunctive_graph_to_tensors(
         node_feature_creators=node_feature_creators,
         new_feature_name="x",
         keep_old_features=False,
-        exclude_old_features=None,
+        exclude_old_features=["node_index"],
         copy=copy,
         remove_nodes=["T", "S"],
     )
