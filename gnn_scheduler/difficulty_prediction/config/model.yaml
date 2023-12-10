@@ -1,8 +1,8 @@
 in_features: 12        # Number of input features
 conv_units:
   - 16                 # Number of units in the first graph convolution layer
-  - 16                 # Number of units in the second graph convolution layer
-  - 16                 # Add more layers as needed
-aggregation_units: 128 # Number of units in the aggregation layer
+  - 32                 # Number of units in the second graph convolution layer
+  - 64                 # Add more layers as needed
+aggregation_units: 64  # Number of units in the aggregation layer
 dropout_rate: 0.05     # Dropout rate for convolution layers
 leaky_relu_slope: 0.01 # Slope for the LeakyReLU activation function
