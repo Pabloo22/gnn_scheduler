@@ -17,7 +17,7 @@ from gnn_scheduler import get_project_path
 CONFIG_FOLDER = (
     get_project_path() / "configs/difficulty_prediction/"
 )
-MODELS_PATH = get_project_path() / "models/difficulty_prediction/model"
+MODELS_PATH = get_project_path() / "models/difficulty_prediction/"
 
 
 def random_name() -> str:
