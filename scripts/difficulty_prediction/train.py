@@ -8,14 +8,14 @@ import tqdm
 from torch import optim
 import wandb
 
-from gnn_scheduler.difficulty_prediction import ExperimentConfig, load_data
+from gnn_scheduler.difficulty_prediction import ExperimentConfig, load_and_split_data
 from gnn_scheduler.gnns.models import RelationalGCNRegressor
 from gnn_scheduler.jssp.graphs import AdjData
 from gnn_scheduler import get_project_path
 
 
 CONFIG_FOLDER = (
-    get_project_path() / "gnn_scheduler/difficulty_prediction/config"
+    get_project_path() / "configs/difficulty_prediction/"
 )
 MODELS_PATH = get_project_path() / "models/difficulty_prediction/model"
 
@@ -82,11 +82,12 @@ def train(experiment_config: dict[str, dict]):
     model_config = experiment_config["model_config"]
     training_config = experiment_config["training_config"]
 
-    train_data, val_data, test_data = load_data(
+    train_data, val_data, test_data = load_and_split_data(
         folder_names=load_data_config["folder_names"],
         seed=load_data_config["seed"],
         eval_size=load_data_config["eval_size"],
         test_size=load_data_config["test_size"],
+        show_progress=training_config["show_progress"],
     )
 
     run_name = wandb.run.name if using_wandb else random_name()
@@ -94,7 +95,7 @@ def train(experiment_config: dict[str, dict]):
 
     # Your training logic here, utilizing the above configs
     model = RelationalGCNRegressor(
-        in_features=load_data_config["in_features"],
+        in_features=model_config["in_features"],
         conv_units=model_config["conv_units"],
         aggregation_units=model_config["aggregation_units"],
         dropout_rate=model_config["dropout_rate"],
@@ -174,4 +175,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print(ExperimentConfig(CONFIG_FOLDER))
+    main()
