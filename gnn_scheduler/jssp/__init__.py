@@ -7,11 +7,6 @@ from .load_utils import (
     load_pickle_instances,
     load_pickle_instances_from_folders
 )
-from .utils import (
-    get_stat_dataframe,
-    set_instance_attributes,
-    get_difficulty_score,
-)
 
 from gnn_scheduler.jssp.graphs import (
     DisjunctiveGraph,
