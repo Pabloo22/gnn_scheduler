@@ -123,10 +123,6 @@ class MultiGraphConvolutionLayers(nn.Module):
             layer.
         edge_type_num (int, optional): Number of different types of edges in
             the graph. Defaults to 2.
-        with_features (bool, optional): If True, additional features are
-            considered. Defaults to False.
-        feature_dim_size (int, optional): Additional feature dimension size.
-            Defaults to 0.
         dropout_rate (float, optional): Dropout rate for regularization.
             Defaults to 0.
     """
@@ -135,32 +131,30 @@ class MultiGraphConvolutionLayers(nn.Module):
         self,
         in_features: int,
         units: list[int],
-        activation: callable,
+        activation: Callable,
         edge_type_num: int = 2,
-        with_features: bool = False,
-        feature_dim_size: int = 0,
         dropout_rate: float = 0.0,
     ):
         super().__init__()
         self.conv_nets = nn.ModuleList()
-        self.units = units
-        in_units = []
 
-        # Adjust input units based on whether additional features are used
-        if with_features:
-            in_units = [x + in_features for x in self.units]
-            input_sizes = [in_features + feature_dim_size] + in_units[:-1]
-        else:
-            in_units = [x + in_features for x in self.units]
-            input_sizes = [in_features] + in_units[:-1]
+        # Setting the input size for the first layer as in_features
+        # and then it will be updated to the output size of the previous layer
+        input_size = in_features
 
         # Create graph convolution layers
-        for u0, u1 in zip(input_sizes, self.units):
+        for output_size in units:
             self.conv_nets.append(
                 GraphConvolutionLayer(
-                    u0, u1, activation, edge_type_num, dropout_rate
+                    input_size,
+                    output_size,
+                    activation,
+                    edge_type_num,
+                    dropout_rate,
                 )
             )
+            # Updating the input size for the next layer
+            input_size = output_size
 
     def forward(
         self,
@@ -192,26 +186,26 @@ class GraphConvolution(nn.Module):
     """Serves as an interface for utilizing multiple  graph convolution layers
     together.
 
-    This class wraps the MultiGraphConvolutionLayers class and allows the creation
-    of a graph convolution network that can handle multiple types of edges and
-    additional features.
+    This class wraps the MultiGraphConvolutionLayers class and allows 
+    the creation of a graph convolution network that can handle multiple
+    types of edges and additional features.
 
     Attributes:
         in_features (int): Number of input features per node.
-        graph_conv_units (List[int]): Number of units in each graph convolution layer.
-        activation_f (torch.nn.Module): Activation function applied in each layer.
-        multi_graph_convolution_layers (MultiGraphConvolutionLayers): The multi-layer
-            graph convolution component.
+        graph_conv_units (List[int]): Number of units in each graph
+            convolution layer.
+        activation_f (torch.nn.Module): Activation function applied
+            in each layer.
+        multi_graph_convolution_layers (MultiGraphConvolutionLayers): The
+            multi-layer graph convolution component.
 
     Args:
         in_features (int): Number of features for each node in the input graph.
-        graph_conv_units (List[int]): A list specifying the number of units in each
-            graph convolution layer.
+        graph_conv_units (List[int]): A list specifying the number of units
+            in each graph convolution layer.
         edge_type_num (int): Number of different types of edges in the graph.
-        with_features (bool, optional): If True, additional features are considered.
-            Defaults to False.
-        f_dim (int, optional): Size of additional feature dimensions. Defaults to 0.
-        dropout_rate (float, optional): Dropout rate for regularization. Defaults to 0.
+        dropout_rate (float, optional): Dropout rate for regularization. 
+            Defaults to 0.
     """
 
     def __init__(
@@ -219,8 +213,6 @@ class GraphConvolution(nn.Module):
         in_features: int,
         graph_conv_units: [int],
         edge_type_num: int,
-        with_features: bool = False,
-        f_dim: int = 0,
         dropout_rate: float = 0.0,
     ):
         super().__init__()
@@ -232,8 +224,6 @@ class GraphConvolution(nn.Module):
             self.graph_conv_units,
             self.activation_f,
             edge_type_num,
-            with_features,
-            f_dim,
             dropout_rate,
         )
 
