@@ -25,8 +25,7 @@ class RelationalGCNRegressor(nn.Module):
         dropout_rate: float = 0.0,
         leaky_relu_slope: float = 0.1,
     ):
-        """
-        Initializes the RelationalGCNRegressor model.
+        """Initializes the RelationalGCNRegressor model.
 
         Args:
             in_features (int): The number of features in each input node
@@ -51,14 +50,13 @@ class RelationalGCNRegressor(nn.Module):
         # Define the aggregation layer
         # The input size is the output size of the last graph convolution layer
         self.aggregation_layer = GraphAggregationLayer(
-            conv_units[-1], aggregation_units
+            conv_units[-1], aggregation_units, leaky_relu_slope=leaky_relu_slope
         )
 
     def forward(
         self, node_features: torch.Tensor, adj_matrices: torch.Tensor
     ) -> torch.Tensor:
-        """
-        Forward pass through the RelationalGCNRegressor.
+        """Forward pass through the RelationalGCNRegressor.
 
         Args:
             node_features (torch.Tensor): The node features tensor of shape
