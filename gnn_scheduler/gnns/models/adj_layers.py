@@ -7,7 +7,9 @@ https://github.com/harutatsuakiyama/Implementation-MolGAN-PyTorch/blob/master/la
 under the CC-BY-4.0 license:
 https://choosealicense.com/licenses/cc-by-4.0/
 
-Comments and the GraphAggregationLayer are my own.
+Comments and the GraphAggregationLayer are my own. Other changes have been
+made to make the code compatible with the rest of the project, such as
+fixing shape issues.
 """
 from __future__ import annotations
 
@@ -85,14 +87,22 @@ class GraphConvolutionLayer(nn.Module):
                 for i in range(self.edge_type_num)
             ],
             1,
-        )
+        )  # shape: (N, edge_type_num, out_features)
+
         # These transformed features are then multiplied by the adjacency
         # tensor adj_tensor to aggregate features across the graph,
         # considering different edge types.
-        output = torch.matmul(adj_tensor, output)
+
+        output_reshaped = output.transpose(1, 2)  # Now it's [N, 16, 2]
+        output_reshaped = output_reshaped.permute(2, 0, 1)  # Now it's [2, N, 16]
+
+        # Adjacency tensor is of shape (edge_type_num, N, N)
+        # output is of shape (edge_type_num, N, out_features)
+        output = torch.matmul(adj_tensor, output_reshaped)
+        # Now output is of shape (edge_type_num, N, out_features)
 
         # out_sum is the sum of these aggregated features.
-        out_sum = torch.sum(output, 1)
+        out_sum = torch.sum(output, 0)
 
         out_linear_2 = self.linear_2(node_features)
 
@@ -192,7 +202,7 @@ class GraphConvolution(nn.Module):
     """Serves as an interface for utilizing multiple  graph convolution layers
     together.
 
-    This class wraps the MultiGraphConvolutionLayers class and allows 
+    This class wraps the MultiGraphConvolutionLayers class and allows
     the creation of a graph convolution network that can handle multiple
     types of edges and additional features.
 
@@ -212,11 +222,11 @@ class GraphConvolution(nn.Module):
         edge_type_num (int): Number of different types of edges in the graph.
                 with_features (bool, optional): If True, additional features are considered.
             Defaults to False.
-        f_dim (int, optional): Size of additional feature dimensions. 
+        f_dim (int, optional): Size of additional feature dimensions.
             Defaults to 0.
-        dropout_rate (float, optional): Dropout rate for regularization. 
+        dropout_rate (float, optional): Dropout rate for regularization.
             Defaults to 0.
-        dropout_rate (float, optional): Dropout rate for regularization. 
+        dropout_rate (float, optional): Dropout rate for regularization.
             Defaults to 0.
     """
 
