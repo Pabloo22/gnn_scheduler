@@ -6,14 +6,9 @@ import networkx as nx
 import numpy as np
 import torch
 
-from gnn_scheduler.jssp import JobShopInstance, get_difficulty_score
 from gnn_scheduler.jssp.graphs import (
     NodeFeatureCreator,
-    JobID,
-    OperationIndex,
-    OneHotEncoding,
     DisjunctiveGraph,
-    AdjData,
 )
 
 
@@ -210,31 +205,3 @@ def disjunctive_graph_to_tensors(
     adj_matrices = get_adj_matrices(disjunctive_graph)
 
     return node_features, adj_matrices
-
-
-def instance_to_adj_data(
-    instance: JobShopInstance,
-    node_feature_creators: list[NodeFeatureCreator],
-    copy: bool = False,
-) -> AdjData:
-    """Returns the node features and adjacency matrices of a job-shop instance.
-
-    Args:
-        instance (JobShopInstance): the instance.
-        node_feature_creators (list[NodeFeatureCreator]): the node feature
-            creators to use.
-        copy (bool, optional): whether to copy the graph before preprocessing.
-
-    Returns:
-        AdjData: the node features and adjacency matrices
-    """
-    y = get_difficulty_score(instance)
-    node_features, adj_matrices = disjunctive_graph_to_tensors(
-        instance.disjunctive_graph,
-        node_feature_creators=node_feature_creators,
-        copy=copy,
-    )
-
-    return AdjData(
-        adj_matrix=adj_matrices, x=node_features, y=y
-    )

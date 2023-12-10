@@ -82,3 +82,7 @@ def load_data(
         adj_data, seed=seed, eval_size=eval_size, test_size=test_size
     )
     return train, evaluation, test
+
+
+if __name__ == "__main__":
+    print(help(get_difficulty_score))
