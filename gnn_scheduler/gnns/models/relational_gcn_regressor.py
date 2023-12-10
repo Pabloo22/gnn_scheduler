@@ -26,6 +26,8 @@ class RelationalGCNRegressor(nn.Module):
         aggregation_units: int,
         dropout_rate: float = 0.0,
         leaky_relu_slope: float = 0.1,
+        with_features: bool = False,
+        feature_dim_size: int = 0,
     ):
         """Initializes the RelationalGCNRegressor model.
 
@@ -37,6 +39,12 @@ class RelationalGCNRegressor(nn.Module):
                 aggregation layer before regression.
             dropout_rate (float, optional): Dropout rate for the convolution
                 layers. Defaults to 0.
+            leaky_relu_slope (float, optional): Slope of the LeakyReLU
+                activation function. Defaults to 0.1.
+            with_features (bool, optional): Whether to use additional 
+                node features. Defaults to False.
+            feature_dim_size (int, optional): The number of units in the
+                additional node features. Defaults to 0.
         """
         super().__init__()
 
@@ -47,6 +55,8 @@ class RelationalGCNRegressor(nn.Module):
             torch.nn.LeakyReLU(leaky_relu_slope),
             edge_type_num=2,
             dropout_rate=dropout_rate,
+            with_features=with_features,
+            feature_dim_size=feature_dim_size,
         )
 
         # Define the aggregation layer

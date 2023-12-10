@@ -210,6 +210,12 @@ class GraphConvolution(nn.Module):
         graph_conv_units (List[int]): A list specifying the number of units
             in each graph convolution layer.
         edge_type_num (int): Number of different types of edges in the graph.
+                with_features (bool, optional): If True, additional features are considered.
+            Defaults to False.
+        f_dim (int, optional): Size of additional feature dimensions. 
+            Defaults to 0.
+        dropout_rate (float, optional): Dropout rate for regularization. 
+            Defaults to 0.
         dropout_rate (float, optional): Dropout rate for regularization. 
             Defaults to 0.
     """
@@ -219,6 +225,8 @@ class GraphConvolution(nn.Module):
         in_features: int,
         graph_conv_units: [int],
         edge_type_num: int,
+        with_features: bool = False,
+        f_dim: int = 0,
         dropout_rate: float = 0.0,
     ):
         super().__init__()
@@ -230,6 +238,8 @@ class GraphConvolution(nn.Module):
             self.graph_conv_units,
             self.activation_f,
             edge_type_num,
+            with_features,
+            f_dim,
             dropout_rate,
         )
 
