@@ -30,11 +30,12 @@ class TrainingConfig:
     batch_size: int = 1
     weight_decay: float = 0.0001
     shuffle: bool = True
+    show_progress: bool = True
 
 
 class ExperimentConfig:
     def __init__(
-        self, config_folder: os.PathLike | str | bytes, encoding="utf-8"
+        self, config_folder: os.PathLike | str | bytes
     ):
         load_data_path = os.path.join(config_folder, "load_data.yaml")
         model_path = os.path.join(config_folder, "model.yaml")
