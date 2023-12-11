@@ -38,6 +38,7 @@ def main():
     #     show_progress=True,
     # )
 
+    # For this folder we save the data in batches to avoid memory issues
     process_and_save_data(
         [FOLDER_NAMES[1]],
         [NEW_FOLDER_NAMES[1]],
