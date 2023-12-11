@@ -282,7 +282,7 @@ def disjunctive_graph_to_tensors(
     node_features = get_node_features_matrix(disjunctive_graph)
 
     if not sparse:
-        adj_matrices = get_adj_matrices(disjunctive_graph)
+        adj_matrices = get_adj_matrices(disjunctive_graph, directed=directed)
     else:
         adj_matrices = get_sparse_adj_matrices(
             disjunctive_graph, directed=directed
