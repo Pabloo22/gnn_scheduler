@@ -37,6 +37,8 @@ def instance_to_adj_data(
     instance: JobShopInstance,
     node_feature_creators: list[NodeFeatureCreator],
     copy: bool = False,
+    sparse: bool = True,
+    directed: bool = False,
 ) -> AdjData:
     """Returns the node features and adjacency matrices of a job-shop instance.
 
@@ -45,6 +47,11 @@ def instance_to_adj_data(
         node_feature_creators (list[NodeFeatureCreator]): the node feature
             creators to use.
         copy (bool, optional): whether to copy the graph before preprocessing.
+            Defaults to False.
+        sparse (bool, optional): whether to use a sparse tensor for the
+            adjacency matrix. Defaults to True.
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to False.
 
     Returns:
         AdjData: the node features and adjacency matrices
@@ -55,6 +62,8 @@ def instance_to_adj_data(
         disjunctive_graph,
         node_feature_creators=node_feature_creators,
         copy=copy,
+        sparse=sparse,
+        directed=directed,
     )
 
     return AdjData(adj_matrix=adj_matrices, x=node_features, y=y)
@@ -64,6 +73,8 @@ def process_data(
     folder_names: list[str],
     show_progress: bool = True,
     data_path: Optional[os.PathLike | str | bytes] = None,
+    sparse: bool = True,
+    directed: bool = False,
 ) -> list[AdjData]:
     """Loads the data from the given folders as AdjData objects.
 
@@ -74,6 +85,10 @@ def process_data(
             Defaults to True.
         data_path (Optional[os.PathLike | str | bytes], optional): the path to
             the data folder. Defaults to `gnn_scheduler.get_data_path()`.
+        sparse (bool, optional): whether to use a sparse tensor for the
+            adjacency matrix. Defaults to True.
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to False.
 
     Returns:
         list[AdjData]: the AdjData objects
@@ -88,7 +103,9 @@ def process_data(
     for instance in tqdm.tqdm(
         instances, disable=not show_progress, desc="Creating AdjData objects"
     ):
-        adj_data = instance_to_adj_data(instance, node_feature_creators)
+        adj_data = instance_to_adj_data(
+            instance, node_feature_creators, sparse=sparse, directed=directed
+        )
         adj_data_list.append(adj_data)
 
     return adj_data_list

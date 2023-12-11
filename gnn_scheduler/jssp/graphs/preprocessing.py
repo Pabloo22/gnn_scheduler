@@ -9,7 +9,7 @@ import torch
 from gnn_scheduler.jssp.graphs import (
     NodeFeatureCreator,
     DisjunctiveGraph,
-    EdgeType
+    EdgeType,
 )
 
 
@@ -149,7 +149,9 @@ def get_node_features_matrix(
     return torch.tensor(node_features_matrix)
 
 
-def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
+def get_adj_matrices(
+    graph: DisjunctiveGraph, directed: bool = True
+) -> torch.Tensor:
     """Returns a tensor of adjacency matrices of a disjunctive graph.
 
     The first adjacency matrix is the adjacency matrix of the conjuctive edges
@@ -158,6 +160,8 @@ def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
     The tensor shape is (2, num_nodes, num_nodes).
     Args:
         graph (DisjunctiveGraph): the disjunctive graph
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to True.
 
     Returns:
         torch.Tensor: the tensor of adjacency matrices
@@ -171,7 +175,10 @@ def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
         v_index = graph.nodes[v]["node_index"]
         adj_matrices[type_index, u_index, v_index] = 1
 
-    return torch.tensor(adj_matrices, dtype=torch.float16)
+        if not directed and type_index == EdgeType.CONJUNCTIVE.value:
+            adj_matrices[type_index, v_index, u_index] = 1
+
+    return torch.tensor(adj_matrices)
 
 
 def get_sparse_adj_matrices(
@@ -241,6 +248,8 @@ def disjunctive_graph_to_tensors(
     disjunctive_graph: DisjunctiveGraph,
     node_feature_creators: list[NodeFeatureCreator],
     copy: bool = False,
+    sparse: bool = False,
+    directed: bool = False,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Returns the node features and adjacency matrices of a job-shop instance.
 
@@ -250,6 +259,11 @@ def disjunctive_graph_to_tensors(
         node_feature_creators (list[NodeFeatureCreator]): the node feature
             creators to use.
         copy (bool, optional): whether to copy the graph before preprocessing.
+            Defaults to False.
+        sparse (bool, optional): whether to return sparse tensors. Defaults to
+            False.
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to False.
 
     Returns:
         tuple[torch.Tensor]: the node features and adjacency matrices
@@ -266,6 +280,12 @@ def disjunctive_graph_to_tensors(
     )
 
     node_features = get_node_features_matrix(disjunctive_graph)
-    adj_matrices = get_adj_matrices(disjunctive_graph)
+
+    if not sparse:
+        adj_matrices = get_adj_matrices(disjunctive_graph)
+    else:
+        adj_matrices = get_sparse_adj_matrices(
+            disjunctive_graph, directed=directed
+        )
 
     return node_features, adj_matrices
