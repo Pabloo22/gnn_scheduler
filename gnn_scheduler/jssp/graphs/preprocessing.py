@@ -9,6 +9,7 @@ import torch
 from gnn_scheduler.jssp.graphs import (
     NodeFeatureCreator,
     DisjunctiveGraph,
+    EdgeType
 )
 
 
@@ -154,7 +155,7 @@ def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
     The first adjacency matrix is the adjacency matrix of the conjuctive edges
     and the second adjacency matrix is  of the disjunctive edges.
 
-    The tensor shape is (num_nodes, num_nodes, 2).
+    The tensor shape is (2, num_nodes, num_nodes).
     Args:
         graph (DisjunctiveGraph): the disjunctive graph
 
@@ -162,15 +163,78 @@ def get_adj_matrices(graph: DisjunctiveGraph) -> torch.Tensor:
         torch.Tensor: the tensor of adjacency matrices
     """
     num_nodes = graph.number_of_nodes()
-    adj_matrices = np.zeros((num_nodes, num_nodes, 2))
+    adj_matrices = np.zeros((2, num_nodes, num_nodes))
     for u, v, edge_type in graph.edges(data="type"):
         type_index = edge_type.value
         # get data from u and v
         u_index = graph.nodes[u]["node_index"]
         v_index = graph.nodes[v]["node_index"]
-        adj_matrices[u_index, v_index, type_index] = 1
+        adj_matrices[type_index, u_index, v_index] = 1
 
-    return torch.tensor(adj_matrices, dtype=torch.int8)
+    return torch.tensor(adj_matrices, dtype=torch.float16)
+
+
+def get_sparse_adj_matrices(
+    graph: DisjunctiveGraph, directed: bool = False
+) -> torch.Tensor:
+    """Returns a tensor of adjacency matrices of a disjunctive graph.
+
+    The first adjacency matrix is the adjacency matrix of the conjunctive edges,
+    and the second adjacency matrix is of the disjunctive edges.
+
+    The tensor shape is (2, num_nodes, num_nodes), and the result is returned as sparse tensors.
+    Args:
+        graph (DisjunctiveGraph): the disjunctive graph
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to False.
+
+    Returns:
+        torch.Tensor: the tensor of adjacency matrices
+    """
+    num_nodes = graph.number_of_nodes()
+
+    # Initialize lists to store indices and values for each type of edge
+    indices_conj = []
+    indices_disj = []
+
+    for u, v, edge_type in graph.edges(data="type"):
+        u_index = graph.nodes[u]["node_index"]
+        v_index = graph.nodes[v]["node_index"]
+
+        # Store indices based on edge type
+        if edge_type.value == EdgeType.CONJUNCTIVE.value:
+            indices_conj.append([u_index, v_index])
+            if not directed:
+                indices_conj.append([v_index, u_index])
+        else:
+            indices_disj.append([u_index, v_index])
+
+    # Convert lists to tensors
+    indices_conj = (
+        torch.tensor(indices_conj).t().contiguous()
+        if indices_conj
+        else torch.empty((2, 0))
+    )
+    indices_disj = (
+        torch.tensor(indices_disj).t().contiguous()
+        if indices_disj
+        else torch.empty((2, 0))
+    )
+    values_conj = torch.ones(indices_conj.size(1))
+    values_disj = torch.ones(indices_disj.size(1))
+
+    # Create sparse tensors
+    adj_matrix_conj = torch.sparse_coo_tensor(
+        indices_conj, values_conj, (num_nodes, num_nodes)
+    )
+    adj_matrix_disj = torch.sparse_coo_tensor(
+        indices_disj, values_disj, (num_nodes, num_nodes)
+    )
+
+    # Stack the sparse tensors
+    adj_matrices = torch.stack([adj_matrix_conj, adj_matrix_disj])
+
+    return adj_matrices
 
 
 def disjunctive_graph_to_tensors(
