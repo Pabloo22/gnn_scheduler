@@ -178,7 +178,7 @@ def get_adj_matrices(
         if not directed and type_index == EdgeType.CONJUNCTIVE.value:
             adj_matrices[type_index, v_index, u_index] = 1
 
-    return torch.tensor(adj_matrices)
+    return torch.tensor(adj_matrices, dtype=torch.float32)
 
 
 def get_sparse_adj_matrices(
@@ -232,10 +232,10 @@ def get_sparse_adj_matrices(
 
     # Create sparse tensors
     adj_matrix_conj = torch.sparse_coo_tensor(
-        indices_conj, values_conj, (num_nodes, num_nodes)
+        indices_conj, values_conj, (num_nodes, num_nodes), dtype=torch.float32
     )
     adj_matrix_disj = torch.sparse_coo_tensor(
-        indices_disj, values_disj, (num_nodes, num_nodes)
+        indices_disj, values_disj, (num_nodes, num_nodes), dtype=torch.float32
     )
 
     # Stack the sparse tensors
