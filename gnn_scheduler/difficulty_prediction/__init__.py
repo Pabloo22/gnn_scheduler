@@ -9,6 +9,7 @@ from .prepare_data import (
     process_data,
     save_adj_data_list,
     load_and_split_data,
+    process_and_save_data,
 )
 from .configs import (
     LoadDataConfig,

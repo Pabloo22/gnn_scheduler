@@ -75,6 +75,7 @@ def process_data(
     data_path: Optional[os.PathLike | str | bytes] = None,
     sparse: bool = True,
     directed: bool = False,
+    batch_size: Optional[int] = None,
 ) -> list[AdjData]:
     """Loads the data from the given folders as AdjData objects.
 
@@ -111,11 +112,70 @@ def process_data(
     return adj_data_list
 
 
+def process_and_save_data(
+    folder_names: list[str],
+    new_folder_names: list[str],
+    show_progress: bool = True,
+    data_path: Optional[os.PathLike | str | bytes] = None,
+    sparse: bool = True,
+    directed: bool = False,
+    batch_size: int = 1000,
+) -> list[AdjData]:
+    """Loads the data from the given folders as AdjData objects and saves them
+    to a new folder.
+
+    Args:
+        folder_names (list[str]): the names of the folders containing the
+            instances
+        show_progress (bool, optional): whether to show a progress bar.
+            Defaults to True.
+        data_path (Optional[os.PathLike | str | bytes], optional): the path to
+            the data folder. Defaults to `gnn_scheduler.get_data_path()`.
+        sparse (bool, optional): whether to use a sparse tensor for the
+            adjacency matrix. Defaults to True.
+        directed (bool, optional): whether the graph is directed. It only
+            affects the conjunctive edges. Defaults to False.
+        batch_size (int, optional): the batch size. Defaults to 1000.
+
+    Returns:
+        list[AdjData]: the AdjData objects
+    """
+    instances = load_pickle_instances_from_folders(
+        folder_names, show_progress=show_progress, data_path=data_path
+    )
+
+    node_feature_creators = diff_pred_node_features_creators()
+
+    adj_data_list = []
+    start_index = 0
+    for instance in tqdm.tqdm(
+        instances, disable=not show_progress, desc="Creating AdjData objects"
+    ):
+        adj_data = instance_to_adj_data(
+            instance, node_feature_creators, sparse=sparse, directed=directed
+        )
+        adj_data_list.append(adj_data)
+
+        if len(adj_data_list) % batch_size == 0:
+            save_adj_data_list(
+                adj_data_list,
+                folder_name=new_folder_names[0],
+                show_progress=True,
+                data_path=data_path,
+                start_index=start_index,
+            )
+            start_index += len(adj_data_list)
+            adj_data_list = []
+
+    return adj_data_list
+
+
 def save_adj_data_list(
     adj_data_list: list[AdjData],
     folder_name: str,
     show_progress: bool = True,
     data_path: Optional[os.PathLike | str | bytes] = None,
+    start_index: int = 0,
 ):
     """Saves a list of AdjData objects to a folder.
 
@@ -127,6 +187,7 @@ def save_adj_data_list(
             Defaults to True.
         data_path (Optional[os.PathLike | str | bytes], optional): the path to
             the data folder. Defaults to `gnn_scheduler.get_data_path()`.
+        start_index (int, optional): the index to start from. Defaults to 0.
     """
     # Create the folder if it doesn't exist
     if data_path is None:
@@ -140,7 +201,7 @@ def save_adj_data_list(
         disable=not show_progress,
         desc="Saving AdjData objects",
     ):
-        file_name = f"{i}.pkl"
+        file_name = f"{start_index + i}.pkl"
         file_path = os.path.join(folder_path, file_name)
         with open(file_path, "wb") as f:
             pickle.dump(adj_data, f)
