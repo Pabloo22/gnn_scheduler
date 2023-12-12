@@ -4,8 +4,11 @@ import torch
 from torch import nn
 
 from gnn_scheduler.gnns.models import (
-    GraphAggregationLayer,
+    GraphAggregation,
     MultiGraphConvolutionLayers,
+    GraphConvolution,
+    MyGraphAggregationLayer,
+    MultiDenseLayer,
 )
 
 
@@ -41,7 +44,7 @@ class RelationalGCNRegressor(nn.Module):
                 layers. Defaults to 0.
             leaky_relu_slope (float, optional): Slope of the LeakyReLU
                 activation function. Defaults to 0.1.
-            with_features (bool, optional): Whether to use additional 
+            with_features (bool, optional): Whether to use additional
                 node features. Defaults to False.
             feature_dim_size (int, optional): The number of units in the
                 additional node features. Defaults to 0.
@@ -52,7 +55,7 @@ class RelationalGCNRegressor(nn.Module):
         self.graph_conv = MultiGraphConvolutionLayers(
             in_features,
             conv_units,
-            torch.nn.LeakyReLU(leaky_relu_slope),
+            torch.nn.Tanh(),
             edge_type_num=2,
             dropout_rate=dropout_rate,
             with_features=with_features,
@@ -61,10 +64,9 @@ class RelationalGCNRegressor(nn.Module):
 
         # Define the aggregation layer
         # The input size is the output size of the last graph convolution layer
-        self.aggregation_layer = GraphAggregationLayer(
+        self.aggregation_layer = MyGraphAggregationLayer(
             conv_units[-1],
             aggregation_units,
-            leaky_relu_slope=leaky_relu_slope,
         )
 
     def forward(
@@ -90,4 +92,52 @@ class RelationalGCNRegressor(nn.Module):
         # Aggregation layer
         output = self.aggregation_layer(hidden_features)
 
+        # Use sigmoid to get a value between 0 and 1
+        output = torch.sigmoid(output)
+
         return output
+
+
+class Discriminator(nn.Module):
+    """Discriminator network with PatchGAN."""
+
+    def __init__(
+        self,
+        conv_dim,
+        m_dim,
+        b_dim,
+        with_features=False,
+        f_dim=0,
+        dropout_rate=0.0,
+    ):
+        super(Discriminator, self).__init__()
+        self.activation_f = torch.nn.Tanh()
+        graph_conv_dim, aux_dim, linear_dim = conv_dim
+        # discriminator
+        self.gcn_layer = GraphConvolution(
+            m_dim, graph_conv_dim, b_dim, with_features, f_dim, dropout_rate
+        )
+        self.agg_layer = GraphAggregation(
+            graph_conv_dim[-1] + m_dim,
+            aux_dim,
+            self.activation_f,
+            with_features,
+            f_dim,
+            dropout_rate,
+        )
+        self.multi_dense_layer = MultiDenseLayer(
+            aux_dim, linear_dim, self.activation_f, dropout_rate=dropout_rate
+        )
+
+        self.output_layer = nn.Linear(linear_dim[-1], 1)
+
+    def forward(self, adj, hidden, node, activation=None):
+        adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
+        h_1 = self.gcn_layer(node, adj, hidden)
+        h = self.agg_layer(h_1, node, hidden)
+        h = self.multi_dense_layer(h)
+
+        output = self.output_layer(h)
+        output = activation(output) if activation is not None else output
+
+        return output, h

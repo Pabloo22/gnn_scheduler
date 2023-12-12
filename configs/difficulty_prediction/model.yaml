@@ -1,8 +1,7 @@
-in_features: 12        # Number of input features
-conv_units:
-  - 16                 # Number of units in the first graph convolution layer
-  - 32                 # Number of units in the second graph convolution layer
-  - 64                 # Add more layers as needed
-aggregation_units: 64  # Number of units in the aggregation layer
-dropout_rate: 0.05     # Dropout rate for convolution layers
-leaky_relu_slope: 0.1  # Slope for the LeakyReLU activation function
+conv_dim:
+  - [64, 32]   # graph_conv_dim
+  - 128        # aux_dim
+  - [128, 1]   # linear_dim
+m_dim: 12       # Dimension of the molecular/node feature vector
+b_dim: 2        # Number of edge types/bond types
+dropout_rate: 0.  # Dropout rate for convolution layers

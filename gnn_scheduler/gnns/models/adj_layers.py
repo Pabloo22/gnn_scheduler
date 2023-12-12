@@ -94,7 +94,9 @@ class GraphConvolutionLayer(nn.Module):
         # considering different edge types.
 
         output_reshaped = output.transpose(1, 2)  # Now it's [N, 16, 2]
-        output_reshaped = output_reshaped.permute(2, 0, 1)  # Now it's [2, N, 16]
+        output_reshaped = output_reshaped.permute(
+            2, 0, 1
+        )  # Now it's [2, N, 16]
 
         # Adjacency tensor is of shape (edge_type_num, N, N)
         # output is of shape (edge_type_num, N, out_features)
@@ -279,7 +281,7 @@ class GraphConvolution(nn.Module):
         return output
 
 
-class GraphAggregationLayer(nn.Module):
+class MyGraphAggregationLayer(nn.Module):
     """Combines node embeddings using sum, mean, and global max pooling, and
     then processes the combined embedding through an MLP.
 
@@ -333,3 +335,66 @@ class GraphAggregationLayer(nn.Module):
         output = self.mlp(combined_embedding)
 
         return output
+
+
+class GraphAggregation(nn.Module):
+    def __init__(
+        self,
+        in_features,
+        aux_units,
+        activation,
+        with_features=False,
+        f_dim=0,
+        dropout_rate=0.0,
+    ):
+        super().__init__()
+        self.with_features = with_features
+        self.activation = activation
+        if self.with_features:
+            self.i = nn.Sequential(
+                nn.Linear(in_features + f_dim, aux_units), nn.Sigmoid()
+            )
+            j_layers = [nn.Linear(in_features + f_dim, aux_units)]
+            if self.activation is not None:
+                j_layers.append(self.activation)
+            self.j = nn.Sequential(*j_layers)
+        else:
+            self.i = nn.Sequential(
+                nn.Linear(in_features, aux_units), nn.Sigmoid()
+            )
+            j_layers = [nn.Linear(in_features, aux_units)]
+            if self.activation is not None:
+                j_layers.append(self.activation)
+            self.j = nn.Sequential(*j_layers)
+        self.dropout = nn.Dropout(dropout_rate)
+
+    def forward(self, n_tensor, out_tensor, h_tensor=None):
+        if h_tensor is not None:
+            annotations = torch.cat((out_tensor, h_tensor, n_tensor), -1)
+        else:
+            annotations = torch.cat((out_tensor, n_tensor), -1)
+        # The i here seems to be an attention.
+        i = self.i(annotations)
+        j = self.j(annotations)
+        output = torch.sum(torch.mul(i, j), 1)
+        if self.activation is not None:
+            output = self.activation(output)
+        output = self.dropout(output)
+
+        return output
+
+
+class MultiDenseLayer(nn.Module):
+    def __init__(self, aux_unit, linear_units, activation=None, dropout_rate=0.):
+        super(MultiDenseLayer, self).__init__()
+        layers = []
+        for c0, c1 in zip([aux_unit] + linear_units[:-1], linear_units):
+            layers.append(nn.Linear(c0, c1))
+            layers.append(nn.Dropout(dropout_rate))
+            if activation is not None:
+                layers.append(activation)
+        self.linear_layer = nn.Sequential(*layers)
+
+    def forward(self, inputs):
+        h = self.linear_layer(inputs)
+        return h
