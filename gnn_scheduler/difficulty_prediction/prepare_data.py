@@ -75,7 +75,6 @@ def process_data(
     data_path: Optional[os.PathLike | str | bytes] = None,
     sparse: bool = True,
     directed: bool = False,
-    batch_size: Optional[int] = None,
 ) -> list[AdjData]:
     """Loads the data from the given folders as AdjData objects.
 
