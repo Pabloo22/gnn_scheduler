@@ -28,7 +28,6 @@ class RelationalGCNRegressor(nn.Module):
         conv_units: list[int],
         aggregation_units: int,
         dropout_rate: float = 0.0,
-        leaky_relu_slope: float = 0.1,
         with_features: bool = False,
         feature_dim_size: int = 0,
     ):
@@ -42,8 +41,6 @@ class RelationalGCNRegressor(nn.Module):
                 aggregation layer before regression.
             dropout_rate (float, optional): Dropout rate for the convolution
                 layers. Defaults to 0.
-            leaky_relu_slope (float, optional): Slope of the LeakyReLU
-                activation function. Defaults to 0.1.
             with_features (bool, optional): Whether to use additional
                 node features. Defaults to False.
             feature_dim_size (int, optional): The number of units in the
