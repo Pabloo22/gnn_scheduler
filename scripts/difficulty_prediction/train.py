@@ -1,5 +1,7 @@
 """
-.
+Script to train a relational GCN regressor on the difficulty prediction task.
+This script is no longer used, since the GAN project is not going to be
+continued for now.
 """
 import random
 
@@ -12,7 +14,11 @@ from gnn_scheduler.difficulty_prediction import (
     ExperimentConfig,
     load_and_split_data,
 )
-from gnn_scheduler.gnns.models import RelationalGCNRegressor, Discriminator
+from gnn_scheduler.gnns.models.dense_matrix import (
+    RelationalGCNRegressor,
+    Discriminator,
+)
+
 from gnn_scheduler.jssp.graphs import AdjData
 from gnn_scheduler.jssp import load_pickle_object
 from gnn_scheduler import get_project_path

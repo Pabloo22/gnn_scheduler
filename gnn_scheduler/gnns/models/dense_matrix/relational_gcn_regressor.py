@@ -1,9 +1,10 @@
+"""Contains models that use"""
 from typing import Optional
 
 import torch
 from torch import nn
 
-from gnn_scheduler.gnns.models import (
+from gnn_scheduler.gnns.models.dense_matrix import (
     GraphAggregation,
     MultiGraphConvolutionLayers,
     GraphConvolution,
