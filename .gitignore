@@ -27,10 +27,10 @@ share/python-wheels/
 MANIFEST
 
 # Data
-data/diff_prediction_instances/
-data/augmented_benchmark_10machines/
-data/adj_data_list_augmented_benchmark_10machines/
-data/adj_data_list_diff_prediction_instances/
+data/difficulty_prediction/diff_prediction_instances/
+data/difficulty_prediction/augmented_benchmark_10machines/
+data/difficulty_prediction/adj_data_list_augmented_benchmark_10machines/
+data/difficulty_prediction/adj_data_list_diff_prediction_instances/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
