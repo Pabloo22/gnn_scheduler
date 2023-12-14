@@ -131,7 +131,7 @@ class Discriminator(nn.Module):
 
         self.output_layer = nn.Linear(linear_dim[-1], 1)
 
-    def forward(self, adj, hidden, node_features, activation=None):
+    def forward(self, adj, hidden, node_features):
         adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
         h_1 = self.gcn_layer(node_features, adj, hidden)
         h = self.agg_layer(h_1, node_features, hidden)
