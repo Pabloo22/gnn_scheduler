@@ -107,8 +107,10 @@ class Discriminator(nn.Module):
         with_features=False,
         f_dim=0,
         dropout_rate=0.0,
+        out_activation_f: Optional[nn.Module] = None,
     ):
-        super(Discriminator, self).__init__()
+        super().__init__()
+        self.out_activation_f = out_activation_f
         self.activation_f = torch.nn.Tanh()
         graph_conv_dim, aux_dim, linear_dim = conv_dim
         # discriminator
@@ -129,13 +131,14 @@ class Discriminator(nn.Module):
 
         self.output_layer = nn.Linear(linear_dim[-1], 1)
 
-    def forward(self, adj, hidden, node, activation=None):
+    def forward(self, adj, hidden, node_features, activation=None):
         adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
-        h_1 = self.gcn_layer(node, adj, hidden)
-        h = self.agg_layer(h_1, node, hidden)
+        h_1 = self.gcn_layer(node_features, adj, hidden)
+        h = self.agg_layer(h_1, node_features, hidden)
         h = self.multi_dense_layer(h)
 
         output = self.output_layer(h)
-        output = activation(output) if activation is not None else output
+        if self.out_activation_f is not None:
+            output = self.out_activation_f(output)
 
         return output, h
