@@ -11,8 +11,8 @@ model:
   - [64, 32]   # graph_conv_dim
   - 128        # aux_dim
   - [128, 1]   # linear_dim
-  m_dim: 12       # Dimension of the molecular/node feature vector
-  b_dim: 2        # Number of edge types/bond types
+  m_dim: 12       # Dimension of the node feature vector
+  b_dim: 2        # Number of edge types
   dropout_rate: 0.  # Dropout rate for convolution layers
 training:
   n_epochs: 10000
