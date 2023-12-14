@@ -156,7 +156,7 @@ class MachineLoad(NodeFeatureCreator):
         self, node_name: str, node_data: dict[str, Any]
     ) -> list[float]:
         machine_id = node_data["machine_id"]
-        machine_load = self.graph.machines_load[machine_id]
+        machine_load = self.graph.machine_loads[machine_id]
         max_load = self.graph.max_machine_load
         return [machine_load / max_load]
 
