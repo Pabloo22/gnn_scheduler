@@ -1,7 +1,0 @@
-n_epochs: 10000
-optimizer: 'adam'
-learning_rate: 0.0001
-batch_size: 32
-weight_decay: 0.0001
-shuffle: true
-show_progress: false
