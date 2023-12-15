@@ -11,6 +11,7 @@ from gnn_scheduler.gnns.models.dense_matrix import (
     MyGraphAggregationLayer,
     MultiDenseLayer,
 )
+from gnn_scheduler.gnns import get_activation_function
 
 
 class RelationalGCNRegressor(nn.Module):
@@ -107,9 +108,11 @@ class Discriminator(nn.Module):
         with_features=False,
         f_dim=0,
         dropout_rate=0.0,
-        out_activation_f: Optional[nn.Module] = None,
+        out_activation_f: Optional[nn.Module | str] = None,
     ):
         super().__init__()
+        if isinstance(out_activation_f, str):
+            out_activation_f = get_activation_function(out_activation_f)
         self.out_activation_f = out_activation_f
         self.activation_f = torch.nn.Tanh()
         graph_conv_dim, aux_dim, linear_dim = conv_dim
@@ -131,9 +134,9 @@ class Discriminator(nn.Module):
 
         self.output_layer = nn.Linear(linear_dim[-1], 1)
 
-    def forward(self, adj, hidden, node_features):
-        adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
-        h_1 = self.gcn_layer(node_features, adj, hidden)
+    def forward(self, adj_matrices, node_features, hidden=None):
+        # adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
+        h_1 = self.gcn_layer(node_features, adj_matrices, hidden)
         h = self.agg_layer(h_1, node_features, hidden)
         h = self.multi_dense_layer(h)
 
@@ -141,4 +144,4 @@ class Discriminator(nn.Module):
         if self.out_activation_f is not None:
             output = self.out_activation_f(output)
 
-        return output, h
+        return output

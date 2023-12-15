@@ -373,10 +373,10 @@ class GraphAggregation(nn.Module):
             annotations = torch.cat((out_tensor, h_tensor, n_tensor), -1)
         else:
             annotations = torch.cat((out_tensor, n_tensor), -1)
-        # The i here seems to be an attention.
+
         i = self.i(annotations)
         j = self.j(annotations)
-        output = torch.sum(torch.mul(i, j), 1)
+        output = torch.sum(torch.mul(i, j), 0)
         if self.activation is not None:
             output = self.activation(output)
         output = self.dropout(output)
@@ -386,7 +386,7 @@ class GraphAggregation(nn.Module):
 
 class MultiDenseLayer(nn.Module):
     def __init__(self, aux_unit, linear_units, activation=None, dropout_rate=0.):
-        super(MultiDenseLayer, self).__init__()
+        super().__init__()
         layers = []
         for c0, c1 in zip([aux_unit] + linear_units[:-1], linear_units):
             layers.append(nn.Linear(c0, c1))
