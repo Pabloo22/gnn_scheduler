@@ -16,7 +16,7 @@ def get_project_path() -> pathlib.Path:
 
 
 def get_data_path() -> pathlib.Path:
-    """Gets data path."""
+    """Returns project/path/data."""
     return get_project_path() / "data"
 
 

@@ -10,7 +10,6 @@ from .node_feature_creators import (
     Duration,
     JobID,
 )
-from .adj_data import AdjData
 from .preprocessing import (
     preprocess_graph,
     preprocess_graphs,

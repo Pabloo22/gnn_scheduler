@@ -7,16 +7,15 @@ https://github.com/harutatsuakiyama/Implementation-MolGAN-PyTorch/blob/master/la
 under the CC-BY-4.0 license:
 https://choosealicense.com/licenses/cc-by-4.0/
 
-Comments and the GraphAggregationLayer are my own. Other changes have been
-made to make the code compatible with the rest of the project, such as
-fixing shape issues.
+Comments are my own. Other changes have been made to make the code compatible
+with the rest of the project.
 """
 from __future__ import annotations
 
 from typing import Optional, Callable
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class GraphConvolutionLayer(nn.Module):

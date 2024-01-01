@@ -8,19 +8,17 @@ from gnn_scheduler import get_data_path
 from gnn_scheduler.jssp import (
     JobShopInstance,
     load_pickle_instances_from_folders,
-    load_pickle_objects_from_folders,
 )
 from gnn_scheduler.jssp.graphs import (
     NodeFeatureCreator,
     JobID,
     OperationIndex,
     OneHotEncoding,
-    AdjData,
     disjunctive_graph_to_tensors,
     DisjunctiveGraph,
 )
-from gnn_scheduler.gnns.training import train_eval_test_split
-from gnn_scheduler.difficulty_prediction import get_difficulty_score
+from gnn_scheduler.gan import get_difficulty_score
+from gnn_scheduler.gan.data import DenseData
 
 
 def diff_pred_node_features_creators(n_machines: int = 10):
@@ -33,13 +31,13 @@ def diff_pred_node_features_creators(n_machines: int = 10):
     return [machine_one_hot, operation_index, job_id]
 
 
-def instance_to_adj_data(
+def instance_to_dense_data(
     instance: JobShopInstance,
     node_feature_creators: list[NodeFeatureCreator],
     copy: bool = False,
     sparse: bool = True,
     directed: bool = False,
-) -> AdjData:
+) -> DenseData:
     """Returns the node features and adjacency matrices of a job-shop instance.
 
     Args:
@@ -54,7 +52,7 @@ def instance_to_adj_data(
             affects the conjunctive edges. Defaults to False.
 
     Returns:
-        AdjData: the node features and adjacency matrices
+        DenseData: the node features and adjacency matrices
     """
     y = get_difficulty_score(instance)
     disjunctive_graph = DisjunctiveGraph.from_job_shop_instance(instance)
@@ -66,7 +64,7 @@ def instance_to_adj_data(
         directed=directed,
     )
 
-    return AdjData(adj_matrix=adj_matrices, x=node_features, y=y)
+    return DenseData(adj_matrix=adj_matrices, x=node_features, y=y)
 
 
 def process_data(
@@ -75,8 +73,8 @@ def process_data(
     data_path: Optional[os.PathLike | str | bytes] = None,
     sparse: bool = True,
     directed: bool = False,
-) -> list[AdjData]:
-    """Loads the data from the given folders as AdjData objects.
+) -> list[DenseData]:
+    """Loads the data from the given folders as DenseData objects.
 
     Args:
         folder_names (list[str]): the names of the folders containing the
@@ -91,7 +89,7 @@ def process_data(
             affects the conjunctive edges. Defaults to False.
 
     Returns:
-        list[AdjData]: the AdjData objects
+        list[DenseData]: the DenseData objects
     """
     instances = load_pickle_instances_from_folders(
         folder_names, show_progress=show_progress, data_path=data_path
@@ -99,16 +97,16 @@ def process_data(
 
     node_feature_creators = diff_pred_node_features_creators()
 
-    adj_data_list = []
+    dense_data_list = []
     for instance in tqdm.tqdm(
-        instances, disable=not show_progress, desc="Creating AdjData objects"
+        instances, disable=not show_progress, desc="Creating DenseData objects"
     ):
-        adj_data = instance_to_adj_data(
+        dense_data = instance_to_dense_data(
             instance, node_feature_creators, sparse=sparse, directed=directed
         )
-        adj_data_list.append(adj_data)
+        dense_data_list.append(dense_data)
 
-    return adj_data_list
+    return dense_data_list
 
 
 def process_and_save_data(
@@ -119,8 +117,8 @@ def process_and_save_data(
     sparse: bool = True,
     directed: bool = False,
     batch_size: int = 1000,
-) -> list[AdjData]:
-    """Loads the data from the given folders as AdjData objects and saves them
+) -> list[DenseData]:
+    """Loads the data from the given folders as DenseData objects and saves them
     to a new folder.
 
     Args:
@@ -137,7 +135,7 @@ def process_and_save_data(
         batch_size (int, optional): the batch size. Defaults to 1000.
 
     Returns:
-        list[AdjData]: the AdjData objects
+        list[DenseData]: the DenseData objects
     """
     instances = load_pickle_instances_from_folders(
         folder_names, show_progress=show_progress, data_path=data_path
@@ -145,43 +143,44 @@ def process_and_save_data(
 
     node_feature_creators = diff_pred_node_features_creators()
 
-    adj_data_list = []
+    dense_data_list = []
     start_index = 0
     for instance in tqdm.tqdm(
-        instances, disable=not show_progress, desc="Creating AdjData objects"
+        instances, disable=not show_progress, desc="Creating DenseData objects"
     ):
-        adj_data = instance_to_adj_data(
+        dense_data = instance_to_dense_data(
             instance, node_feature_creators, sparse=sparse, directed=directed
         )
-        adj_data_list.append(adj_data)
+        dense_data_list.append(dense_data)
 
-        if len(adj_data_list) % batch_size == 0:
-            save_adj_data_list(
-                adj_data_list,
+        if len(dense_data_list) % batch_size == 0:
+            save_dense_data_list(
+                dense_data_list,
                 folder_name=new_folder_names[0],
                 show_progress=True,
                 data_path=data_path,
                 start_index=start_index,
             )
-            start_index += len(adj_data_list)
-            adj_data_list = []
+            start_index += len(dense_data_list)
+            dense_data_list = []
 
-    return adj_data_list
+    return dense_data_list
 
 
-def save_adj_data_list(
-    adj_data_list: list[AdjData],
+def save_dense_data_list(
+    dense_data_list: list[DenseData],
     folder_name: str,
     show_progress: bool = True,
     data_path: Optional[os.PathLike | str | bytes] = None,
     start_index: int = 0,
 ):
-    """Saves a list of AdjData objects to a folder.
+    """Saves a list of DenseData objects to a folder.
 
     Args:
-        adj_data_list (list[AdjData]): the list of AdjData objects to save.
-        folder_name (str): the name of the folder to save the AdjData objects
-            to.
+        dense_data_list (list[DenseData]): the list of DenseData
+            objects to save.
+        folder_name (str): the name of the folder to save the
+            DenseData objects to.
         show_progress (bool, optional): whether to show a progress bar.
             Defaults to True.
         data_path (Optional[os.PathLike | str | bytes], optional): the path to
@@ -195,34 +194,12 @@ def save_adj_data_list(
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    for i, adj_data in tqdm.tqdm(
-        enumerate(adj_data_list),
+    for i, dense_data in tqdm.tqdm(
+        enumerate(dense_data_list),
         disable=not show_progress,
-        desc="Saving AdjData objects",
+        desc="Saving DenseData objects",
     ):
         file_name = f"{start_index + i}.pkl"
         file_path = os.path.join(folder_path, file_name)
         with open(file_path, "wb") as f:
-            pickle.dump(adj_data, f)
-
-
-def load_and_split_data(
-    folder_names: list[str],
-    seed: int = 0,
-    eval_size: float = 0.1,
-    test_size: float = 0.2,
-    show_progress: bool = True,
-    data_path: Optional[os.PathLike | str | bytes] = None,
-) -> tuple[list[AdjData], list[AdjData], list[AdjData]]:
-    """Loads the data from the given folders, splits it into train, eval and
-    test sets and returns them."""
-    adj_data_list = load_pickle_objects_from_folders(
-        folder_names, show_progress=show_progress, data_path=data_path
-    )
-    train_adj_data, eval_adj_data, test_adj_data = train_eval_test_split(
-        adj_data_list,
-        seed=seed,
-        eval_size=eval_size,
-        test_size=test_size,
-    )
-    return train_adj_data, eval_adj_data, test_adj_data
+            pickle.dump(dense_data, f)

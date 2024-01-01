@@ -1,3 +1,4 @@
+"""Contains the JobShopInstance and Operation classes."""
 from __future__ import annotations
 
 import functools

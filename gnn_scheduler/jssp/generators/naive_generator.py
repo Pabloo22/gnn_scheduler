@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import random
 from typing import Optional
 
@@ -30,25 +28,37 @@ class NaiveGenerator:
     def generate(
         self, n_jobs: Optional[int] = None, n_machines: Optional[int] = None
     ) -> JobShopInstance:
+        n_jobs, n_machines = self._get_n_jobs_and_n_machines(
+            n_jobs, n_machines
+        )
+        jobs = []
+        available_machines = list(range(n_machines))
+        for _ in range(n_jobs):
+            job = []
+            for _ in range(n_machines):
+                operation = self._create_random_operation(available_machines)
+                job.append(operation)
+            jobs.append(job)
+            available_machines = list(range(n_machines))
+
+        return JobShopInstance(jobs=jobs, name=self._get_name())
+
+    def _create_random_operation(
+        self, available_machines: list[int]
+    ) -> Operation:
+        machine_id = random.choice(available_machines)
+        available_machines.remove(machine_id)
+        duration = random.randint(self.min_duration, self.max_duration)
+        return Operation(machine_id=machine_id, duration=duration)
+
+    def _get_n_jobs_and_n_machines(
+        self, n_jobs: int, n_machines: int
+    ) -> tuple[int, int]:
         if n_jobs is None:
             n_jobs = random.randint(self.min_n_jobs, self.max_n_jobs)
         if n_machines is None:
             n_machines = random.randint(n_jobs, self.max_n_machines)
-        jobs = []
-        available_machines = list(range(n_machines))
-        for _ in range(n_jobs):
-            operations = []
-            for _ in range(n_machines):
-                machine_id = random.choice(available_machines)
-                available_machines.remove(machine_id)
-                duration = random.randint(self.min_duration, self.max_duration)
-                operations.append(
-                    Operation(machine_id=machine_id, duration=duration)
-                )
-            jobs.append(operations)
-            available_machines = list(range(n_machines))
-
-        return JobShopInstance(jobs=jobs, name=self._get_name())
+        return n_jobs, n_machines
 
     def _get_name(self) -> str:
         self.counter += 1

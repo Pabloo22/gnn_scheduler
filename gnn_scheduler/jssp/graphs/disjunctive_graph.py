@@ -183,7 +183,7 @@ class DisjunctiveGraph(nx.DiGraph):
         return disjunctive_graph
 
     @functools.cached_property
-    def disjuncive_edges(self) -> list[tuple[str, str]]:
+    def disjunctive_edges(self) -> list[tuple[str, str]]:
         """Returns the disjunctive edges of the graph."""
         return [
             (u, v)

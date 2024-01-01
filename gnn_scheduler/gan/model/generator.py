@@ -2,8 +2,18 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from gnn_scheduler.gnns.models.dense_matrix import MultiDenseLayer
-from gnn_scheduler.gnns import get_activation_function
+from gnn_scheduler.gan.model import MultiDenseLayer
+from gnn_scheduler.training_utils import get_activation_function
+
+
+def compute_adjacency_matrix(x: torch.Tensor) -> torch.Tensor:
+    disjunctive_adj_matrix = torch.matmul(x, x.t())
+
+    # Remove self-loops
+    disjunctive_adj_matrix = disjunctive_adj_matrix - torch.diag(
+        torch.diag(disjunctive_adj_matrix)
+    )
+    return disjunctive_adj_matrix
 
 
 class Generator(nn.Module):
@@ -34,20 +44,7 @@ class Generator(nn.Module):
         h = h[:n_valid_nodes, :]
         logits = self.final_layer(h).view(-1, self.num_machines)
 
-        # Apply Gumbel-Softmax
         x = F.gumbel_softmax(logits, tau=self.temperature, hard=True, dim=1)
 
-        disjunctive_adj_matrix = self.compute_adjacency(x)
+        disjunctive_adj_matrix = compute_adjacency_matrix(x)
         return x, disjunctive_adj_matrix
-
-    def compute_adjacency(
-        self,
-        x: torch.Tensor,
-    ) -> torch.Tensor:
-        disjunctive_adj_matrix = torch.matmul(x, x.t())
-
-        # Remove self-loops
-        disjunctive_adj_matrix = disjunctive_adj_matrix - torch.diag(
-            torch.diag(disjunctive_adj_matrix)
-        )
-        return disjunctive_adj_matrix
