@@ -19,6 +19,7 @@ from gnn_scheduler.gan.data import load_dense_data_dataset, DenseData
 
 
 class RewardNetworkTrainer:
+
     def __init__(
         self,
         experiment_config: dict,
