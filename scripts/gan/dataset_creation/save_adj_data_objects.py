@@ -1,6 +1,6 @@
-from gnn_scheduler.difficulty_prediction import (
+from gnn_scheduler.gan.data import (
     process_data,
-    save_adj_data_list,
+    save_dense_data_list,
     process_and_save_data,
 )
 
@@ -19,7 +19,7 @@ def main():
         sparse=False,
         directed=False,
     )
-    save_adj_data_list(
+    save_dense_data_list(
         adj_data_list_augmented_benchmark_10machines,
         folder_name=NEW_FOLDER_NAMES[0],
         show_progress=True,
