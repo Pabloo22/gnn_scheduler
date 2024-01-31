@@ -6,7 +6,7 @@ import networkx as nx
 import numpy as np
 import torch
 
-from gnn_scheduler.jssp.graphs import (
+from gnn_scheduler.job_shop.graphs import (
     NodeFeatureCreator,
     DisjunctiveGraph,
     EdgeType,

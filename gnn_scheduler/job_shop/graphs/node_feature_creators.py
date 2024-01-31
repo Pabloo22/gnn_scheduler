@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from gnn_scheduler.jssp.graphs import DisjunctiveGraph
+from gnn_scheduler.job_shop.graphs import DisjunctiveGraph
 
 
 class NodeFeatureCreator(ABC):
@@ -126,6 +126,13 @@ class Duration(NodeFeatureCreator):
     def create_features(
         self, node_name: str, node_data: dict[str, Any]
     ) -> list[float]:
+        max_duration = self._get_max_duration(node_data)
+        percentage = node_data["duration"] / max_duration
+        return [
+            self.min_value + percentage * (self.max_value - self.min_value)
+        ]
+
+    def _get_max_duration(self, node_data: dict[str, Any]) -> float:
         if self.normalize_with == "graph":
             max_duration = self.graph.max_graph_duration
         elif self.normalize_with == "machine":
@@ -138,10 +145,7 @@ class Duration(NodeFeatureCreator):
             raise ValueError(
                 f"Unknown normalization option: {self.normalize_with}"
             )
-        percentage = node_data["duration"] / max_duration
-        return [
-            self.min_value + percentage * (self.max_value - self.min_value)
-        ]
+        return max_duration
 
 
 class MachineLoad(NodeFeatureCreator):

@@ -4,7 +4,7 @@ from typing import Optional
 import torch
 
 from gnn_scheduler import get_project_path
-from gnn_scheduler.jssp import (
+from gnn_scheduler.job_shop import (
     load_pickle_object,
     load_pickle_objects_from_folders,
 )

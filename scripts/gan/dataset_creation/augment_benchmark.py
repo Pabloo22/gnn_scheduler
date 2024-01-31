@@ -5,7 +5,7 @@ import random
 import tqdm
 
 from gnn_scheduler import get_data_path
-from gnn_scheduler.jssp import (
+from gnn_scheduler.job_shop import (
     JobShopInstance,
     load_all_from_benchmark,
     load_pickle_instances,
@@ -13,7 +13,7 @@ from gnn_scheduler.jssp import (
     RemoveMachines,
     AddDurationNoise,
 )
-from gnn_scheduler.jssp import set_instance_attributes
+from gnn_scheduler.job_shop import set_instance_attributes
 
 
 

@@ -5,7 +5,7 @@ import time
 
 from ortools.sat.python import cp_model
 
-from gnn_scheduler.jssp import JobShopInstance
+from gnn_scheduler.job_shop import JobShopInstance
 
 
 class CPSolver:
@@ -114,7 +114,7 @@ class CPSolver:
 
 
 if __name__ == "__main__":
-    from gnn_scheduler.jssp import load_from_benchmark
+    from gnn_scheduler.job_shop import load_from_benchmark
 
     instance = load_from_benchmark("swv10")
     solver = CPSolver(instance, time_limit=1)

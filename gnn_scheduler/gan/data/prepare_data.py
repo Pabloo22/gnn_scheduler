@@ -5,11 +5,11 @@ import pickle
 import tqdm
 
 from gnn_scheduler import get_data_path
-from gnn_scheduler.jssp import (
+from gnn_scheduler.job_shop import (
     JobShopInstance,
     load_pickle_instances_from_folders,
 )
-from gnn_scheduler.jssp.graphs import (
+from gnn_scheduler.job_shop.graphs import (
     NodeFeatureCreator,
     JobID,
     OperationIndex,

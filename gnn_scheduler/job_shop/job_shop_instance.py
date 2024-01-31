@@ -55,7 +55,7 @@ class JobShopInstance:
     def disjunctive_graph(self):
         """Returns the disjunctive graph of the instance."""
         # Imported here to avoid circular imports
-        from gnn_scheduler.jssp.graphs import DisjunctiveGraph
+        from gnn_scheduler.job_shop.graphs import DisjunctiveGraph
 
         return DisjunctiveGraph.from_job_shop_instance(self)
 
