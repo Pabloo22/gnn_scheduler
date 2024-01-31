@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from gnn_scheduler.job_shop.graphs import DisjunctiveGraph
+import networkx as nx
 
 
 class NodeFeatureCreator(ABC):
@@ -14,7 +14,7 @@ class NodeFeatureCreator(ABC):
         self.is_fit = False
         self.name = self.__class__.__name__
 
-    def fit(self, graph: DisjunctiveGraph):
+    def fit(self, graph: nx.Graph):
         """Used to fit the feature creator to the graph.
 
         Stores the graph.
@@ -64,7 +64,6 @@ class InAndOutDegrees(NodeFeatureCreator):
         Args:
             node_name (str): name of the node
             node_data (dict[str, Any]): data associated with the node
-            graph (DisjunctiveGraph): the networkx graph
 
         Returns:
             list[float]:
@@ -94,7 +93,6 @@ class OneHotEncoding(NodeFeatureCreator):
         Args:
             node_name (str):
             node_data (dict[str, Any]):
-            graph (DisjunctiveGraph):
 
         Returns:
             list[float]:
