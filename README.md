@@ -12,7 +12,7 @@ This a very active repository right now, and many changes are done daily, so com
 ## Installation
 
 ### With Visual Studio Code and Dev Containers
-A `.devcontainer` folder in the repository is included. This is set to work with VisualStudio Code and allows to easily work inside a Docker container and avoid specific machines used. This is the option recommended, especially if you plan to contribute to this repository. For more information about devcontainers click [here](https://code.visualstudio.com/docs/devcontainers/containers).
+A `.devcontainer` folder in the repository is included. This is set to work with VisualStudio Code and allows to easily work inside a Docker container and avoid specific machines used. This is the safer and most recommended option, especially if you plan to contribute to this repository. For more information about devcontainers click [here](https://code.visualstudio.com/docs/devcontainers/containers).
 
 #### Prerequisites:
 
@@ -42,7 +42,7 @@ The project structure is based on the [Cookiecutter Data Science](https://driven
 |       |-- abz5        # These files have no extension.
 |       | ...
 |       `-- yn4
-|-- experiments         # Experiments' scripts.
+|-- scripts             # Scripts for creating datasets, training models, etc.
 |-- gnn_scheduler       # Source code for use in this project.
 |   |-- __init__.py
 |   |-- gan             # Generative Adversarial Network project related source code.
