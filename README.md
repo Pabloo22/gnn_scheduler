@@ -43,7 +43,7 @@ The project structure is based on the [Cookiecutter Data Science](https://driven
 |-- gnn_scheduler       # Source code for use in this project.
 |   |-- __init__.py
 |   |-- gan             # Generative Adversarial Network project related source code.
-|   |-- jssp            # Job Shop Scheduling related source code.
+|   |-- job_shop        # Job Shop Scheduling related source code.
 |   `-- training_utils  # Training related source code.
 |-- notebooks           # Jupyter notebooks.
 |   |-- data_exploration

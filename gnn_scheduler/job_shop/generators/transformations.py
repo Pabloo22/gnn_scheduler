@@ -5,7 +5,7 @@ import copy
 import random
 from typing import Optional
 
-from gnn_scheduler.jssp import JobShopInstance, Operation
+from gnn_scheduler.job_shop import JobShopInstance, Operation
 
 
 class Transformation(abc.ABC):

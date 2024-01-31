@@ -8,7 +8,7 @@ import pickle
 import tqdm
 
 from gnn_scheduler import get_data_path
-from gnn_scheduler.jssp import JobShopInstance, Operation
+from gnn_scheduler.job_shop import JobShopInstance, Operation
 
 
 def _read_taillard_file(
