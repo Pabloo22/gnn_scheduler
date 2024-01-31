@@ -5,10 +5,10 @@ from typing import Optional
 import tqdm
 
 from gnn_scheduler import get_project_path
-from gnn_scheduler.job_shop import (
+from gnn_scheduler.job_shop.generators import (
     NaiveGenerator,
-    set_instance_attributes,
 )
+from gnn_scheduler.gan import set_instance_attributes
 
 
 def create_dataset(
