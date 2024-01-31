@@ -10,7 +10,7 @@ from .node_feature_creators import (
     Duration,
     JobID,
 )
-from .preprocessing import (
+from .disjunctive_graph_preprocessing import (
     preprocess_graph,
     preprocess_graphs,
     get_node_features_matrix,
