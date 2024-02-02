@@ -2,22 +2,17 @@
 from __future__ import annotations
 
 import functools
-from typing import Optional, NamedTuple, Any
+from typing import Optional, Any, NamedTuple
 import os
 import pickle
 
 
 class Operation(NamedTuple):
-    """Stores information about an operation in a job-shop scheduling
-    problem."""
-
     machine_id: int
     duration: int
 
     def get_id(self, job_id: int, position: int) -> str:
-        """Returns the id of the operation."""
         return f"J{job_id}M{self.machine_id}P{position}"
-
 
 class JobShopInstance:
     """Stores a classic job-shop scheduling problem instance."""
