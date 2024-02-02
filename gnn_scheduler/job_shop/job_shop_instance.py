@@ -30,11 +30,6 @@ class JobShopInstance:
     ):
         self.jobs = jobs
         self.name = name
-
-        self.time = 0
-        # List of lists of job ids. Each list represents a machine:
-        self.current_solution = [[] for _ in range(self.n_machines)]
-
         self.metadata = metadata
 
     def to_dict(self):
