@@ -20,7 +20,7 @@ class Operation(NamedTuple):
 
 
 class JobShopInstance:
-    """Stores a job-shop scheduling problem instance."""
+    """Stores a classic job-shop scheduling problem instance."""
 
     def __init__(
         self,
