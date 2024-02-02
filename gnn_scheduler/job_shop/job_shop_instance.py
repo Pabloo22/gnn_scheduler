@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, Any
 import os
 import pickle
 
@@ -26,9 +26,7 @@ class JobShopInstance:
         self,
         jobs: list[list[Operation]],
         name: str = "JobShopInstance",
-        optimum: Optional[float] = None,
-        upper_bound: Optional[float] = None,
-        lower_bound: Optional[float] = None,
+        **metadata: Any,
     ):
         self.jobs = jobs
         self.name = name
@@ -37,9 +35,7 @@ class JobShopInstance:
         # List of lists of job ids. Each list represents a machine:
         self.current_solution = [[] for _ in range(self.n_machines)]
 
-        self.optimum = optimum
-        self.upper_bound = upper_bound
-        self.lower_bound = lower_bound
+        self.metadata = metadata
 
     @property
     def n_jobs(self) -> int:
@@ -50,6 +46,21 @@ class JobShopInstance:
     def bounds(self) -> tuple[float, float]:
         """Returns the lower and upper bounds of the instance."""
         return self.lower_bound, self.upper_bound
+
+    @property
+    def upper_bound(self) -> Optional[float]:
+        """Returns the upper bound of the instance."""
+        return self.metadata.get("upper_bound")
+
+    @property
+    def lower_bound(self) -> Optional[float]:
+        """Returns the lower bound of the instance."""
+        return self.metadata.get("lower_bound")
+
+    @property
+    def optimum(self) -> Optional[float]:
+        """Returns the optimum of the instance."""
+        return self.metadata.get("optimum")
 
     @functools.cached_property
     def disjunctive_graph(self):
