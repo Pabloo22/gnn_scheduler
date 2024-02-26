@@ -3,9 +3,11 @@
 
 This repository contains everything related to solving the Job-Shop Scheduling Problem (JSSP) with Graph Neural Networks (GNNs). 
 
+> I am currently moving and refactoring part of the code (and adding new functionality) to another repository to create an easy-to-use, modular, and efficient library for the JSSP. See the GitHub repository [here](https://github.com/Pabloo22/job_shop_lib).
+
 The Job-Shop Scheduling Problem (JSSP) is a well-known NP-hard combinatorial optimization problem. It consists of scheduling a set of jobs on a set of machines, where each job is a sequence of operations that must be processed on a set of machines. Each operation has a specific processing time and must be processed in a specific order. The objective is to find a schedule that minimizes the makespan, i.e., the time when all jobs are completed.
 
-This problem is modeled as a graph (as it's shown in the above image), so we can apply GNN based technique to generate new instances (See my [paper](paper.pdf) draft titled "Generating Realistic and Difficult Job Shop Scheduling Problems with a GAN-based Framework for Graph Neural Networks") or to solve the problem (my bachelotr's thesis theme). This repository will contain the code for both approaches. Currently, I'm working only on my bachelor's thesis, but some code for the GAN-based approach is already available.
+This problem is modeled as a graph (as it's shown in the above image), so we can apply GNN based technique to generate new instances (See my [paper](paper.pdf) draft titled "Generating Realistic and Difficult Job Shop Scheduling Problems with a GAN-based Framework for Graph Neural Networks") or to solve the problem (my bachelor's thesis theme). This repository will contain the code for both approaches. Currently, I'm working only on my bachelor's thesis, but some code for the GAN-based approach is already available.
 
 This a very active repository right now, and many changes are done daily, so comprehensive documentation is not yet available. In the future, a step-by-step explanation of the source code of this project will be created in the [Tutorials](notebooks/tutorials). Currently, there is an introductory tutorial.
 
