@@ -1,0 +1,30 @@
+seed: 123
+data:
+  load_data:
+    folder_names: 
+    #  - adj_data_list_augmented_benchmark_10machines
+      - adj_data_list_diff_prediction_instances_2
+    data_path: /workspaces/gnn_scheduler/data/difficulty_prediction
+    seed: 0
+    eval_size: 0.1
+    test_size: 0.2
+  keep_one_hot: false
+  debug: false
+model:
+  graph_conv_dim: [128,]
+  aux_dim: 256
+  linear_dim: [128, 64, 32, 1]
+  n_node_features: 2
+  n_edge_types: 2
+  dropout_rate: 0.2
+  out_activation_f: sigmoid
+training:
+  n_epochs: 50
+  optimizer: adam
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  shuffle: true
+  show_progress: true
+  # difficulty_threshold: 0.21481769
+  difficulty_threshold: 0.19754601
+  log_interval: 10
