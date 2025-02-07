@@ -18,10 +18,18 @@ python-dotenv = "^1.0.0"
 omegaconf = "^2.3.0"
 job-shop-lib = {version = "^1.0.0a5", allow-prereleases = true}
 tqdm = "^4.67.1"
+torch = "^2.6.0"
+torch-geometric = "^2.6.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 pylint = "^3.0.2"
+
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
