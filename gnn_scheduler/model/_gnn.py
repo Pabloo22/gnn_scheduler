@@ -1,12 +1,12 @@
-from typing import Dict, List, Optional
-
 import torch
 from torch import nn
 from torch_geometric.data import HeteroData
 
-from gnn_scheduler.model import initialize_hgin_layers, HeteroMetadata
-
-from job_shop_lib.graphs import NodeType
+from gnn_scheduler.model import (
+    initialize_hgin_layers,
+    HeteroMetadata,
+    FeatureType,
+)
 
 
 class ResidualSchedulingGNN(nn.Module):
@@ -29,7 +29,7 @@ class ResidualSchedulingGNN(nn.Module):
     def __init__(
         self,
         metadata: HeteroMetadata,
-        in_channels_dict: Dict[str, int],
+        in_channels_dict: dict[str, int],
         hidden_channels: int = 256,
         num_layers: int = 3,
         use_batch_norm: bool = True,
@@ -89,11 +89,11 @@ class ResidualSchedulingGNN(nn.Module):
         }
 
         # Store residual connections
-        residuals: List[Dict[str, torch.Tensor]] = []
+        residuals: list[dict[str, torch.Tensor]] = []
 
         # Graph convolutions
         for conv in self.convs:
-            x_dict_new: Dict[str, torch.Tensor] = conv(
+            x_dict_new: dict[str, torch.Tensor] = conv(
                 x_dict, data.edge_index_dict
             )
 
@@ -109,9 +109,9 @@ class ResidualSchedulingGNN(nn.Module):
 
         # Select valid pairs
         mapping = {
-            NodeType.OPERATION.value: 0,
-            NodeType.MACHINE.value: 1,
-            NodeType.JOB.value: 2,
+            FeatureType.OPERATIONS.value: 0,
+            FeatureType.MACHINES.value: 1,
+            FeatureType.JOBS.value: 2,
         }
         scores = torch.zeros(len(valid_pairs), device=data.x.device)
         concat_features_list = []

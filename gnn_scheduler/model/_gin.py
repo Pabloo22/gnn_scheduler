@@ -1,9 +1,11 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Literal
+import enum
 import itertools
 import torch
 from torch import nn
 from torch_geometric.nn import GINConv, HeteroConv
 
+from job_shop_lib.dispatching.feature_observers import FeatureType
 
 class HeteroMetadata:
     """Metadata for a heterogeneous graph.
@@ -23,7 +25,9 @@ class HeteroMetadata:
     def __init__(
         self,
         node_types: List[str],
-        edge_types: Optional[List[Tuple[str, str, str]]] = None,
+        edge_types: Optional[
+            List[Tuple[str, Literal["to"], str]]
+        ] = None,
     ):
         self.node_types = node_types
 
