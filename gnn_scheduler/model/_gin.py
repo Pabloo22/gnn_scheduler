@@ -6,6 +6,17 @@ from torch_geometric.nn import GINConv, HeteroConv
 
 
 class HeteroMetadata:
+    """Metadata for a heterogeneous graph.
+
+    Args:
+        node_types:
+            List of node types. Node types are strings, typically
+            "operation", "machine", and "job".
+        edge_types:
+            List of edge types as tuples of the form (source, relation,
+            target). If not provided, all possible edge types between node
+            types are considered.
+    """
 
     __slots__ = ["node_types", "edge_types"]
 
@@ -24,8 +35,11 @@ class HeteroMetadata:
 
 
 class HGINLayer(torch.nn.Module):
-    """
-    Heterogeneous Graph Isomorphism Network layer using PyG's built-in GINConv.
+    """Heterogeneous Graph Isomorphism Network layer using PyG's built-in
+    GINConv.
+
+    The ``__call__`` method of this module expects a dictionary of node
+    features and a dictionary of edge indices.
     """
 
     def __init__(
@@ -78,6 +92,7 @@ def initialize_hgin_layers(
     num_layers: int,
     use_batch_norm: bool,
 ) -> nn.ModuleList:
+    """Returns a ``ModuleList`` of ``HGINLayer`` instances."""
     convs = nn.ModuleList()
     for i in range(num_layers):
         conv_in_channels = (
