@@ -6,6 +6,8 @@ from torch_geometric.data import HeteroData
 
 from gnn_scheduler.model import initialize_hgin_layers, HeteroMetadata
 
+from job_shop_lib.graphs import NodeType
+
 
 class ResidualSchedulingGNN(nn.Module):
     """
@@ -66,19 +68,20 @@ class ResidualSchedulingGNN(nn.Module):
         )
 
     def forward(
-        self, data: HeteroData, valid_pairs: Optional[torch.Tensor] = None
+        self, data: HeteroData, valid_pairs: torch.Tensor
     ) -> torch.Tensor:
         """
         Forward pass of the model.
 
         Args:
             data: Heterogeneous graph data
-            valid_pairs: Tensor of valid (machine, operation) pairs to score.
-                       If None, scores all possible pairs.
-                       Shape: [num_pairs, 2]
+            valid_pairs:
+                Tensor of valid (operation_id, machine_id, job_id) pairs to
+                score. If ``None``, scores all possible pairs.
+                Shape: [num_pairs, 3]
 
         Returns:
-            Tensor of scores for machine-operation pairs
+            Tensor of scores for operation-machine-job pairs
         """
         # Initial node features
         x_dict = {
@@ -104,6 +107,19 @@ class ResidualSchedulingGNN(nn.Module):
             residuals.append(x_dict_new)
             x_dict = x_dict_new
 
-        # Concatenate 
+        # Select valid pairs
+        mapping = {
+            NodeType.OPERATION.value: 0,
+            NodeType.MACHINE.value: 1,
+            NodeType.JOB.value: 2,
+        }
+        scores = torch.zeros(len(valid_pairs), device=data.x.device)
+        concat_features_list = []
+        for node_type in data.node_types:
+            indices = valid_pairs[:, mapping[node_type]]
+            concat_features_list.append(x_dict[node_type][indices])
+
+        concat_features = torch.cat(concat_features_list, dim=1)
+        scores = self.score_mlp(concat_features)
 
         return scores
