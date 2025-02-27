@@ -6,6 +6,7 @@ from gnn_scheduler.model import (
     initialize_hgin_layers,
     HeteroMetadata,
     FeatureType,
+    MultiPeriodicEncoder,
 )
 
 
@@ -30,7 +31,9 @@ class ResidualSchedulingGNN(nn.Module):
         self,
         metadata: HeteroMetadata,
         in_channels_dict: dict[str, int],
-        hidden_channels: int = 256,
+        initial_node_features_dim: int = 32,
+        sigma: float = 1.0,
+        hidden_channels: int = 64,
         num_layers: int = 3,
         use_batch_norm: bool = True,
     ):
@@ -38,13 +41,28 @@ class ResidualSchedulingGNN(nn.Module):
 
         self.hidden_channels = hidden_channels
         self.num_layers = num_layers
+        self.metadata = metadata
+        self.encoders = nn.ModuleDict(
+            {
+                node_type: MultiPeriodicEncoder(
+                    in_channels_dict[node_type],
+                    initial_node_features_dim,
+                    concat=True,
+                    sigma=sigma,
+                )
+                for node_type in metadata.node_types
+            }
+        )
 
         self.convs = initialize_hgin_layers(
             metadata,
-            in_channels_dict,
-            hidden_channels,
-            num_layers,
-            use_batch_norm,
+            in_channels_dict={
+                node_type: initial_node_features_dim
+                for node_type in metadata.node_types
+            },
+            hidden_channels=hidden_channels,
+            num_layers=num_layers,
+            use_batch_norm=use_batch_norm,
         )
 
         # Score function MLP
@@ -68,7 +86,10 @@ class ResidualSchedulingGNN(nn.Module):
         )
 
     def forward(
-        self, data: HeteroData, valid_pairs: torch.Tensor
+        self,
+        x_dict: dict[str, torch.Tensor],
+        edge_index_dict: dict[tuple[str, str, str], torch.Tensor],
+        valid_pairs: torch.Tensor,
     ) -> torch.Tensor:
         """
         Forward pass of the model.
@@ -83,39 +104,38 @@ class ResidualSchedulingGNN(nn.Module):
         Returns:
             Tensor of scores for operation-machine-job pairs
         """
-        # Initial node features
-        x_dict = {
-            node_type: data[node_type].x for node_type in data.node_types
-        }
 
         # Store residual connections
         residuals: list[dict[str, torch.Tensor]] = []
 
+        x_dict = {
+            node_type: self.encoders[node_type](x)
+            for node_type, x in x_dict.items()
+        }
         # Graph convolutions
+        node_type = None
         for conv in self.convs:
-            x_dict_new: dict[str, torch.Tensor] = conv(
-                x_dict, data.edge_index_dict
-            )
+            x_dict = conv(x_dict, edge_index_dict)
 
             # Add residual connection
             if residuals:
-                for node_type in x_dict_new:
-                    x_dict_new[node_type] = (
-                        x_dict_new[node_type] + residuals[-1][node_type]
+                for node_type in x_dict:
+                    x_dict[node_type] = (
+                        x_dict[node_type] + residuals[-1][node_type]
                     )
 
-            residuals.append(x_dict_new)
-            x_dict = x_dict_new
+            residuals.append(x_dict)
 
         # Select valid pairs
         mapping = {
-            FeatureType.OPERATIONS.value: 0,
-            FeatureType.MACHINES.value: 1,
-            FeatureType.JOBS.value: 2,
+            "operation": 0,
+            "machine": 1,
+            "job": 2,
         }
-        scores = torch.zeros(len(valid_pairs), device=data.x.device)
+        assert node_type is not None
+        scores = torch.zeros(len(valid_pairs), device=x_dict[node_type].device)
         concat_features_list = []
-        for node_type in data.node_types:
+        for node_type in self.metadata.node_types:
             indices = valid_pairs[:, mapping[node_type]]
             concat_features_list.append(x_dict[node_type][indices])
 
