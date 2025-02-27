@@ -1146,7 +1146,7 @@ pygraphviz = ["pygraphviz (>=1.12,<2.0)"]
 type = "git"
 url = "https://github.com/Pabloo22/job_shop_lib.git"
 reference = "main"
-resolved_reference = "09b0cba37ca7e8f64cb0bebc3cff695e3b1e3e8e"
+resolved_reference = "485fa2cb3196db748866682ed74564a681ee58db"
 
 [[package]]
 name = "jupyter-client"
