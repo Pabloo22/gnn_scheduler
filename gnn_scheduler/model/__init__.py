@@ -12,4 +12,5 @@ __all__ = [
     "HGINLayer",
     "initialize_hgin_layers",
     "FeatureType",
+    "ResidualSchedulingGNN",
 ]
