@@ -2,7 +2,7 @@ import torch
 from torch_geometric.data import HeteroData  # type: ignore[import-untyped]
 
 
-class JobShopGraphData(HeteroData):
+class JobShopData(HeteroData):
     def __inc__(self, key, value, *args, **kwargs):
         if key == "valid_pairs":
             increments = []
