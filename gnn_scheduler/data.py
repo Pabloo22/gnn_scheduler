@@ -5,13 +5,19 @@ from torch_geometric.data import HeteroData  # type: ignore[import-untyped]
 class JobShopData(HeteroData):
     def __inc__(self, key, value, *args, **kwargs):
         if key == "valid_pairs":
-            increments = []
-            for node_type in ["operation", "machine", "job"]:
-                if node_type in self and "x" in self[node_type]:
-                    increments.append([self[node_type]["x"].size(0)])
-                else:
-                    increments.append([0])
+            assert isinstance(value, torch.Tensor)
+            dim_size = value.size(1)
+            increments = torch.zeros(
+                dim_size, dtype=torch.long, device=value.device
+            )
 
-            return torch.tensor(increments)
+            # Set increments for each column according to respective node
+            # counts
+            node_types = ["operation", "machine", "job"]
+            for i, node_type in enumerate(node_types):
+                if self[node_type]:
+                    increments[i] = self[node_type]["x"].size(0)
+
+            return increments
 
         return super().__inc__(key, value, *args, **kwargs)
