@@ -1,11 +1,9 @@
 import torch
 from torch import nn
-from torch_geometric.data import HeteroData
 
 from gnn_scheduler.model import (
     initialize_hgin_layers,
     HeteroMetadata,
-    FeatureType,
     MultiPeriodicEncoder,
 )
 
