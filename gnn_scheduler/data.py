@@ -1,6 +1,9 @@
 import os
 import json
 import random
+import pickle
+import sys
+
 from typing import Type
 from collections.abc import Sequence
 import numpy as np
@@ -10,6 +13,8 @@ from torch_geometric.data import (  # type: ignore[import-untyped]
     InMemoryDataset,
     download_url,
 )
+from torch_geometric.data.dataset import files_exist
+from torch_geometric.io import fs
 import tqdm  # type: ignore[import-untyped]
 
 from job_shop_lib.dispatching.feature_observers import (
@@ -114,16 +119,13 @@ class JobShopDataset(InMemoryDataset):
             )
         )
         # Save intermediate results
+        with open(self.processed_dir + "/observations.pkl", "wb") as f:
+            pickle.dump(observations, f)
         with open(
-            self.processed_dir + "/observations.json", "w", encoding="utf-8"
+            self.processed_dir + "/action_probabilities.pkl",
+            "wb",
         ) as f:
-            json.dump(observations, f)
-        with open(
-            self.processed_dir + "/action_probabilities.json",
-            "w",
-            encoding="utf-8",
-        ) as f:
-            json.dump(action_probabilities_sequence, f)
+            pickle.dump(action_probabilities_sequence, f)
 
         hetero_dataset = self.process_observation_action_pairs(
             observations, action_probabilities_sequence
@@ -135,7 +137,7 @@ class JobShopDataset(InMemoryDataset):
         for raw_path in self.raw_paths:
             with open(raw_path, "r", encoding="utf-8") as f:
                 schedules_json.extend(json.load(f))
-        return schedules_json
+        return schedules_json[:100]
 
     @staticmethod
     def process_observation_action_pairs(
@@ -267,3 +269,18 @@ class JobShopDataset(InMemoryDataset):
             node_features_dict[key][:, indices] /= max_values[indices]
 
         return node_features_dict
+
+    def _process(self):
+        if not self.force_reload and files_exist(self.processed_paths):
+            return
+
+        if self.log and "pytest" not in sys.modules:
+            print("Processing...", file=sys.stderr)
+
+        fs.makedirs(self.processed_dir, exist_ok=True)
+        self.process()
+
+        # No saving of pre_transform.pt and pre_filter.pt files here
+
+        if self.log and "pytest" not in sys.modules:
+            print("Done!", file=sys.stderr)
