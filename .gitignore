@@ -1,4 +1,5 @@
 # Data
+data/processed/
 data/difficulty_prediction/diff_prediction_instances/
 data/difficulty_prediction/augmented_benchmark_10machines/
 data/difficulty_prediction/adj_data_list_augmented_benchmark_10machines/
