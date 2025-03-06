@@ -20,6 +20,8 @@ job-shop-lib = { git = "https://github.com/Pabloo22/job_shop_lib.git", branch = 
 tqdm = "^4.67.1"
 torch = "^2.6.0"
 torch-geometric = "^2.6.1"
+wandb = "^0.19.8"
+types-tqdm = "^4.67.0.20250301"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
