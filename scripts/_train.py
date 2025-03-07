@@ -17,10 +17,14 @@ def _main(config: Config):
         max_chunks_in_memory=config.max_chunks_in_memory,
     )
     val_dataset_10x10 = JobShopDataset(
-        num_chunks=1, raw_filename="instances10x10_eval_0.json"
+        num_chunks=1,
+        raw_filename="instances10x10_eval_0.json",
+        processed_filenames_prefix="instances10x10_eval",
     )
     val_dataset_5x5 = JobShopDataset(
-        num_chunks=1, raw_filename="instances5x5_eval_0.json"
+        num_chunks=1,
+        raw_filename="instances5x5_eval_0.json",
+        processed_filenames_prefix="instances5x5_eval",
     )
     train_dataloader = DataLoader(
         train_dataset, batch_size=config.batch_size, shuffle=True
