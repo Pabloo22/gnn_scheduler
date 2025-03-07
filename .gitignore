@@ -1,3 +1,4 @@
+checkpoints/
 # Data
 data/processed/
 data/difficulty_prediction/diff_prediction_instances/
