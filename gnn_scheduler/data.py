@@ -5,6 +5,7 @@ import sys
 
 from typing import Type
 from collections.abc import Sequence
+from collections import deque
 import numpy as np
 import torch
 from torch_geometric.data import (  # type: ignore[import-untyped]
@@ -12,10 +13,16 @@ from torch_geometric.data import (  # type: ignore[import-untyped]
     Dataset,
     download_url,
 )
-from torch_geometric.data.storage import BaseStorage, NodeStorage, EdgeStorage
-from torch_geometric.data.dataset import files_exist
-from torch_geometric.io import fs
-import tqdm  # type: ignore[import-untyped]
+from torch_geometric.data.storage import (  # type: ignore[import-untyped]
+    BaseStorage,
+    NodeStorage,
+    EdgeStorage,
+)
+from torch_geometric.data.dataset import (  # type: ignore[import-untyped]
+    files_exist,
+)
+from torch_geometric.io import fs  # type: ignore[import-untyped]
+import tqdm
 
 from job_shop_lib.dispatching.feature_observers import (
     FeatureObserverType,
@@ -91,6 +98,7 @@ class JobShopDataset(Dataset):
         num_chunks: int = 1,
         force_reload: bool = False,
         max_chunks_in_memory: int = 2,
+        log: bool = True,
     ):
         self.feature_observers_types = (
             feature_observers_types
@@ -102,12 +110,15 @@ class JobShopDataset(Dataset):
         self.num_chunks = num_chunks
         self.max_chunks_in_memory = max_chunks_in_memory
         self._data_chunks: dict[int, list[JobShopData]] = {}
-        self._chunk_access_order: list[int] = []  # Track LRU chunks
+        self._chunk_load_order: deque[int] = deque()
         self._chunk_sizes: list[int] = []
         self._total_size = 0
-        self._metadata_file = "metadata.json"
+        self._metadata_file = (
+            f"{self.processed_filenames_prefix}_metadata.json"
+        )
+        self._num_accesses_before_unload = 0
         super().__init__(
-            root, transform, pre_transform, force_reload=force_reload
+            root, transform, pre_transform, force_reload=force_reload, log=log
         )
         self._load_metadata()
 
@@ -253,47 +264,77 @@ class JobShopDataset(Dataset):
                 f"Index {idx} out of range for dataset with {self.len()} "
                 "samples"
             )
+        chunk_idx, sample_idx = self._find_chunk(self._chunk_sizes, idx)
 
-        # Find which chunk contains this index
+        if chunk_idx in self._data_chunks:
+            return self._get_sample_from_chunk_idx(chunk_idx, sample_idx)
+
+        if len(self._data_chunks) < self.max_chunks_in_memory:
+            self._load_chunk(chunk_idx)
+        elif self._num_accesses_before_unload > 0:
+            self._num_accesses_before_unload -= 1
+            chunk_sizes_of_loaded_chunks = [
+                len(chunk) for chunk in self._data_chunks.values()
+            ]
+            chunk_idx, sample_idx = self._find_chunk(
+                chunk_sizes_of_loaded_chunks, self._readjust_idx(idx)
+            )
+        else:
+            self._remove_least_recently_used_chunk()
+            self._load_chunk(chunk_idx)
+
+        return self._get_sample_from_chunk_idx(chunk_idx, sample_idx)
+
+    def _readjust_idx(self, idx: int) -> int:
+        """Readjusts the index to be within the range of the loaded dataset.
+
+        This is to avoid loading and unloading chunks frequently.
+        """
+        return idx % self._num_samples_loaded()
+
+    def _num_samples_loaded(self) -> int:
+        return sum(len(chunk) for chunk in self._data_chunks.values())
+
+    def _get_sample_from_chunk_idx(
+        self, chunk_idx: int, sample_idx: int
+    ) -> JobShopData:
+        data = self._data_chunks[chunk_idx][sample_idx]
+        if self.transform is not None:
+            data = self.transform(data)
+        return data
+
+    @staticmethod
+    def _find_chunk(chunk_sizes: list[int], idx: int) -> tuple[int, int]:
         chunk_idx = 0
         sample_idx = idx
 
-        for size in self._chunk_sizes:
+        for size in chunk_sizes:
             if sample_idx < size:
                 break
             sample_idx -= size
             chunk_idx += 1
 
-        # Load the chunk if not already loaded
-        if chunk_idx not in self._data_chunks:
-            # Check if we need to free memory first
-            if len(self._data_chunks) >= self.max_chunks_in_memory:
-                # Remove least recently used chunk
-                lru_chunk = self._chunk_access_order.pop(0)
-                del self._data_chunks[lru_chunk]
-                if self.log:
-                    print(f"Unloaded chunk {lru_chunk} to free memory")
+        return chunk_idx, sample_idx
 
-            # Load the requested chunk
-            chunk_path = self._get_chunk_path(chunk_idx)
-            self._data_chunks[chunk_idx] = torch.load(chunk_path)
-            if self.log:
-                print(f"Loaded chunk {chunk_idx} into memory")
-        elif chunk_idx in self._chunk_access_order:
-            # Move this chunk to the end of the access order (most recently
-            # used)
-            self._chunk_access_order.remove(chunk_idx)
+    def _load_chunk(self, chunk_idx: int):
+        chunk_path = self._get_chunk_path(chunk_idx)
+        self._data_chunks[chunk_idx] = torch.load(chunk_path)
+        if self.log:
+            print(
+                f"Loaded chunk {chunk_idx} with "
+                f"{len(self._data_chunks[chunk_idx])} samples"
+            )
+        self._chunk_load_order.append(chunk_idx)
+        self._num_accesses_before_unload += len(self._data_chunks[chunk_idx])
 
-        # Add/Update this chunk as most recently used
-        self._chunk_access_order.append(chunk_idx)
+    def _remove_least_recently_used_chunk(self):
+        chunk_idx = self._chunk_load_order.popleft()
+        self._unload_chunk(chunk_idx)
 
-        # Get the sample from the chunk
-        data = self._data_chunks[chunk_idx][sample_idx]
-
-        if self.transform is not None:
-            data = self.transform(data)
-
-        return data
+    def _unload_chunk(self, chunk_idx: int):
+        del self._data_chunks[chunk_idx]
+        if self.log:
+            print(f"Unloaded chunk {chunk_idx} to free memory")
 
     @staticmethod
     def process_observation_action_pairs(
