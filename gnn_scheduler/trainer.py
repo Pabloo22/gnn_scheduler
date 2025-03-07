@@ -422,16 +422,15 @@ class Trainer:
             # Get current metrics for progress bar
             batch_metrics = self._compute_metrics()
 
-            # Update progress bar with first metric
+            # Update progress bar with all metrics
             if self.metrics:
-                first_metric = self.metrics[0]
-                metric_val = batch_metrics[first_metric.name]
-                pbar.set_postfix(
-                    {
-                        "loss": f"{batch_loss:.6f}",
-                        f"{first_metric.name}": f"{metric_val:.4f}",
-                    }
-                )
+                postfix = {"loss": f"{batch_loss:.6f}"}
+                # Add all metrics to the progress bar
+                for metric in self.metrics:
+                    metric_name = metric.name
+                    metric_val = batch_metrics[metric_name]
+                    postfix[metric_name] = f"{metric_val:.4f}"
+                pbar.set_postfix(postfix)
             else:
                 pbar.set_postfix({"loss": f"{batch_loss:.6f}"})
 
