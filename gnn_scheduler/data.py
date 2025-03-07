@@ -1,7 +1,6 @@
 import os
 import json
 import random
-import pickle
 import sys
 
 from typing import Type
@@ -13,6 +12,7 @@ from torch_geometric.data import (  # type: ignore[import-untyped]
     Dataset,
     download_url,
 )
+from torch_geometric.data.storage import BaseStorage, NodeStorage, EdgeStorage
 from torch_geometric.data.dataset import files_exist
 from torch_geometric.io import fs
 import tqdm  # type: ignore[import-untyped]
@@ -63,6 +63,11 @@ class JobShopData(HeteroData):
             return increments
 
         return super().__inc__(key, value, *args, **kwargs)
+
+
+torch.serialization.add_safe_globals(
+    [JobShopData, BaseStorage, NodeStorage, EdgeStorage]
+)
 
 
 class JobShopDataset(Dataset):
@@ -241,7 +246,8 @@ class JobShopDataset(Dataset):
         return self._total_size
 
     def get(self, idx: int) -> JobShopData:
-        """Gets the data object at the specified index with memory management."""
+        """Gets the data object at the specified index with memory
+        management."""
         if idx < 0 or idx >= self.len():
             raise IndexError(
                 f"Index {idx} out of range for dataset with {self.len()} "
@@ -274,7 +280,8 @@ class JobShopDataset(Dataset):
             if self.log:
                 print(f"Loaded chunk {chunk_idx} into memory")
         elif chunk_idx in self._chunk_access_order:
-            # Move this chunk to the end of the access order (most recently used)
+            # Move this chunk to the end of the access order (most recently
+            # used)
             self._chunk_access_order.remove(chunk_idx)
 
         # Add/Update this chunk as most recently used
@@ -302,7 +309,10 @@ class JobShopDataset(Dataset):
         ):
             job_shop_data = JobShopData()
             for key, value in obs.items():
-                for subkey, subvalue in value.items():
+                for (
+                    subkey,
+                    subvalue,
+                ) in value.items():  # type: ignore[attr-defined]
                     if key == "node_features_dict":
                         job_shop_data[subkey].x = torch.from_numpy(subvalue)
                     elif key == "edge_index_dict":
