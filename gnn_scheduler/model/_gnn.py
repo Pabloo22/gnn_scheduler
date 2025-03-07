@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 
+from gnn_scheduler.data import JobShopData
 from gnn_scheduler.model import (
     initialize_hgin_layers,
     HeteroMetadata,
@@ -17,12 +18,16 @@ class ResidualSchedulingGNN(nn.Module):
             Graph metadata (node types and edge types)
         in_channels_dict:
             Dictionary of input feature dimensions for each node type
+        initial_node_features_dim:
+            Initial node feature dimension
+        sigma:
+            Periodic kernel parameter
         hidden_channels:
-            Hidden dimension size
+            Hidden feature dimension
         num_layers:
-            Number of HGIN layers
+            Number of GNN layers
         use_batch_norm:
-            Whether to use batch normalization in MLPs
+            Whether to use batch normalization
     """
 
     def __init__(
@@ -85,23 +90,22 @@ class ResidualSchedulingGNN(nn.Module):
 
     def forward(
         self,
-        x_dict: dict[str, torch.Tensor],
-        edge_index_dict: dict[tuple[str, str, str], torch.Tensor],
-        valid_pairs: torch.Tensor,
+        job_shop_data: JobShopData,
     ) -> torch.Tensor:
         """
         Forward pass of the model.
 
         Args:
-            data: Heterogeneous graph data
-            valid_pairs:
-                Tensor of valid (operation_id, machine_id, job_id) pairs to
-                score. If ``None``, scores all possible pairs.
-                Shape: [num_pairs, 3]
+            job_shop_data: Input data representing jobs, operations, and machines.
 
         Returns:
             Tensor of scores for operation-machine-job pairs
         """
+        x_dict: dict[str, torch.Tensor] = job_shop_data.x_dict
+        edge_index_dict: dict[tuple[str, str, str], torch.Tensor] = (
+            job_shop_data.edge_index_dict
+        )
+        valid_pairs: torch.Tensor = job_shop_data.valid_pairs
 
         # Store residual connections
         residuals: list[dict[str, torch.Tensor]] = []
@@ -140,4 +144,4 @@ class ResidualSchedulingGNN(nn.Module):
         concat_features = torch.cat(concat_features_list, dim=1)
         scores = self.score_mlp(concat_features)
 
-        return scores
+        return scores.squeeze(1)
