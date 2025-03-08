@@ -21,7 +21,6 @@ from torch_geometric.data.storage import (  # type: ignore[import-untyped]
 from torch_geometric.data.dataset import (  # type: ignore[import-untyped]
     files_exist,
 )
-from torch_geometric.io import fs  # type: ignore[import-untyped]
 import tqdm
 
 from job_shop_lib.dispatching.feature_observers import (
@@ -145,8 +144,8 @@ class JobShopDataset(Dataset):
         if os.path.exists(self.raw_paths[0]):
             return
         url = (
-            "https://github.com/Pabloo22/gnn_scheduler/blob/main/data/raw/"
-            + self.raw_filename
+            "https://raw.githubusercontent.com/Pabloo22/gnn_scheduler/main"
+            "/data/raw/small_random_instances_0.json" + self.raw_filename
         )
         download_url(url, self.raw_dir)
 
@@ -479,7 +478,7 @@ class JobShopDataset(Dataset):
         if self.log and "pytest" not in sys.modules:
             print("Processing...", file=sys.stderr)
 
-        fs.makedirs(self.processed_dir, exist_ok=True)
+        os.makedirs(self.processed_dir, exist_ok=True)
         self.process()
 
         # No saving of pre_transform.pt and pre_filter.pt files here
