@@ -35,7 +35,6 @@ def setup_environment(
     env = SingleJobShopGraphEnv(
         graph,
         feature_observer_configs=_DEFAULT_FEATURE_OBSERVERS_TYPES,
-        ready_operations_filter=None,
     )
 
     # Wrap the environment with the observation wrapper
