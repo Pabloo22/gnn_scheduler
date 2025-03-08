@@ -112,11 +112,9 @@ def create_job_shop_data(
         )
 
     # Add valid pairs
-    job_shop_data["valid_pairs"] = torch.tensor(available_ops, device=device)
-
-    # Set dummy y values (not used for inference)
-    dummy_values = torch.ones(len(available_ops), device=device)
-    job_shop_data["y"] = dummy_values
+    job_shop_data["valid_pairs"] = torch.tensor(
+        available_ops, device=device, dtype=torch.int64
+    )
 
     return job_shop_data
 
