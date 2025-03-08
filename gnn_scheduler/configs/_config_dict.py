@@ -18,6 +18,7 @@ class ModelConfig:
     hidden_channels: int = 64
     num_layers: int = 3
     use_batch_norm: bool = True
+    aggregation: str = "sum"
 
     def to_dict(self):
         return {
@@ -28,6 +29,7 @@ class ModelConfig:
             "hidden_channels": self.hidden_channels,
             "num_layers": self.num_layers,
             "use_batch_norm": self.use_batch_norm,
+            "aggregation": self.aggregation,
         }
 
 
@@ -35,8 +37,8 @@ class ModelConfig:
 class Config:
     model_config: ModelConfig = field(default_factory=ModelConfig)
     lr: float = 0.001
-    num_chunks_train: int = 20
-    max_chunks_in_memory: int = 10
+    num_chunks_train: int = 100
+    max_chunks_in_memory: int = 100
     metrics: list[Metric] = field(
         default_factory=lambda: [Accuracy(), Precision(), Recall(), F1Score()]
     )

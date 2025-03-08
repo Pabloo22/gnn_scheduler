@@ -15,6 +15,7 @@ def _main(config: Config):
     train_dataset = JobShopDataset(
         num_chunks=config.num_chunks_train,
         max_chunks_in_memory=config.max_chunks_in_memory,
+        processed_filenames_prefix="instances_train"
     )
     val_dataset_10x10 = JobShopDataset(
         num_chunks=1,
@@ -70,7 +71,8 @@ def _main(config: Config):
 
 
 if __name__ == "__main__":
-    from gnn_scheduler.configs import DEFAULT_CONFIG
+    from gnn_scheduler.configs.experiment_configs import (
+        EXPERIMENT_2,
+    )
 
-    DEFAULT_CONFIG.num_chunks_train = 1
-    _main(DEFAULT_CONFIG)
+    _main(EXPERIMENT_2)
