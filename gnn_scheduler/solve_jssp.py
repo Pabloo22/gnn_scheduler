@@ -8,6 +8,10 @@ from job_shop_lib.reinforcement_learning import (
     ResourceTaskGraphObservation,
     ResourceTaskGraphObservationDict,
 )
+from job_shop_lib.dispatching import (
+    create_composite_operation_filter,
+    ReadyOperationsFilterType,
+)
 from gnn_scheduler.data import JobShopData, _DEFAULT_FEATURE_OBSERVERS_TYPES
 
 
@@ -35,6 +39,12 @@ def setup_environment(
     env = SingleJobShopGraphEnv(
         graph,
         feature_observer_configs=_DEFAULT_FEATURE_OBSERVERS_TYPES,
+        ready_operations_filter=create_composite_operation_filter(
+            [
+                ReadyOperationsFilterType.DOMINATED_OPERATIONS,
+                ReadyOperationsFilterType.NON_IMMEDIATE_OPERATIONS,
+            ]
+        ),
     )
 
     # Wrap the environment with the observation wrapper
@@ -107,10 +117,10 @@ def create_job_shop_data(
 
     # Add edge indices
     for edge_type, indices in edge_index_dict.items():
-        job_shop_data[edge_type].edge_index = torch.from_numpy(indices).to(
-            device
+        # Convert to torch.int64 (long) explicitly
+        job_shop_data[edge_type].edge_index = torch.tensor(
+            indices, device=device, dtype=torch.int64
         )
-
     # Add valid pairs
     job_shop_data["valid_pairs"] = torch.tensor(
         available_ops, device=device, dtype=torch.int64
@@ -187,7 +197,10 @@ def solve_job_shop_with_gnn(job_shop_instance, model):
         job_shop_data = create_job_shop_data(
             normalized_obs, obs["edge_index_dict"], available_ops, device
         )
-        best_action_idx, _ = predict_best_action(model, job_shop_data)
+        if len(available_ops) == 1:
+            best_action_idx = 0
+        else:
+            best_action_idx, _ = predict_best_action(model, job_shop_data)
         best_action_tuple = job_shop_data["valid_pairs"][
             best_action_idx
         ].tolist()
