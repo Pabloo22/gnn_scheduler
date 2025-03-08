@@ -39,12 +39,14 @@ class ResidualSchedulingGNN(nn.Module):
         hidden_channels: int = 64,
         num_layers: int = 3,
         use_batch_norm: bool = True,
+        aggregation: str = "sum",
     ):
         super().__init__()
 
         self.hidden_channels = hidden_channels
         self.num_layers = num_layers
         self.metadata = metadata
+        self.aggregation = aggregation
         self.encoders = nn.ModuleDict(
             {
                 node_type: MultiPeriodicEncoder(
@@ -66,6 +68,7 @@ class ResidualSchedulingGNN(nn.Module):
             hidden_channels=hidden_channels,
             num_layers=num_layers,
             use_batch_norm=use_batch_norm,
+            aggregation=aggregation,
         )
 
         # Score function MLP

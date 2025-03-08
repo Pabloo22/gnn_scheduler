@@ -95,6 +95,7 @@ def initialize_hgin_layers(
     hidden_channels: int,
     num_layers: int,
     use_batch_norm: bool,
+    aggregation: str = "sum",
 ) -> nn.ModuleList:
     """Returns a ``ModuleList`` of ``HGINLayer`` instances."""
     convs = nn.ModuleList()
@@ -112,6 +113,7 @@ def initialize_hgin_layers(
             hidden_channels,
             metadata,
             use_batch_norm,
+            aggregation,
         )
         convs.append(conv)
     return convs
