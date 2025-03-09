@@ -51,10 +51,31 @@ if __name__ == "__main__":
     #     num_machines=(5, 5),
     # )
 
+    # _main(
+    #     25_000,
+    #     "instances10x10_train_1.json",
+    #     num_jobs=(10, 10),
+    #     num_machines=(10, 10),
+    #     seed=1,
+    # )
+    _main(
+        50_000,
+        "instances10x5_train_2.json",
+        num_jobs=10,
+        num_machines=5,
+        seed=2,
+    )
     _main(
         25_000,
-        "instances10x10_train_1.json",
-        num_jobs=(10, 10),
-        num_machines=(10, 10),
-        seed=1,
+        "instances10x10_train_3.json",
+        num_jobs=10,
+        num_machines=10,
+        seed=3,
+    )
+    _main(
+        50_000,
+        "instances10x5_train_4.json",
+        num_jobs=10,
+        num_machines=5,
+        seed=4,
     )
