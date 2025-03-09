@@ -11,6 +11,7 @@ def _main(
     num_jobs: int | tuple[int, int] = (3, 6),
     num_machines: int | tuple[int, int] = (3, 5),
     seed: int = 0,
+    duration_range: tuple[int, int] = (1, 99),
 ):
     generator = GeneralInstanceGenerator(
         num_jobs=num_jobs,
@@ -58,24 +59,40 @@ if __name__ == "__main__":
     #     num_machines=(10, 10),
     #     seed=1,
     # )
+    # _main(
+    #     50_000,
+    #     "instances10x5_train_2.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=2,
+    # )
+    # _main(
+    #     25_000,
+    #     "instances10x10_train_3.json",
+    #     num_jobs=10,
+    #     num_machines=10,
+    #     seed=3,
+    # )
+    # _main(
+    #     50_000,
+    #     "instances10x5_train_4.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=4,
+    # )
     _main(
         50_000,
-        "instances10x5_train_2.json",
+        "instances10x5_train_5.json",
         num_jobs=10,
         num_machines=5,
-        seed=2,
+        seed=5,
+        duration_range=(50, 99),
     )
     _main(
         25_000,
-        "instances10x10_train_3.json",
-        num_jobs=10,
-        num_machines=10,
-        seed=3,
-    )
-    _main(
-        50_000,
-        "instances10x5_train_4.json",
+        "instances10x5_train_6.json",
         num_jobs=10,
         num_machines=5,
-        seed=4,
+        seed=6,
+        duration_range=(50, 99),
     )
