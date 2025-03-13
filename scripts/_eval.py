@@ -11,6 +11,7 @@ from job_shop_lib.dispatching.rules import (
     DispatchingRuleSolver,
     DispatchingRuleType,
 )
+import pandas as pd
 
 from gnn_scheduler.model import ResidualSchedulingGNN
 from gnn_scheduler.configs import Config
@@ -60,7 +61,7 @@ def evaluate_model_performance(
     solver: Callable[[JobShopInstance], Schedule],
     instances: List[JobShopInstance],
     show_progress: bool = True,
-) -> tuple[defaultdict, defaultdict]:
+) -> pd.DataFrame:
     """
     Evaluate a GNN model's performance on a list of job shop instances by
     calculating the average makespan.
