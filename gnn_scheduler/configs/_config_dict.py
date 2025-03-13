@@ -49,5 +49,5 @@ class Config:
     primary_val_key: str = "instances10x10_eval"
     batch_size: int = 128
     scheduler_: dict | None = None
-    train_json: str = "small_random_instances_0.json"
+    train_jsons: str | list[str] = "small_random_instances_0.json"
     processed_filenames_prefix_train: str = "instances_train10x10"

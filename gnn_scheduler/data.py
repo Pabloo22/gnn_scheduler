@@ -84,7 +84,7 @@ class JobShopDataset(Dataset):
         transform=None,
         pre_transform=None,
         processed_filenames_prefix: str = "job_shop_data",
-        raw_filename: str = "small_random_instances_0.json",
+        raw_filenames: str | list[str] = "small_random_instances_0.json",
         feature_observers_types: (
             Sequence[
                 str
@@ -105,7 +105,9 @@ class JobShopDataset(Dataset):
             else _DEFAULT_FEATURE_OBSERVERS_TYPES
         )
         self.processed_filenames_prefix = processed_filenames_prefix
-        self.raw_filename = raw_filename
+        if isinstance(raw_filenames, str):
+            raw_filenames = [raw_filenames]
+        self.raw_filenames = raw_filenames
         self.num_chunks = num_chunks
         self.max_chunks_in_memory = max_chunks_in_memory
         self._data_chunks: dict[int, list[JobShopData]] = {}
@@ -123,7 +125,10 @@ class JobShopDataset(Dataset):
 
     @property
     def raw_file_names(self) -> list[str]:
-        return [os.path.join(self.raw_dir, self.raw_filename)]
+        return [
+            os.path.join(self.raw_dir, filename)
+            for filename in self.raw_filenames
+        ]
 
     @property
     def processed_file_names(self) -> list[str]:
@@ -143,11 +148,13 @@ class JobShopDataset(Dataset):
     def download(self):
         if os.path.exists(self.raw_paths[0]):
             return
-        url = (
-            "https://raw.githubusercontent.com/Pabloo22/gnn_scheduler/main"
-            "/data/raw/small_random_instances_0.json" + self.raw_filename
-        )
-        download_url(url, self.raw_dir)
+        
+        for raw_filename in self.raw_filenames:
+            url = (
+                "https://raw.githubusercontent.com/Pabloo22/gnn_scheduler/main"
+                "/data/raw/small_random_instances_0.json/" + raw_filename
+            )
+            download_url(url, self.raw_dir)
 
     def _get_chunk_path(self, chunk_idx: int) -> str:
         return os.path.join(
