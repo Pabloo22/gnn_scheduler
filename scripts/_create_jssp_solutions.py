@@ -80,19 +80,49 @@ if __name__ == "__main__":
     #     num_machines=5,
     #     seed=4,
     # )
+    # _main(
+    #     50_000,
+    #     "instances10x5_train_5.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=5,
+    #     duration_range=(50, 99),
+    # )
+    # _main(
+    #     25_000,
+    #     "instances10x5_train_6.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=6,
+    #     duration_range=(50, 99),
+    # )
     _main(
-        50_000,
-        "instances10x5_train_5.json",
+        25_000,
+        "instances10x5to10_train_7.json",
         num_jobs=10,
-        num_machines=5,
-        seed=5,
+        num_machines=(5, 10),
+        seed=7,
         duration_range=(50, 99),
     )
     _main(
         25_000,
-        "instances10x5_train_6.json",
+        "instances10x5to10_train_8.json",
         num_jobs=10,
-        num_machines=5,
-        seed=6,
+        num_machines=(5, 10),
+        seed=8,
+    )
+    _main(
+        25_000,
+        "instances10x5to10_train_9.json",
+        num_jobs=10,
+        num_machines=(5, 10),
+        seed=9,
         duration_range=(50, 99),
+    )
+    _main(
+        25_000,
+        "instances10x5to10_train_10.json",
+        num_jobs=10,
+        num_machines=(5, 10),
+        seed=10,
     )
