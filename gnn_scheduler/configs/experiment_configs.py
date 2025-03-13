@@ -8,6 +8,9 @@ from gnn_scheduler.utils import get_data_path
 TRAIN_JSONS = [
     file for file in os.listdir(get_data_path() / "raw") if "train" in file
 ]
+TESTING_JSONS = [
+    file for file in os.listdir(get_data_path() / "raw") if "testing" in file
+]
 
 DEFAULT_CONFIG = Config()
 EXPERIMENT_1 = Config(
@@ -36,4 +39,13 @@ EXPERIMENT_4 = Config(
     processed_filenames_prefix_train="instances_train10x10_2",
     lr=0.0005,
     epochs=100,
+)
+TESTING_CONFIG = Config(
+    model_config=ModelConfig(aggregation="max"),
+    experiment_name="debugging_dataset_manager",
+    batch_size=5,
+    train_jsons=TESTING_JSONS,
+    processed_filenames_prefix_train="instances_train10x10_2",
+    lr=0.0005,
+    epochs=2,
 )
