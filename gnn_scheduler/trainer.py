@@ -105,8 +105,16 @@ class Trainer:
 
         self.model = self.model.to(self.device)
 
-        self.checkpoint_dir = checkpoint_dir
-        os.makedirs(checkpoint_dir, exist_ok=True)
+        # Weights & Biases setup
+        self.experiment_name = (
+            experiment_name or f"train_{self.model.__class__.__name__}"
+        )
+        self.project_name = project_name
+
+        self.checkpoint_dir = os.path.join(
+            checkpoint_dir, self.experiment_name
+        )
+        os.makedirs(self.checkpoint_dir, exist_ok=True)
 
         if metric_mode not in ["max", "min"]:
             raise ValueError("metric_mode must be either 'max' or 'min'")
@@ -135,12 +143,6 @@ class Trainer:
             self.primary_metric = None
 
         self.early_stopping_patience = early_stopping_patience
-
-        # Weights & Biases setup
-        self.experiment_name = (
-            experiment_name or f"train_{self.model.__class__.__name__}"
-        )
-        self.project_name = project_name
 
         # Metrics tracking
         self.best_metric_value = (
