@@ -9,14 +9,8 @@ from collections import deque
 import numpy as np
 import torch
 from torch_geometric.data import (  # type: ignore[import-untyped]
-    HeteroData,
     Dataset,
     download_url,
-)
-from torch_geometric.data.storage import (  # type: ignore[import-untyped]
-    BaseStorage,
-    NodeStorage,
-    EdgeStorage,
 )
 from torch_geometric.data.dataset import (  # type: ignore[import-untyped]
     files_exist,
@@ -38,6 +32,7 @@ from job_shop_lib.reinforcement_learning import (
 from job_shop_lib.dispatching import OptimalOperationsObserver
 from job_shop_lib import Schedule
 
+from gnn_scheduler.data import JobShopData
 from gnn_scheduler.utils import get_data_path
 
 
@@ -48,32 +43,6 @@ _DEFAULT_FEATURE_OBSERVERS_TYPES = [
     FeatureObserverType.POSITION_IN_JOB,
     FeatureObserverType.REMAINING_OPERATIONS,
 ]
-
-
-class JobShopData(HeteroData):
-    def __inc__(self, key, value, *args, **kwargs):
-        if key == "valid_pairs":
-            assert isinstance(value, torch.Tensor)
-            dim_size = value.size(1)
-            increments = torch.zeros(
-                dim_size, dtype=torch.long, device=value.device
-            )
-
-            # Set increments for each column according to respective node
-            # counts
-            node_types = ["operation", "machine", "job"]
-            for i, node_type in enumerate(node_types):
-                if self[node_type]:
-                    increments[i] = self[node_type]["x"].size(0)
-
-            return increments
-
-        return super().__inc__(key, value, *args, **kwargs)
-
-
-torch.serialization.add_safe_globals(
-    [JobShopData, BaseStorage, NodeStorage, EdgeStorage]
-)
 
 
 class JobShopDataset(Dataset):
@@ -148,7 +117,7 @@ class JobShopDataset(Dataset):
     def download(self):
         if os.path.exists(self.raw_paths[0]):
             return
-        
+
         for raw_filename in self.raw_filenames:
             url = (
                 "https://raw.githubusercontent.com/Pabloo22/gnn_scheduler/main"
