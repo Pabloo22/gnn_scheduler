@@ -9,8 +9,6 @@ from job_shop_lib.dispatching.feature_observers import (
 from gnn_scheduler.utils import get_data_path
 from gnn_scheduler.data import JobShopDataset
 
-from job_shop_lib.generation import GeneralInstanceGenerator
-
 
 class DatasetManager:
     """Manages the creation, loading, and unloading of data chunks for
@@ -25,7 +23,7 @@ class DatasetManager:
         root: str = str(get_data_path()),
         transform=None,
         pre_transform=None,
-        raw_filenames: str | list[str] = ["small_random_instances_0.json"],
+        raw_filenames: str | list[str] = "small_random_instances_0.json",
         feature_observers_types: (
             Sequence[
                 str
@@ -68,7 +66,7 @@ class DatasetManager:
         self._current_filename_index += 1
         return JobShopDataset(
             root=self.root,
-            raw_filenames=raw_filename,
+            raw_filename=raw_filename,
             transform=self.transform,
             pre_transform=self.pre_transform,
             feature_observers_types=self.feature_observers_types,

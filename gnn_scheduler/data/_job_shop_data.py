@@ -29,5 +29,11 @@ class JobShopData(HeteroData):
 
 
 torch.serialization.add_safe_globals(
-    [JobShopData, BaseStorage, NodeStorage, EdgeStorage]
+    [
+        JobShopData,
+        HeteroData,
+        BaseStorage,
+        NodeStorage,
+        EdgeStorage,
+    ]
 )
