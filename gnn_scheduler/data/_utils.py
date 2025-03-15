@@ -38,7 +38,11 @@ def process_observation_action_pairs(
     action_probabilities_sequence: list[dict[tuple[int, int, int], float]],
 ) -> list[JobShopData]:
     hetero_dataset: list[JobShopData] = []
-    assert len(observations) == len(action_probabilities_sequence)
+    assert len(observations) == len(action_probabilities_sequence), (
+        f"Number of observations ({len(observations)}) does not match the "
+        f"number of action probabilities sequences "
+        f"({len(action_probabilities_sequence)})"
+    )
     for obs, action_probs in tqdm.tqdm(
         zip(observations, action_probabilities_sequence),
         desc="Processing observation-action pairs",
