@@ -43,9 +43,8 @@ EXPERIMENT_4 = Config(
 TESTING_CONFIG = Config(
     model_config=ModelConfig(aggregation="max"),
     experiment_name="debugging_dataset_manager",
-    batch_size=5,
+    batch_size=256,
     train_jsons=TESTING_JSONS,
-    processed_filenames_prefix_train="instances_train10x10_2",
     lr=0.0005,
     epochs=2,
 )
