@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from torch_geometric.loader import DataLoader
 
-from gnn_scheduler.data import JobShopData
+from gnn_scheduler.data import JobShopData, DatasetManager
 from gnn_scheduler.metrics import Metric
 
 
@@ -61,7 +61,7 @@ class Trainer:
     def __init__(
         self,
         model: torch.nn.Module,
-        train_dataloader: DataLoader,
+        train_dataloader: DataLoader | DatasetManager,
         val_dataloaders: dict[str, DataLoader],
         optimizer: torch.optim.Optimizer,
         criterion: torch.nn.Module = torch.nn.BCEWithLogitsLoss(),
@@ -80,7 +80,13 @@ class Trainer:
         wandb_config: Optional[dict[str, Any]] = None,
     ):
         self.model = model
-        self.train_dataloader = train_dataloader
+        self.dataset_manager: Optional[DatasetManager] = None
+        if isinstance(train_dataloader, DatasetManager):
+            self.dataset_manager = train_dataloader
+            self.train_dataloader = DataLoader(next(train_dataloader))
+        if isinstance(train_dataloader, DataLoader):
+            self.dataset_manager = None
+            self.train_dataloader = train_dataloader
         self.val_dataloaders = val_dataloaders
 
         if primary_val_key not in val_dataloaders:
@@ -227,142 +233,169 @@ class Trainer:
         print(f"Starting training on {self.device}")
 
         try:
-            for epoch in range(1, self.epochs + 1):
-                print(f"\nEpoch {epoch}/{self.epochs}")
-
-                # Training phase
-                train_loss, train_metrics = self._train_epoch()
-                history["train_loss"].append(train_loss)
-
-                # Record training metrics
-                for metric_name, metric_value in train_metrics.items():
-                    history[f"train_{metric_name}"].append(metric_value)
-
-                # Get current learning rate
-                current_lr = self.optimizer.param_groups[0]["lr"]
-                history["learning_rate"].append(current_lr)
-
-                # Validation phase
-                val_results: dict[str, ResultDict] = {}
-                for val_key, val_dataloader in self.val_dataloaders.items():
-                    val_loss, val_metrics = self._validate_epoch(
-                        val_dataloader
+            for i in range(self.epochs):
+                dataloader_iter = (
+                    [self.train_dataloader]
+                    if self.dataset_manager is None
+                    else self.dataset_manager
+                )
+                total_epochs = self.epochs * len(dataloader_iter)
+                for j, train_dataloader in enumerate(dataloader_iter):
+                    epoch = i * len(dataloader_iter) + j + 1
+                
+                    print(f"\nEpoch {epoch}/{total_epochs}")
+                    raw_filename = getattr(
+                        train_dataloader.dataset, "raw_filename", None
                     )
-                    val_results[val_key] = {
-                        "loss": val_loss,
-                        "metrics": val_metrics,
+                    if raw_filename is not None:
+                        print(f"Training on {raw_filename}")
+
+                    self.train_dataloader = train_dataloader
+
+                    # Training phase
+                    train_loss, train_metrics = self._train_epoch()
+                    history["train_loss"].append(train_loss)
+
+                    # Record training metrics
+                    for metric_name, metric_value in train_metrics.items():
+                        history[f"train_{metric_name}"].append(metric_value)
+
+                    # Get current learning rate
+                    current_lr = self.optimizer.param_groups[0]["lr"]
+                    history["learning_rate"].append(current_lr)
+
+                    # Validation phase
+                    val_results: dict[str, ResultDict] = {}
+                    for (
+                        val_key,
+                        val_dataloader,
+                    ) in self.val_dataloaders.items():
+                        val_loss, val_metrics = self._validate_epoch(
+                            val_dataloader
+                        )
+                        val_results[val_key] = {
+                            "loss": val_loss,
+                            "metrics": val_metrics,
+                        }
+
+                        history[f"{val_key}_loss"].append(val_loss)
+                        for metric_name, metric_value in val_metrics.items():
+                            history[f"{val_key}_{metric_name}"].append(
+                                metric_value
+                            )
+
+                    # Update learning rate scheduler if exists
+                    if self.scheduler is not None:
+                        if isinstance(
+                            self.scheduler,
+                            torch.optim.lr_scheduler.ReduceLROnPlateau,
+                        ):
+                            # Use primary metric for scheduler if available
+                            primary_val_dict = val_results[
+                                self.primary_val_key
+                            ]
+                            if self.primary_metric:
+                                primary_val_metrics = primary_val_dict[
+                                    "metrics"
+                                ]
+                                primary_val = primary_val_metrics[
+                                    self.primary_metric
+                                ]
+                                self.scheduler.step(primary_val)
+                            else:
+                                # Fall back to loss
+                                primary_loss = primary_val_dict["loss"]
+                                self.scheduler.step(primary_loss)
+                        else:
+                            self.scheduler.step()
+
+                    # Log metrics to W&B
+                    metrics_to_log = {
+                        "train/loss": train_loss,
+                        "train/learning_rate": current_lr,
                     }
 
-                    history[f"{val_key}_loss"].append(val_loss)
-                    for metric_name, metric_value in val_metrics.items():
-                        history[f"{val_key}_{metric_name}"].append(
-                            metric_value
-                        )
+                    # Log training metrics
+                    for metric_name, metric_value in train_metrics.items():
+                        metrics_to_log[f"train/{metric_name}"] = metric_value
 
-                # Update learning rate scheduler if exists
-                if self.scheduler is not None:
-                    if isinstance(
-                        self.scheduler,
-                        torch.optim.lr_scheduler.ReduceLROnPlateau,
-                    ):
-                        # Use primary metric for scheduler if available
-                        primary_val_dict = val_results[self.primary_val_key]
-                        if self.primary_metric:
-                            primary_val_metrics = primary_val_dict["metrics"]
-                            primary_val = primary_val_metrics[
-                                self.primary_metric
-                            ]
-                            self.scheduler.step(primary_val)
+                    # Log validation metrics
+                    for val_key, results in val_results.items():
+                        metrics_to_log[f"val/{val_key}/loss"] = results["loss"]
+                        for metric_name, metric_value in results[
+                            "metrics"
+                        ].items():
+                            metrics_to_log[f"val/{val_key}/{metric_name}"] = (
+                                metric_value
+                            )
+
+                    wandb.log(metrics_to_log, step=epoch)
+                    # Check if this is the best model on primary validation set
+                    is_best = False
+                    if self.primary_metric:
+                        # Use the primary metric if available
+                        primary_val = val_results[self.primary_val_key][
+                            "metrics"
+                        ][self.primary_metric]
+                        is_best = self._is_better_metric(primary_val)
+
+                        if is_best:
+                            print(
+                                f"New best model with {self.primary_val_key} "
+                                f"{self.primary_metric}: {primary_val:.6f}"
+                            )
+                            self.best_metric_value = primary_val
+                            self.best_epoch = epoch
+                            self.epochs_without_improvement = 0
+                            self._save_checkpoint(
+                                epoch, primary_val, is_best=True
+                            )
                         else:
-                            # Fall back to loss
-                            primary_loss = primary_val_dict["loss"]
-                            self.scheduler.step(primary_loss)
+                            self.epochs_without_improvement += 1
+                            self._save_checkpoint(
+                                epoch, primary_val, is_best=False
+                            )
                     else:
-                        self.scheduler.step()
-
-                # Log metrics to W&B
-                metrics_to_log = {
-                    "train/loss": train_loss,
-                    "train/learning_rate": current_lr,
-                }
-
-                # Log training metrics
-                for metric_name, metric_value in train_metrics.items():
-                    metrics_to_log[f"train/{metric_name}"] = metric_value
-
-                # Log validation metrics
-                for val_key, results in val_results.items():
-                    metrics_to_log[f"val/{val_key}/loss"] = results["loss"]
-                    for metric_name, metric_value in results[
-                        "metrics"
-                    ].items():
-                        metrics_to_log[f"val/{val_key}/{metric_name}"] = (
-                            metric_value
+                        # Fall back to loss if no primary metric
+                        val_loss = val_results[self.primary_val_key]["loss"]
+                        # For loss, better means lower (min mode)
+                        is_best = self._is_better_metric(
+                            -val_loss
+                            if self.metric_mode == "max"
+                            else val_loss
                         )
 
-                wandb.log(metrics_to_log, step=epoch)
+                        if is_best:
+                            print(
+                                f"New best model with {self.primary_val_key} "
+                                f"loss: {val_loss:.6f}"
+                            )
+                            self.best_metric_value = val_loss
+                            self.best_epoch = epoch
+                            self.epochs_without_improvement = 0
+                            self._save_checkpoint(
+                                epoch, val_loss, is_best=True
+                            )
+                        else:
+                            self.epochs_without_improvement += 1
+                            self._save_checkpoint(
+                                epoch, val_loss, is_best=False
+                            )
 
-                # Check if this is the best model on primary validation set
-                is_best = False
-                if self.primary_metric:
-                    # Use the primary metric if available
-                    primary_val = val_results[self.primary_val_key]["metrics"][
-                        self.primary_metric
-                    ]
-                    is_best = self._is_better_metric(primary_val)
-
-                    if is_best:
-                        print(
-                            f"New best model with {self.primary_val_key} "
-                            f"{self.primary_metric}: {primary_val:.6f}"
-                        )
-                        self.best_metric_value = primary_val
-                        self.best_epoch = epoch
-                        self.epochs_without_improvement = 0
-                        self._save_checkpoint(epoch, primary_val, is_best=True)
-                    else:
-                        self.epochs_without_improvement += 1
-                        self._save_checkpoint(
-                            epoch, primary_val, is_best=False
-                        )
-                else:
-                    # Fall back to loss if no primary metric
-                    val_loss = val_results[self.primary_val_key]["loss"]
-                    # For loss, better means lower (min mode)
-                    is_best = self._is_better_metric(
-                        -val_loss if self.metric_mode == "max" else val_loss
+                    # Print epoch summary
+                    self._print_epoch_summary(
+                        epoch, train_loss, train_metrics, val_results
                     )
 
-                    if is_best:
-                        print(
-                            f"New best model with {self.primary_val_key} "
-                            f"loss: {val_loss:.6f}"
-                        )
-                        self.best_metric_value = val_loss
-                        self.best_epoch = epoch
-                        self.epochs_without_improvement = 0
-                        self._save_checkpoint(epoch, val_loss, is_best=True)
-                    else:
-                        self.epochs_without_improvement += 1
-                        self._save_checkpoint(epoch, val_loss, is_best=False)
-
-                # Print epoch summary
-                self._print_epoch_summary(
-                    epoch, train_loss, train_metrics, val_results
-                )
-
-                # Check for early stopping
-                if self._should_early_stop():
-                    print(f"Early stopping triggered after {epoch} epochs")
-                    break
+                    # Check for early stopping
+                    if self._should_early_stop():
+                        print(f"Early stopping triggered after {epoch} epochs")
+                        break
 
         except KeyboardInterrupt:
             print("\nTraining interrupted by user")
 
         finally:
-            # Finish the W&B run
-            wandb.finish()
-
             # Load the best model
             self._load_best_model()
 
