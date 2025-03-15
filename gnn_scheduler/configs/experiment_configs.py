@@ -36,9 +36,9 @@ EXPERIMENT_4 = Config(
     experiment_name="experiment_4",
     batch_size=256,
     train_jsons=TRAIN_JSONS,
-    processed_filenames_prefix_train="instances_train10x10_2",
     lr=0.0005,
     epochs=100,
+    early_stopping_patience=20,
 )
 TESTING_CONFIG = Config(
     model_config=ModelConfig(aggregation="max"),
