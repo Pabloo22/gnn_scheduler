@@ -38,7 +38,7 @@ EXPERIMENT_4 = Config(
     train_jsons=TRAIN_JSONS,
     lr=0.0005,
     epochs=100,
-    early_stopping_patience=20,
+    early_stopping_patience=50,
 )
 TESTING_CONFIG = Config(
     model_config=ModelConfig(aggregation="max"),
