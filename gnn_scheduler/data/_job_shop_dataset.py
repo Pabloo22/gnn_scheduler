@@ -21,7 +21,7 @@ from job_shop_lib.dispatching.feature_observers import (
 from gnn_scheduler.data import (
     JobShopData,
     DEFAULT_FEATURE_OBSERVERS_TYPES,
-    get_observation_action_pairs_with_threading,
+    get_observation_action_pairs,
     process_observation_action_pairs,
 )
 from gnn_scheduler.utils import get_data_path
@@ -72,7 +72,8 @@ class JobShopDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self) -> list[str]:
-        return [f"{self.raw_filename}_processed.pt"]
+        raw_filename_stem = os.path.splitext(self.raw_filename)[0]
+        return [f"{raw_filename_stem}_processed.pt"]
 
     def download(self):
         if os.path.exists(self.raw_paths[0]):
@@ -88,11 +89,11 @@ class JobShopDataset(InMemoryDataset):
     def process(self):
         # Create chunks for processing
         schedules_json = self._load_schedules()
-        observation_action_pairs = get_observation_action_pairs_with_threading(
-            schedules_json, self.feature_observers_types, self.num_threads
+        observation_action_pairs = get_observation_action_pairs(
+            schedules_json, self.feature_observers_types
         )
         processed_data = process_observation_action_pairs(
-            observation_action_pairs, self.feature_observers_types
+            *observation_action_pairs
         )
         self.save(processed_data, self.processed_paths[0])
 
@@ -109,6 +110,11 @@ class JobShopDataset(InMemoryDataset):
 
         if self.log and "pytest" not in sys.modules:
             print("Processing...", file=sys.stderr)
+            print(
+                "Reading the following files: "
+                f"{', '.join(self.raw_file_names)}",
+                file=sys.stderr,
+            )
 
         os.makedirs(self.processed_dir, exist_ok=True)
         self.process()
