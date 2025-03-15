@@ -251,7 +251,6 @@ class Trainer:
                     if raw_filename is not None:
                         print(f"Training on {raw_filename}")
 
-                    self.train_dataloader = train_dataloader
 
                     # Training phase
                     train_loss, train_metrics = self._train_epoch()
