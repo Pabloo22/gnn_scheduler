@@ -239,12 +239,11 @@ class Trainer:
                     if self.dataset_manager is None
                     else self.dataset_manager
                 )
-                assert self.train_dataloader is not None
                 total_epochs = self.epochs * len(dataloader_iter)
                 for j, train_dataloader in enumerate(dataloader_iter):
                     assert train_dataloader is not None
                     epoch = i * len(dataloader_iter) + j + 1
-                
+
                     print(f"\nEpoch {epoch}/{total_epochs}")
                     raw_filename = getattr(
                         train_dataloader.dataset, "raw_filename", None
