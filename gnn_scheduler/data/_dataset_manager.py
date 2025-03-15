@@ -1,7 +1,9 @@
 from typing import Any
 from collections.abc import Iterator
 import gc
+import psutil
 
+import torch
 from torch_geometric.loader import DataLoader
 from gnn_scheduler.data import JobShopDataset
 
@@ -40,22 +42,44 @@ class DatasetManager:
     def _cleanup_current_data(self):
         """Explicitly clean up current dataset and dataloader to free
         memory."""
-        if (
-            hasattr(self, "_current_dataset")
-            and self._current_dataset is not None
-        ):
-            del self._current_dataset
-            self._current_dataset = None
+        process = psutil.Process()
+        if torch.cuda.is_available():
+            print(
+                "Before cleanup (CUDA): "
+                f"{torch.cuda.memory_allocated() / 1024**2:.2f} MB"
+            )
+        print(
+            "Before cleanup (RAM): "
+            f"{process.memory_info().rss / 1024**2:.2f} MB"
+        )
 
-        if (
-            hasattr(self, "_current_dataloader")
-            and self._current_dataloader is not None
-        ):
+        if self._current_dataloader is not None:
             del self._current_dataloader
             self._current_dataloader = None
 
+        if self._current_dataset is not None:
+            if hasattr(self._current_dataset, "data"):
+                self._current_dataset.data = None
+            if hasattr(self._current_dataset, "slices"):
+                self._current_dataset.slices = None
+            del self._current_dataset
+            self._current_dataset = None
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         # Force garbage collection to reclaim memory
         gc.collect()
+        gc.collect()
+
+        if torch.cuda.is_available():
+            print(
+                "After cleanup (CUDA): "
+                f"{torch.cuda.memory_allocated() / 1024**2:.2f} MB"
+            )
+        print(
+            "After cleanup (RAM): "
+            f"{process.memory_info().rss / 1024**2:.2f} MB"
+        )
 
     def __next__(self) -> DataLoader:
         if self._current_filename_index >= len(self.raw_filenames):
