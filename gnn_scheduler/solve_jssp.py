@@ -12,7 +12,7 @@ from job_shop_lib.dispatching import (
     create_composite_operation_filter,
     ReadyOperationsFilterType,
 )
-from gnn_scheduler.data import JobShopData, _DEFAULT_FEATURE_OBSERVERS_TYPES
+from gnn_scheduler.data import JobShopData, DEFAULT_FEATURE_OBSERVERS_TYPES
 
 
 def setup_environment(
@@ -38,7 +38,7 @@ def setup_environment(
     # Create an environment
     env = SingleJobShopGraphEnv(
         graph,
-        feature_observer_configs=_DEFAULT_FEATURE_OBSERVERS_TYPES,
+        feature_observer_configs=DEFAULT_FEATURE_OBSERVERS_TYPES,
         ready_operations_filter=create_composite_operation_filter(
             [
                 ReadyOperationsFilterType.DOMINATED_OPERATIONS,
