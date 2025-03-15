@@ -1,5 +1,6 @@
 checkpoints/
 # Data
+data/raw/*.pt
 data/processed/
 data/difficulty_prediction/diff_prediction_instances/
 data/difficulty_prediction/augmented_benchmark_10machines/
