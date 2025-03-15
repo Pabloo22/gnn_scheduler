@@ -251,9 +251,10 @@ class Trainer:
                     if raw_filename is not None:
                         print(f"Training on {raw_filename}")
 
-
                     # Training phase
-                    train_loss, train_metrics = self._train_epoch()
+                    train_loss, train_metrics = self._train_epoch(
+                        train_dataloader
+                    )
                     history["train_loss"].append(train_loss)
 
                     # Record training metrics
@@ -414,7 +415,9 @@ class Trainer:
 
         return history
 
-    def _train_epoch(self) -> tuple[float, dict[str, float]]:
+    def _train_epoch(
+        self, train_dataloader: DataLoader
+    ) -> tuple[float, dict[str, float]]:
         """
         Train the model for a single epoch.
 
@@ -427,7 +430,7 @@ class Trainer:
         # Reset metrics
         self._reset_metrics()
 
-        pbar = tqdm(self.train_dataloader, desc="Training")
+        pbar = tqdm(train_dataloader, desc="Training")
         for batch in pbar:
             # Move batch to device
             inputs, targets = self._prepare_batch(batch)
@@ -470,7 +473,7 @@ class Trainer:
                 pbar.set_postfix({"loss": f"{batch_loss:.6f}"})
 
         # Calculate average loss for the epoch
-        avg_loss = epoch_loss / len(self.train_dataloader)
+        avg_loss = epoch_loss / len(train_dataloader)
 
         # Compute final metrics
         metrics = self._compute_metrics()
