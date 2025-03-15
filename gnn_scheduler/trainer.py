@@ -83,8 +83,8 @@ class Trainer:
         self.dataset_manager: Optional[DatasetManager] = None
         if isinstance(train_dataloader, DatasetManager):
             self.dataset_manager = train_dataloader
-            self.train_dataloader = DataLoader(next(train_dataloader))
-        if isinstance(train_dataloader, DataLoader):
+            self.train_dataloader: Optional[DataLoader] = None
+        else:
             self.dataset_manager = None
             self.train_dataloader = train_dataloader
         self.val_dataloaders = val_dataloaders
@@ -239,8 +239,10 @@ class Trainer:
                     if self.dataset_manager is None
                     else self.dataset_manager
                 )
+                assert self.train_dataloader is not None
                 total_epochs = self.epochs * len(dataloader_iter)
                 for j, train_dataloader in enumerate(dataloader_iter):
+                    assert train_dataloader is not None
                     epoch = i * len(dataloader_iter) + j + 1
                 
                     print(f"\nEpoch {epoch}/{total_epochs}")
