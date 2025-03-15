@@ -34,7 +34,7 @@ EXPERIMENT_3 = Config(
 EXPERIMENT_4 = Config(
     model_config=ModelConfig(aggregation="max"),
     experiment_name="experiment_4",
-    batch_size=256,
+    batch_size=512,
     train_jsons=TRAIN_JSONS,
     lr=0.0005,
     epochs=100,
