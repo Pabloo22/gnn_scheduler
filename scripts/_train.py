@@ -32,12 +32,8 @@ def _main(config: Config):
     val_dataset_10x10 = JobShopDataset(
         raw_filename="instances10x10_eval_0.json"
     )
-    val_dataset_5x5 = JobShopDataset(raw_filename="instances5x5_eval_0.json")
     val_dataloader_10x10 = DataLoader(
         val_dataset_10x10, batch_size=config.batch_size
-    )
-    val_dataloader_5x5 = DataLoader(
-        val_dataset_5x5, batch_size=config.batch_size
     )
     # Set up optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
@@ -49,7 +45,6 @@ def _main(config: Config):
         train_dataloader=dataset_manager_train,
         val_dataloaders={
             "instances10x10_eval": val_dataloader_10x10,
-            "instances5x5_eval": val_dataloader_5x5,
         },
         optimizer=optimizer,
         criterion=criterion,
