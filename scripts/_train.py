@@ -36,7 +36,7 @@ def _main(config: Config):
         val_dataset_10x10, batch_size=config.batch_size
     )
     # Set up optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr)
 
     # Create loss function
     criterion = torch.nn.BCEWithLogitsLoss()
