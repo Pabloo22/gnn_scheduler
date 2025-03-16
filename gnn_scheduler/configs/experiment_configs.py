@@ -48,3 +48,12 @@ TESTING_CONFIG = Config(
     lr=0.0005,
     epochs=2,
 )
+EXPERIMENT_5 = Config(
+    model_config=ModelConfig(no_message_passing=True),
+    experiment_name="experiment_5",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=100,
+    early_stopping_patience=50,
+)

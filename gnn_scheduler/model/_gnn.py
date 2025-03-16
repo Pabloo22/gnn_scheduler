@@ -40,6 +40,7 @@ class ResidualSchedulingGNN(nn.Module):
         num_layers: int = 3,
         use_batch_norm: bool = True,
         aggregation: str = "sum",
+        no_message_passing: bool = False,
     ):
         super().__init__()
 
@@ -47,6 +48,9 @@ class ResidualSchedulingGNN(nn.Module):
         self.num_layers = num_layers
         self.metadata = metadata
         self.aggregation = aggregation
+        self.no_message_passing = no_message_passing
+        if no_message_passing:
+            hidden_channels = initial_node_features_dim
         self.encoders = nn.ModuleDict(
             {
                 node_type: MultiPeriodicEncoder(
@@ -117,10 +121,11 @@ class ResidualSchedulingGNN(nn.Module):
             node_type: self.encoders[node_type](x)
             for node_type, x in x_dict.items()
         }
-        # Graph convolutions
-        node_type = None
-        for conv in self.convs:
-            x_dict = conv(x_dict, edge_index_dict)
+        if not self.no_message_passing:
+            # Graph convolutions
+            node_type = None
+            for conv in self.convs:
+                x_dict = conv(x_dict, edge_index_dict)
 
             # Add residual connection
             if residuals:

@@ -19,6 +19,7 @@ class ModelConfig:
     num_layers: int = 3
     use_batch_norm: bool = True
     aggregation: str = "sum"
+    no_message_passing: bool = False
 
     def to_dict(self):
         return {
@@ -30,6 +31,7 @@ class ModelConfig:
             "num_layers": self.num_layers,
             "use_batch_norm": self.use_batch_norm,
             "aggregation": self.aggregation,
+            "no_message_passing": self.no_message_passing,
         }
 
 
