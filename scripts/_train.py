@@ -1,11 +1,9 @@
 from functools import partial
 import os
-
-import wandb
 import torch
-from torch_geometric.loader import DataLoader
+from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
 from job_shop_lib.benchmarking import load_all_benchmark_instances
-
+import wandb
 from gnn_scheduler.model import ResidualSchedulingGNN
 from gnn_scheduler.data import JobShopDataset, DatasetManager
 from gnn_scheduler.eval import get_performance_dataframe
@@ -78,6 +76,14 @@ def _main(config: Config):
 
     # save performance metrics to wandb
     wandb.log({"performance_metrics": performance_df})
+
+    # Aggregate by problem size (num_jobs and num_machines columns)
+    performance_df_agg = (
+        performance_df[["num_jobs", "num_machines", "optimality_gap"]]
+        .groupby(["num_jobs", "num_machines"])
+        .mean()
+    )
+    wandb.log({"performance_metrics_agg": performance_df_agg})
 
     wandb.finish()
 
