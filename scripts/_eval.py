@@ -1,198 +1,121 @@
-from collections.abc import Iterable, Callable
-from collections import defaultdict
-from functools import partial
-
-import torch
-import tqdm
-from typing import List, Optional
-from job_shop_lib import JobShopInstance, Schedule
-from job_shop_lib.benchmarking import load_all_benchmark_instances
-from job_shop_lib.dispatching.rules import (
-    DispatchingRuleSolver,
-    DispatchingRuleType,
-)
 import pandas as pd
-
-from gnn_scheduler.model import ResidualSchedulingGNN
-from gnn_scheduler.configs import Config
-from gnn_scheduler.configs.experiment_configs import EXPERIMENT_2
-from gnn_scheduler.configs.experiment_configs import DEFAULT_CONFIG
-from gnn_scheduler.solve_jssp import solve_job_shop_with_gnn
-from gnn_scheduler.utils import get_project_path
+import matplotlib.pyplot as plt
+import numpy as np
+from gnn_scheduler.utils import get_data_path
 
 
-def load_model(
-    model_path: str, config: Optional[Config] = None
-) -> ResidualSchedulingGNN:
-    """
-    Load a trained GNN model from a .pth file.
+def main(csv_name: str, only_taillard: bool = False):
+    data_path = get_data_path()
+    dpr_df = pd.read_csv(data_path / "dispatching_rule_performance.csv")
+    # keep columns that start with "makespan" or "optimality_gap"
+    dpr_df = dpr_df[
+        [
+            col
+            for col in dpr_df.columns
+            if col.startswith("makespan") or col.startswith("optimality_gap")
+        ]
+    ]
+    model_df = pd.read_csv(data_path / f"{csv_name}.csv")
 
-    Args:
-        model_path: Path to the .pth file containing the model weights
-        config: Optional config object. If None, DEFAULT_CONFIG will be used
+    # Merge the two dataframes
+    merged_df = pd.concat([model_df, dpr_df], axis=1)
 
-    Returns:
-        The loaded model with weights from the .pth file
-    """
-    # Use default config if none provided
-    if config is None:
-        config = DEFAULT_CONFIG
+    # Substract one to all optimality gap columns to get the optimality gap
+    optimality_gap_cols = [
+        col for col in merged_df.columns if col.startswith("optimality_gap")
+    ]
+    for col in optimality_gap_cols:
+        merged_df[col] -= 1
 
-    # Create model with the same architecture as during training
-    model = ResidualSchedulingGNN(
-        **config.model_config.to_dict(),
+    # remove ft06
+    merged_df = merged_df[merged_df["instance_name"] != "ft06"]
+
+    if only_taillard:
+        # keep only taillard instances
+        merged_df = merged_df[merged_df["instance_name"].str.startswith("ta")]
+
+    # Drop name column
+    merged_df_agg = merged_df.drop(columns=["instance_name"])
+    # aggregate by problem size
+    merged_df_agg = (
+        merged_df_agg.groupby(["num_jobs", "num_machines"])
+        .mean()
+        .reset_index()
+    )
+    print(merged_df_agg)
+    only_taillard_str = "_only_taillard" if only_taillard else ""
+    merged_df_agg.to_csv(
+        data_path / f"{csv_name}{only_taillard_str}_with_dpr.csv",
+        index=False,
     )
 
-    # Load the model weights
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # Handle different formats of saved weights
-    state_dict = torch.load(model_path, map_location=device)
-    if isinstance(state_dict, dict) and "model_state_dict" in state_dict:
-        model.load_state_dict(state_dict["model_state_dict"])
-    else:
-        model.load_state_dict(state_dict)
-    model.to(device)
-    model.eval()  # Set to evaluation mode
-
-    return model
+    # Create bar plot comparing the optimality gap of the model and each of
+    # the dispatching rules for each problem size
+    create_optimality_gap_plot(
+        merged_df_agg, csv_name, data_path, only_taillard_str
+    )
 
 
-def evaluate_model_performance(
-    solver: Callable[[JobShopInstance], Schedule],
-    instances: List[JobShopInstance],
-    show_progress: bool = True,
-) -> pd.DataFrame:
-    """
-    Evaluate a model's performance on a list of job shop instances.
+def create_optimality_gap_plot(df, csv_name, data_path, only_taillard_str):
+    # Get all the optimality gap columns
+    optimality_cols = [
+        col for col in df.columns if col.startswith("optimality_gap")
+    ]
 
-    Args:
-        solver: Function that takes a JobShopInstance and returns a Schedule
-        instances: List of job_shop_lib.JobShopInstance objects
-        show_progress: Whether to show a progress bar during evaluation
-
-    Returns:
-        A pandas DataFrame with detailed results for each instance
-    """
-    # Create progress bar if requested
-    if show_progress:
-        instances_iter: Iterable[JobShopInstance] = tqdm.tqdm(
-            instances, desc="Evaluating instances"
+    # Set up the problem sizes for x-axis
+    problem_sizes = []
+    for _, row in df.iterrows():
+        problem_sizes.append(
+            f"{int(row['num_jobs'])}x{int(row['num_machines'])}"
         )
-    else:
-        instances_iter = instances
 
-    # Lists to collect data for DataFrame
-    instance_names = []
-    job_counts = []
-    machine_counts = []
-    makespans = []
-    optimality_gaps = []
-    optimums = []
-    upper_bounds = []
-    lower_bounds = []
+    # Set up the figure and axis
+    plt.figure(figsize=(14, 8))
 
-    # Also track total stats for backward compatibility
-    total_makespan = 0
-    total_optimality_gap = 0
-    successful_optimal = 0
+    # Number of bars and their positions
+    n_bars = len(optimality_cols)
+    bar_width = 0.8 / n_bars
+    index = np.arange(len(problem_sizes))
 
-    for instance in instances_iter:
-        schedule = solver(instance)
-        makespan = schedule.makespan()
+    # Define a color palette
+    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
 
-        # Add to overall statistics
-        total_makespan += makespan
-        # Collect data for DataFrame
-        instance_names.append(instance.name)
-        job_counts.append(instance.num_jobs)
-        machine_counts.append(instance.num_machines)
-        makespans.append(makespan)
-
-        # Extract reference values from metadata
-        optimum = instance.metadata.get("optimum")
-        upper_bound = instance.metadata.get("upper_bound")
-        lower_bound = instance.metadata.get("lower_bound")
-
-        optimums.append(optimum)
-        upper_bounds.append(upper_bound)
-        lower_bounds.append(lower_bound)
-
-        # Calculate optimality gap if possible
-        best_makespan = None
-        if optimum is not None:
-            best_makespan = optimum
-        elif upper_bound is not None and lower_bound is not None:
-            best_makespan = (upper_bound + lower_bound) / 2
-
-        if best_makespan is not None:
-            gap = makespan / best_makespan
-            optimality_gaps.append(gap)
-            total_optimality_gap += gap
-            successful_optimal += 1
+    # Create bars for each optimality gap
+    for i, col in enumerate(optimality_cols):
+        # Use a readable label: remove 'optimality_gap_' prefix and capitalize
+        if col == "optimality_gap":
+            label = "Model"  # The model's optimality gap
         else:
-            optimality_gaps.append(None)
-    results_df = pd.DataFrame(
-        {
-            "instance_name": instance_names,
-            "num_jobs": job_counts,
-            "num_machines": machine_counts,
-            "makespan": makespans,
-            "optimality_gap": optimality_gaps,
-            "optimum": optimums,
-            "upper_bound": upper_bounds,
-            "lower_bound": lower_bounds,
-        }
+            label = col.replace("optimality_gap_", "").upper()
+
+        # Plot the bars
+        plt.bar(
+            index + i * bar_width - (n_bars * bar_width / 2) + bar_width / 2,
+            df[col],
+            bar_width,
+            label=label,
+            color=colors[i % len(colors)],
+        )
+
+    # Customize the plot
+    plt.xlabel("Problem Size (Jobs × Machines)", fontsize=12)
+    plt.ylabel("Optimality Gap (%)", fontsize=12)
+    plt.title(
+        "Comparison of Optimality Gap by Problem Size and Method", fontsize=14
     )
-    return results_df
+    plt.xticks(index, problem_sizes, rotation=45)
+    plt.legend(loc="best")
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.tight_layout()
+
+    # Save the figure
+    plt.savefig(
+        data_path
+        / f"{csv_name}{only_taillard_str}_optimality_gap_comparison.png",
+        dpi=300,
+    )
+    plt.close()
 
 
 if __name__ == "__main__":
-    model = load_model(
-        str(get_project_path() / "checkpoints" / "best_model.pth"),
-        config=EXPERIMENT_2,
-    )
-
-    benchmark_instances = load_all_benchmark_instances()
-
-    taillard_instances = [
-        instance
-        for instance in benchmark_instances.values()
-        if "ta" in instance.name
-    ][:10]
-    gnn_solver = partial(solve_job_shop_with_gnn, model=model)
-    # Evaluate the model
-    avg_makespan, avg_optimality_gap = evaluate_model_performance(
-        gnn_solver, taillard_instances
-    )
-    print("GNN model performance:")
-    print(f"verage makespan: {avg_makespan}")
-    print(f"Average optimality gap: {avg_optimality_gap}")
-
-    mwkr_solver = DispatchingRuleSolver()
-    avg_makespan, avg_optimality_gap = evaluate_model_performance(
-        mwkr_solver, taillard_instances
-    )
-    print("MWKR performance:")
-    print(f"Average makespan: {avg_makespan}")
-    print(f"Average optimality gap: {avg_optimality_gap}")
-
-    spt_solver = DispatchingRuleSolver(
-        dispatching_rule="shortest_processing_time"
-    )
-    avg_makespan, avg_optimality_gap = evaluate_model_performance(
-        spt_solver, taillard_instances
-    )
-    print("SPT performance:")
-    print(f"Average makespan: {avg_makespan}")
-    print(f"Average optimality gap: {avg_optimality_gap}")
-
-    print("FIFO performance:")
-    fifo_solver = DispatchingRuleSolver(
-        dispatching_rule=DispatchingRuleType.FIRST_COME_FIRST_SERVED
-    )
-
-    avg_makespan, avg_optimality_gap = evaluate_model_performance(
-        fifo_solver, taillard_instances
-    )
-    print(f"Average makespan: {avg_makespan}")
-    print(f"Average optimality gap: {avg_optimality_gap}")
+    main("experiment_5_results", only_taillard=True)
