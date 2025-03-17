@@ -57,3 +57,23 @@ EXPERIMENT_5 = Config(
     epochs=100,
     early_stopping_patience=50,
 )
+EXPERIMENT_6 = Config(  # same than experiment 4 but with AdamW and lr=0.0001
+    model_config=ModelConfig(aggregation="max"),
+    experiment_name="experiment_6",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=100,
+    early_stopping_patience=22,
+)
+EXPERIMENT_7 = Config(  # same than experiment 4 but with AdamW and lr=0.0001
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment_7",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=100,
+    early_stopping_patience=22,
+)
