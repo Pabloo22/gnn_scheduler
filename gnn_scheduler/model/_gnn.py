@@ -138,7 +138,6 @@ class ResidualSchedulingGNN(nn.Module):
 
         # Store residual connections
         residuals: list[dict[str, torch.Tensor]] = []
-
         x_dict = {
             node_type: self.encoders[node_type](x)
             for node_type, x in x_dict.items()
@@ -164,7 +163,7 @@ class ResidualSchedulingGNN(nn.Module):
             "machine": 1,
             "job": 2,
         }
-        assert node_type is not None
+        node_type = "operation"
         scores = torch.zeros(len(valid_pairs), device=x_dict[node_type].device)
         concat_features_list = []
         for node_type in self.metadata.node_types:
