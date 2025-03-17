@@ -99,7 +99,7 @@ def normalize_features(
         }
     for key, indices in indices_to_normalize.items():
         # Divide by the maximum value checking for division by zero
-        max_values = np.max(node_features_dict[key], axis=0)
+        max_values = np.max(np.abs(node_features_dict[key]), axis=0)
         max_values[max_values == 0] = 1
         node_features_dict[key][:, indices] /= max_values[indices]
 
