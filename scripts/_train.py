@@ -89,7 +89,7 @@ def _main(config: Config):
         performance_df[["num_jobs", "num_machines", "optimality_gap"]]
         .groupby(["num_jobs", "num_machines"])
         .mean()
-    )
+    ).reset_index()
     wandb.log({"performance_metrics_agg": performance_df_agg})
 
     wandb.finish()
@@ -97,7 +97,7 @@ def _main(config: Config):
 
 if __name__ == "__main__":
     from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_7,
+        EXPERIMENT_8,
     )
 
-    _main(EXPERIMENT_7)
+    _main(EXPERIMENT_8)
