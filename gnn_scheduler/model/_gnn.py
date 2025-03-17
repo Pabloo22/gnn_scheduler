@@ -41,6 +41,7 @@ class ResidualSchedulingGNN(nn.Module):
         use_batch_norm: bool = True,
         aggregation: str = "sum",
         no_message_passing: bool = False,
+        use_mlp_encoder: bool = False,
     ):
         super().__init__()
 
@@ -51,18 +52,39 @@ class ResidualSchedulingGNN(nn.Module):
         self.no_message_passing = no_message_passing
         if no_message_passing:
             hidden_channels = initial_node_features_dim
-        self.encoders = nn.ModuleDict(
-            {
-                node_type: MultiPeriodicEncoder(
-                    in_channels_dict[node_type],
-                    initial_node_features_dim,
-                    concat=True,
-                    sigma=sigma,
-                )
-                for node_type in metadata.node_types
-            }
-        )
 
+        self.use_mlp_encoder = use_mlp_encoder
+
+        if not use_mlp_encoder:
+            self.encoders = nn.ModuleDict(
+                {
+                    node_type: MultiPeriodicEncoder(
+                        in_channels_dict[node_type],
+                        initial_node_features_dim,
+                        concat=True,
+                        sigma=sigma,
+                    )
+                    for node_type in metadata.node_types
+                }
+            )
+        else:
+            self.encoders = nn.ModuleDict(
+                {
+                    node_type: nn.Sequential(
+                        nn.Linear(
+                            in_channels_dict[node_type],
+                            initial_node_features_dim,
+                        ),
+                        nn.ELU(),
+                        nn.Linear(
+                            initial_node_features_dim,
+                            initial_node_features_dim,
+                        ),
+                        nn.ELU(),
+                    )
+                    for node_type in metadata.node_types
+                }
+            )
         self.convs = initialize_hgin_layers(
             metadata,
             in_channels_dict={

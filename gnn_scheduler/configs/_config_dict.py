@@ -20,6 +20,7 @@ class ModelConfig:
     use_batch_norm: bool = True
     aggregation: str = "sum"
     no_message_passing: bool = False
+    use_mlp_encoder: bool = False
 
     def to_dict(self):
         return {
@@ -32,6 +33,7 @@ class ModelConfig:
             "use_batch_norm": self.use_batch_norm,
             "aggregation": self.aggregation,
             "no_message_passing": self.no_message_passing,
+            "use_mlp_encoder": self.use_mlp_encoder,
         }
 
 
