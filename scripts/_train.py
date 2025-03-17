@@ -10,6 +10,7 @@ from gnn_scheduler.eval import get_performance_dataframe
 from gnn_scheduler.trainer import Trainer
 from gnn_scheduler.configs import Config
 from gnn_scheduler.solve_jssp import solve_job_shop_with_gnn
+from gnn_scheduler.utils import get_data_path
 
 
 def _main(config: Config):
@@ -70,12 +71,18 @@ def _main(config: Config):
 
     # Save .csv file with results
     performance_df.to_csv(
-        os.path.join(trainer.checkpoint_dir, "best_model_performance.csv"),
+        get_data_path() / f"{config.experiment_name}_results.csv",
         index=False,
     )
 
     # save performance metrics to wandb
     wandb.log({"performance_metrics": performance_df})
+
+    # Save performance_df to csv
+    performance_df.to_csv(
+        get_data_path() / f"{config.experiment_name}_results.csv",
+        index=False,
+    )
 
     # Aggregate by problem size (num_jobs and num_machines columns)
     performance_df_agg = (
@@ -90,7 +97,7 @@ def _main(config: Config):
 
 if __name__ == "__main__":
     from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_4,
+        EXPERIMENT_7,
     )
 
-    _main(EXPERIMENT_4)
+    _main(EXPERIMENT_7)
