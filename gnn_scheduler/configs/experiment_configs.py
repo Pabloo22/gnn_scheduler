@@ -77,3 +77,12 @@ EXPERIMENT_7 = Config(  # same than experiment 4 but with AdamW and lr=0.0001
     epochs=100,
     early_stopping_patience=22,
 )
+EXPERIMENT_8 = Config(
+    model_config=ModelConfig(no_message_passing=True, use_mlp_encoder=True),
+    experiment_name="experiment_5",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=30,
+    early_stopping_patience=22,
+)
