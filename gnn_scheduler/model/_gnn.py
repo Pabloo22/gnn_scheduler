@@ -42,6 +42,7 @@ class ResidualSchedulingGNN(nn.Module):
         aggregation: str = "sum",
         no_message_passing: bool = False,
         use_mlp_encoder: bool = False,
+        edge_dropout: float = 0.0,
     ):
         super().__init__()
 
@@ -50,6 +51,7 @@ class ResidualSchedulingGNN(nn.Module):
         self.metadata = metadata
         self.aggregation = aggregation
         self.no_message_passing = no_message_passing
+        self.edge_dropout = edge_dropout
         if no_message_passing:
             hidden_channels = initial_node_features_dim
 
@@ -95,6 +97,7 @@ class ResidualSchedulingGNN(nn.Module):
             num_layers=num_layers,
             use_batch_norm=use_batch_norm,
             aggregation=aggregation,
+            edge_dropout=edge_dropout,
         )
 
         # Score function MLP

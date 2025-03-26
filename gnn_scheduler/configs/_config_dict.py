@@ -21,6 +21,7 @@ class ModelConfig:
     aggregation: str = "sum"
     no_message_passing: bool = False
     use_mlp_encoder: bool = False
+    edge_dropout: float = 0.0
 
     def to_dict(self):
         return {

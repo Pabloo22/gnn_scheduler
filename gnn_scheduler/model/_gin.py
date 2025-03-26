@@ -1,11 +1,9 @@
 from typing import Dict, List, Optional, Tuple, Literal
-import enum
 import itertools
 import torch
 from torch import nn
 from torch_geometric.nn import GINConv, HeteroConv
-
-from job_shop_lib.dispatching.feature_observers import FeatureType
+from torch_geometric.utils import dropout_edge
 
 class HeteroMetadata:
     """Metadata for a heterogeneous graph.
@@ -53,8 +51,10 @@ class HGINLayer(torch.nn.Module):
         metadata: HeteroMetadata,
         use_batch_norm: bool = True,
         aggregation: str = "sum",
+        edge_dropout: float = 0.0,
     ):
         super().__init__()
+        self.edge_dropout = edge_dropout
 
         # Create MLPs for each node type
         self.mlps = nn.ModuleDict()
@@ -86,6 +86,20 @@ class HGINLayer(torch.nn.Module):
         )
 
     def forward(self, x_dict, edge_index_dict):
+        # Apply edge dropout during training
+        if self.training and self.edge_dropout > 0:
+            # Create a new edge_index_dict with dropped edges
+            dropped_edge_index_dict = {}
+
+            for edge_type, edge_index in edge_index_dict.items():
+                # Apply dropout_edge to each edge type
+                dropped_edge_index, _ = dropout_edge(
+                    edge_index,
+                    p=self.edge_dropout,
+                    force_undirected=False,
+                    training=self.training,
+                )
+                dropped_edge_index_dict[edge_type] = dropped_edge_index
         return self.conv(x_dict, edge_index_dict)
 
 
@@ -96,6 +110,7 @@ def initialize_hgin_layers(
     num_layers: int,
     use_batch_norm: bool,
     aggregation: str = "sum",
+    edge_dropout: float = 0.0,
 ) -> nn.ModuleList:
     """Returns a ``ModuleList`` of ``HGINLayer`` instances."""
     convs = nn.ModuleList()
@@ -114,6 +129,7 @@ def initialize_hgin_layers(
             metadata,
             use_batch_norm,
             aggregation,
+            edge_dropout,
         )
         convs.append(conv)
     return convs
