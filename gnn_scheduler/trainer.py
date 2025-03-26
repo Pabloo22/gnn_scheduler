@@ -233,9 +233,11 @@ class Trainer:
                 history[f"{val_key}_{metric.name}"] = []
 
         print(f"Starting training on {self.device}")
-
+        early_stop = False
         try:
             for i in range(self.epochs):
+                if early_stop:
+                    break
                 dataloader_iter = (
                     [self.train_dataloader]
                     if self.dataset_manager is None
@@ -393,6 +395,7 @@ class Trainer:
                     # Check for early stopping
                     if self._should_early_stop():
                         print(f"Early stopping triggered after {epoch} epochs")
+                        early_stop = True
                         break
 
         except KeyboardInterrupt:
