@@ -98,7 +98,7 @@ def _main(config: Config):
 
 if __name__ == "__main__":
     from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_8,
+        EXPERIMENT_9,
     )
 
-    _main(EXPERIMENT_8)
+    _main(EXPERIMENT_9)
