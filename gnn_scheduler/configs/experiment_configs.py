@@ -13,8 +13,8 @@ TESTING_JSONS = [
 ]
 
 # Train JSONS without "10x5" instances
-TRAIN_JSONS_WITHOUT_10X5 = [file for file in TRAIN_JSONS if "10x5" not in file]
-TRAIN_JSONS_WITHOUT_10X5 += [
+ONLY_10X10_TRAIN_JSONS = [file for file in TRAIN_JSONS if "10x5" not in file]
+TRAIN_JSONS_WITHOUT_10X5 = ONLY_10X10_TRAIN_JSONS + [
     file for file in TRAIN_JSONS if "10x5to10" in file
 ]
 
@@ -128,4 +128,17 @@ EXPERIMENT_11 = Config(
     early_stopping_patience=22,
     n_batches_per_epoch=10,
     store_each_n_steps=31,
+)
+EXPERIMENT_12 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32, edge_dropout=0.4
+    ),
+    experiment_name="experiment12",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=22,
+    # store_each_n_steps=31,
+    n_batches_per_epoch=500,
 )
