@@ -480,7 +480,8 @@ class Trainer:
                 pbar.set_postfix({"loss": f"{batch_loss:.6f}"})
 
         # Calculate average loss for the epoch
-        avg_loss = epoch_loss / len(train_dataloader)
+        n = len(train_dataloader) if self.n_batches_per_epoch is None else self.n_batches_per_epoch
+        avg_loss = epoch_loss / n
 
         # Compute final metrics
         metrics = self._compute_metrics()
