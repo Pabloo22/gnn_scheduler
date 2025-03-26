@@ -53,6 +53,7 @@ def _main(config: Config):
         grad_clip_val=config.grad_clip_val,
         early_stopping_patience=config.early_stopping_patience,
         experiment_name=config.experiment_name,
+        n_batches_per_epoch=config.n_batches_per_epoch,
     )
 
     # Train the model
