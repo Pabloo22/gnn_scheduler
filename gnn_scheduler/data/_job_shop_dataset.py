@@ -47,6 +47,7 @@ class JobShopDataset(InMemoryDataset):
         force_reload: bool = False,
         log: bool = True,
         num_threads: int = -1,
+        store_each_n_steps: int = 1,
     ):
         self.feature_observers_types = (
             feature_observers_types
@@ -54,7 +55,7 @@ class JobShopDataset(InMemoryDataset):
             else DEFAULT_FEATURE_OBSERVERS_TYPES
         )
         self.raw_filename = raw_filename
-
+        self.store_each_n_steps = store_each_n_steps
         cpu_count = os.cpu_count()
         if cpu_count is not None and num_threads == -1:
             num_threads = cpu_count - 1
@@ -73,7 +74,12 @@ class JobShopDataset(InMemoryDataset):
     @property
     def processed_file_names(self) -> list[str]:
         raw_filename_stem = os.path.splitext(self.raw_filename)[0]
-        return [f"{raw_filename_stem}_processed.pt"]
+        n_step_suffix = (
+            ""
+            if self.store_each_n_steps == 1
+            else f"_subset{self.store_each_n_steps}"
+        )
+        return [f"{raw_filename_stem}_processed{n_step_suffix}.pt"]
 
     def download(self):
         if os.path.exists(self.raw_paths[0]):
@@ -90,7 +96,9 @@ class JobShopDataset(InMemoryDataset):
         # Create chunks for processing
         schedules_json = self._load_schedules()
         observation_action_pairs = get_observation_action_pairs(
-            schedules_json, self.feature_observers_types
+            schedules_json,
+            self.feature_observers_types,
+            self.store_each_n_steps,
         )
         processed_data = process_observation_action_pairs(
             *observation_action_pairs

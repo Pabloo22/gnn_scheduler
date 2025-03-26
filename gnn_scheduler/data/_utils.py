@@ -189,6 +189,7 @@ def get_observation_action_pairs(
         | Type[FeatureObserver]
         | FeatureObserverConfig,
     ],
+    store_each_n_steps: int = 1,
 ) -> tuple[
     list[ResourceTaskGraphObservationDict],
     list[dict[tuple[int, int, int], float]],
@@ -199,8 +200,9 @@ def get_observation_action_pairs(
         schedules_json, desc="Processing schedules"
     ):
         schedule = Schedule.from_dict(**schedule_dict)
-        obs, action_probs = get_observation_action_pairs_from_schedule(
-            schedule, feature_observers_types
+        i = 0
+        obs, action_probs, i = get_observation_action_pairs_from_schedule(
+            schedule, feature_observers_types, store_each_n_steps, i
         )
         observations.extend(obs)
         action_probabilities_sequence.extend(action_probs)
@@ -215,9 +217,12 @@ def get_observation_action_pairs_from_schedule(
         | Type[FeatureObserver]
         | FeatureObserverConfig,
     ],
+    store_each_n_steps: int = 1,
+    i: int = 0,
 ) -> tuple[
     list[ResourceTaskGraphObservationDict],
     list[dict[tuple[int, int, int], float]],
+    int
 ]:
     observations: list[ResourceTaskGraphObservationDict] = []
     action_probabilities_sequence: list[dict[tuple[int, int, int], float]] = []
@@ -241,7 +246,7 @@ def get_observation_action_pairs_from_schedule(
                 obs["original_ids_dict"],
             ),
         )
-        if len(action_probs) > 1:
+        if len(action_probs) > 1 and i % store_each_n_steps == 0:
             obs["node_features_dict"] = normalize_features(
                 obs["node_features_dict"]
             )
@@ -262,4 +267,4 @@ def get_observation_action_pairs_from_schedule(
         action_choice = random.choice(optimal_actions)
         _, machine_id, job_id = action_choice
         obs, _, done, _, info = wrapped_env.step((job_id, machine_id))
-    return observations, action_probabilities_sequence
+    return observations, action_probabilities_sequence, i
