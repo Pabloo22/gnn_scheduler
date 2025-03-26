@@ -247,7 +247,6 @@ def get_observation_action_pairs_from_schedule(
             ),
         )
         if len(action_probs) > 1 and i % store_each_n_steps == 0:
-            print("Storing")
             obs["node_features_dict"] = normalize_features(
                 obs["node_features_dict"]
             )
