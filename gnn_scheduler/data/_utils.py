@@ -196,11 +196,11 @@ def get_observation_action_pairs(
 ]:
     observations: list[ResourceTaskGraphObservationDict] = []
     action_probabilities_sequence: list[dict[tuple[int, int, int], float]] = []
+    i = 0
     for schedule_dict in tqdm.tqdm(
         schedules_json, desc="Processing schedules"
     ):
         schedule = Schedule.from_dict(**schedule_dict)
-        i = 0
         obs, action_probs, i = get_observation_action_pairs_from_schedule(
             schedule, feature_observers_types, store_each_n_steps, i
         )
@@ -247,6 +247,7 @@ def get_observation_action_pairs_from_schedule(
             ),
         )
         if len(action_probs) > 1 and i % store_each_n_steps == 0:
+            print("Storing")
             obs["node_features_dict"] = normalize_features(
                 obs["node_features_dict"]
             )
@@ -267,4 +268,5 @@ def get_observation_action_pairs_from_schedule(
         action_choice = random.choice(optimal_actions)
         _, machine_id, job_id = action_choice
         obs, _, done, _, info = wrapped_env.step((job_id, machine_id))
+        i += 1
     return observations, action_probabilities_sequence, i
