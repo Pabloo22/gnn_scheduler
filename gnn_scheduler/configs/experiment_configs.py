@@ -12,6 +12,12 @@ TESTING_JSONS = [
     file for file in os.listdir(get_data_path() / "raw") if "testing" in file
 ]
 
+# Train JSONS without "10x5" instances
+TRAIN_JSONS_WITHOUT_10X5 = [file for file in TRAIN_JSONS if "10x5" not in file]
+TRAIN_JSONS_WITHOUT_10X5 += [
+    file for file in TRAIN_JSONS if "10x5to10" in file
+]
+
 DEFAULT_CONFIG = Config()
 EXPERIMENT_1 = Config(
     experiment_name="experiment_1",
@@ -104,7 +110,7 @@ EXPERIMENT_10 = Config(
     ),
     experiment_name="experiment10",
     batch_size=256,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
