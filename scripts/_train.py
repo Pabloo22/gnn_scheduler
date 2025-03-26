@@ -1,5 +1,4 @@
 from functools import partial
-import os
 import torch
 from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
 from job_shop_lib.benchmarking import load_all_benchmark_instances
@@ -27,6 +26,8 @@ def _main(config: Config):
     dataset_manager_train = DatasetManager(
         raw_filenames=config.train_jsons,
         dataloader_kwargs={"batch_size": config.batch_size, "shuffle": True},
+        dataset_kwargs={"store_each_n_steps": config.store_each_n_steps},
+            
     )
     val_dataset_10x10 = JobShopDataset(
         raw_filename="instances10x10_eval_0.json"
