@@ -55,3 +55,4 @@ class Config:
     scheduler_: dict | None = None
     train_jsons: str | list[str] = "small_random_instances_0.json"
     processed_filenames_prefix_train: str = "instances_train10x10"
+    n_batches_per_epoch: int | None = None

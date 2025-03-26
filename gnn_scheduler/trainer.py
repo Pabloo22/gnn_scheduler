@@ -78,7 +78,9 @@ class Trainer:
         experiment_name: Optional[str] = None,
         project_name: str = "job-shop-imitation-learning",
         wandb_config: Optional[dict[str, Any]] = None,
+        n_batches_per_epoch: Optional[int] = None,
     ):
+        self.n_batches_per_epoch = n_batches_per_epoch
         self.model = model
         self.dataset_manager: Optional[DatasetManager] = None
         if isinstance(train_dataloader, DatasetManager):
@@ -431,7 +433,12 @@ class Trainer:
         self._reset_metrics()
 
         pbar = tqdm(train_dataloader, desc="Training")
-        for batch in pbar:
+        for i, batch in enumerate(pbar):
+            if (
+                self.n_batches_per_epoch is not None
+                and i >= self.n_batches_per_epoch
+            ):
+                break
             # Move batch to device
             inputs, targets = self._prepare_batch(batch)
             self.optimizer.zero_grad()
