@@ -116,3 +116,16 @@ EXPERIMENT_10 = Config(
     early_stopping_patience=22,
     n_batches_per_epoch=10,
 )
+EXPERIMENT_11 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment11",
+    batch_size=256,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=22,
+    n_batches_per_epoch=10,
+    store_each_n_steps=31,
+)
