@@ -142,3 +142,43 @@ EXPERIMENT_12 = Config(
     # store_each_n_steps=31,
     n_batches_per_epoch=500,
 )
+EXPERIMENT_13 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32,
+    ),
+    experiment_name="experiment13",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=22,
+    store_each_n_steps=31,
+)
+EXPERIMENT_14 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=1,
+        hidden_channels=32,
+    ),
+    experiment_name="experiment14",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=22,
+    store_each_n_steps=31,
+)
+EXPERIMENT_15 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=1,
+        hidden_channels=32,
+    ),
+    experiment_name="experiment15",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=22,
+    store_each_n_steps=31,
+)
