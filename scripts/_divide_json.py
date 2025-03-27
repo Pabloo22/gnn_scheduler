@@ -30,7 +30,9 @@ def _main(json_filename: str, num_splits=2):
 
 
 if __name__ == "__main__":
-    from gnn_scheduler.configs.experiment_configs import TRAIN_JSONS
+    from gnn_scheduler.configs.experiment_configs import (
+        TRAIN_JSONS_WITHOUT_8X8,
+    )
 
-    for train_json in TRAIN_JSONS:
+    for train_json in TRAIN_JSONS_WITHOUT_8X8:
         _main(train_json)

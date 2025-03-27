@@ -10,14 +10,21 @@ from gnn_scheduler.utils import get_data_path
 TRAIN_JSONS = [
     file for file in os.listdir(get_data_path() / "raw") if "train" in file
 ]
+TRAIN_JSONS_WITHOUT_8X8 = [
+    file
+    for file in os.listdir(get_data_path() / "raw")
+    if "train" in file and "8x8" not in file
+]
 TESTING_JSONS = [
     file for file in os.listdir(get_data_path() / "raw") if "testing" in file
 ]
 
 # Train JSONS without "10x5" instances
-ONLY_10X10_TRAIN_JSONS = [file for file in TRAIN_JSONS if "10x5" not in file]
-TRAIN_JSONS_WITHOUT_10X5 = ONLY_10X10_TRAIN_JSONS + [
-    file for file in TRAIN_JSONS if "10x5to10" in file
+ONLY_10X10_TRAIN_JSONS = [
+    file for file in TRAIN_JSONS_WITHOUT_8X8 if "10x5" not in file
+]
+TRAIN_JSONS_WITHOUT_10X5_AND_8X8 = ONLY_10X10_TRAIN_JSONS + [
+    file for file in TRAIN_JSONS_WITHOUT_8X8 if "10x5to10" in file
 ]
 
 DEFAULT_CONFIG = Config()
@@ -43,7 +50,7 @@ EXPERIMENT_4 = Config(
     model_config=ModelConfig(aggregation="max"),
     experiment_name="experiment_4",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0005,
     epochs=100,
     early_stopping_patience=50,
@@ -60,7 +67,7 @@ EXPERIMENT_5 = Config(
     model_config=ModelConfig(no_message_passing=True),
     experiment_name="experiment_5",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=100,
     early_stopping_patience=50,
@@ -69,7 +76,7 @@ EXPERIMENT_6 = Config(  # same than experiment 4 but with AdamW and lr=0.0001
     model_config=ModelConfig(aggregation="max"),
     experiment_name="experiment_6",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=100,
     early_stopping_patience=22,
@@ -80,7 +87,7 @@ EXPERIMENT_7 = Config(  # same than experiment 4 but with AdamW and lr=0.0001
     ),
     experiment_name="experiment_7",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=100,
     early_stopping_patience=22,
@@ -89,7 +96,7 @@ EXPERIMENT_8 = Config(
     model_config=ModelConfig(no_message_passing=True, use_mlp_encoder=True),
     experiment_name="experiment_5",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=30,
     early_stopping_patience=22,
@@ -100,7 +107,7 @@ EXPERIMENT_9 = Config(
     ),
     experiment_name="experiment_9",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
@@ -112,7 +119,7 @@ EXPERIMENT_10 = Config(
     ),
     experiment_name="experiment10",
     batch_size=256,
-    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5_AND_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
@@ -124,7 +131,7 @@ EXPERIMENT_11 = Config(
     ),
     experiment_name="experiment11",
     batch_size=256,
-    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5_AND_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
@@ -164,7 +171,7 @@ EXPERIMENT_14 = Config(
     ),
     experiment_name="experiment14",
     batch_size=512,
-    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5_AND_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
@@ -178,14 +185,14 @@ EXPERIMENT_15 = Config(
     ),
     experiment_name="experiment15",
     batch_size=512,
-    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5_AND_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
     store_each_n_steps=31,
 )
-random_generator.shuffle(TRAIN_JSONS)
-random_generator.shuffle(TRAIN_JSONS_WITHOUT_10X5)
+random_generator.shuffle(TRAIN_JSONS_WITHOUT_8X8)
+random_generator.shuffle(TRAIN_JSONS_WITHOUT_10X5_AND_8X8)
 EXPERIMENT_16 = Config(
     model_config=ModelConfig(
         aggregation="max",
@@ -194,7 +201,7 @@ EXPERIMENT_16 = Config(
     ),
     experiment_name="experiment16",
     batch_size=512,
-    train_jsons=TRAIN_JSONS,
+    train_jsons=TRAIN_JSONS_WITHOUT_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=220,
@@ -206,7 +213,7 @@ EXPERIMENT_17 = Config(
     ),
     experiment_name="experiment17",
     batch_size=512,
-    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5_AND_8X8,
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=220,
