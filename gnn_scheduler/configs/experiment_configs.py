@@ -1,5 +1,7 @@
 import os
+import random
 
+random_generator = random.Random(42)
 from gnn_scheduler.configs import Config, ModelConfig
 from gnn_scheduler.metrics import Accuracy, F1Score
 from gnn_scheduler.utils import get_data_path
@@ -180,5 +182,33 @@ EXPERIMENT_15 = Config(
     lr=0.0001,
     epochs=10_000,
     early_stopping_patience=22,
+    store_each_n_steps=31,
+)
+random_generator.shuffle(TRAIN_JSONS)
+random_generator.shuffle(TRAIN_JSONS_WITHOUT_10X5)
+EXPERIMENT_16 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=1,
+        hidden_channels=32,
+    ),
+    experiment_name="experiment16",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=220,
+    store_each_n_steps=31,
+)
+EXPERIMENT_17 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment17",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS_WITHOUT_10X5,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=220,
     store_each_n_steps=31,
 )
