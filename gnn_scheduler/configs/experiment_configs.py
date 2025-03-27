@@ -219,3 +219,16 @@ EXPERIMENT_17 = Config(
     early_stopping_patience=220,
     store_each_n_steps=31,
 )
+random_generator.shuffle(TRAIN_JSONS)
+EXPERIMENT_18 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment18",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=10_000,
+    early_stopping_patience=100,
+    store_each_n_steps=31,
+)
