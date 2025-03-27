@@ -126,33 +126,42 @@ if __name__ == "__main__":
     #     num_machines=(5, 10),
     #     seed=10,
     # )
-    _main(
-        100,
-        "instances5x5_testing_11.json",
-        num_jobs=10,
-        num_machines=5,
-        seed=11,
-        duration_range=(50, 99),
-    )
-    _main(
-        100,
-        "instances5x5_testing_12.json",
-        num_jobs=10,
-        num_machines=5,
-        seed=12,
-    )
-    _main(
-        100,
-        "instances5x5_testing_13.json",
-        num_jobs=10,
-        num_machines=5,
-        seed=13,
-        duration_range=(50, 99),
-    )
-    _main(
-        100,
-        "instances5x5_testing_14.json",
-        num_jobs=10,
-        num_machines=5,
-        seed=14,
-    )
+    # _main(
+    #     100,
+    #     "instances5x5_testing_11.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=11,
+    #     duration_range=(50, 99),
+    # )
+    # _main(
+    #     100,
+    #     "instances5x5_testing_12.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=12,
+    # )
+    # _main(
+    #     100,
+    #     "instances5x5_testing_13.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=13,
+    #     duration_range=(50, 99),
+    # )
+    # _main(
+    #     100,
+    #     "instances5x5_testing_14.json",
+    #     num_jobs=10,
+    #     num_machines=5,
+    #     seed=14,
+    # )
+    for seed in range(15, 25):
+        _main(
+            10_000,
+            f"instances8x8_train_{seed}.json",
+            num_jobs=8,
+            num_machines=8,
+            seed=seed,
+            duration_range=(50, 99),
+        )
