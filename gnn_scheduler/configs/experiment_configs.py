@@ -245,3 +245,197 @@ EXPERIMENT_19 = Config(
     store_each_n_steps=31,
     use_combined_dataset=True,
 )
+EXPERIMENT_20 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment20",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+)
+EXPERIMENT_21 = Config(
+    model_config=ModelConfig(
+        aggregation="max", num_layers=1, hidden_channels=32
+    ),
+    experiment_name="experiment21",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=99,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_subset99_combined_dataset.pt",
+)
+EXPERIMENT_22 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=1,
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment22",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=99,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_subset99_combined_dataset.pt",
+)
+EXPERIMENT_23 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,  # 2 layers
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment23",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=99,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_subset99_combined_dataset.pt",
+)
+EXPERIMENT_24 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment24",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+)
+EXPERIMENT_25 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=3,  # 3 layers
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment25",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+)
+EXPERIMENT_26 = Config(
+    model_config=ModelConfig(
+        aggregation="mean",  # mean aggregation
+        num_layers=3,
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment26",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+)
+EXPERIMENT_27 = Config(
+    model_config=ModelConfig(
+        aggregation="max",  # max aggregation
+        num_layers=2,  # 2 layers
+        hidden_channels=64,  # 64 hidden channels
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment27",
+    batch_size=512,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=50,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+)
+EXPERIMENT_28 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment28",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+)
+EXPERIMENT_29 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=3,
+        hidden_channels=32,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment29",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+)
+EXPERIMENT_30 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=48,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment30",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+)
+EXPERIMENT_31 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=3,
+        hidden_channels=48,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment31",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+)

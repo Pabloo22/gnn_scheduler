@@ -111,7 +111,14 @@ def _main(config: Config):
 
 if __name__ == "__main__":
     from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_19,
+        EXPERIMENT_28,
+        EXPERIMENT_29,
+        EXPERIMENT_30,
+        EXPERIMENT_31,
+
     )
 
-    _main(EXPERIMENT_19)
+    _main(EXPERIMENT_28)
+    _main(EXPERIMENT_29)
+    _main(EXPERIMENT_30)
+    _main(EXPERIMENT_31)
