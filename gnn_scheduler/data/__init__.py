@@ -11,6 +11,7 @@ from ._utils import (
 )
 from ._job_shop_dataset import JobShopDataset
 from ._dataset_manager import DatasetManager
+from ._combined_job_shop_dataset import CombinedJobShopDataset
 
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "get_observation_action_pairs",
     "get_observation_action_pairs_from_schedule",
     "get_observation_action_pairs_with_threading",
+    "CombinedJobShopDataset",
 ]

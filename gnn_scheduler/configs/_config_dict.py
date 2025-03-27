@@ -58,3 +58,5 @@ class Config:
     processed_filenames_prefix_train: str = "instances_train10x10"
     n_batches_per_epoch: int | None = None
     store_each_n_steps: int = 1
+    use_combined_dataset: bool = False
+    combined_dataset_filename: str = "TRAIN_combined_dataset.pt"

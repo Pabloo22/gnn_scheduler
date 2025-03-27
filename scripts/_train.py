@@ -4,7 +4,11 @@ from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
 from job_shop_lib.benchmarking import load_all_benchmark_instances
 import wandb
 from gnn_scheduler.model import ResidualSchedulingGNN
-from gnn_scheduler.data import JobShopDataset, DatasetManager
+from gnn_scheduler.data import (
+    JobShopDataset,
+    DatasetManager,
+    CombinedJobShopDataset,
+)
 from gnn_scheduler.eval import get_performance_dataframe
 from gnn_scheduler.trainer import Trainer
 from gnn_scheduler.configs import Config
@@ -23,12 +27,20 @@ def _main(config: Config):
     #     processed_filenames_prefix="instances_train10x10",
     #     raw_filenames=config.train_jsons,
     # )
-    dataset_manager_train = DatasetManager(
+    dataset_manager_train: DatasetManager | DataLoader = DatasetManager(
         raw_filenames=config.train_jsons,
         dataloader_kwargs={"batch_size": config.batch_size, "shuffle": True},
         dataset_kwargs={"store_each_n_steps": config.store_each_n_steps},
-            
     )
+    if config.use_combined_dataset:
+        combined_dataset = CombinedJobShopDataset(
+            dataset_manager_train,
+            processed_filename=config.combined_dataset_filename,
+        )
+        dataset_manager_train = DataLoader(
+            combined_dataset, batch_size=config.batch_size, shuffle=True
+        )
+
     val_dataset_10x10 = JobShopDataset(
         raw_filename="instances10x10_eval_0.json"
     )
@@ -99,7 +111,7 @@ def _main(config: Config):
 
 if __name__ == "__main__":
     from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_18,
+        EXPERIMENT_19,
     )
 
-    _main(EXPERIMENT_18)
+    _main(EXPERIMENT_19)
