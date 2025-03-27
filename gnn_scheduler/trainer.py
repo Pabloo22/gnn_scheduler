@@ -1,11 +1,10 @@
 import os
 from typing import Optional, Any, TypedDict
 import torch
-import wandb
+
 from tqdm import tqdm
-
-from torch_geometric.loader import DataLoader
-
+from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
+import wandb
 from gnn_scheduler.data import JobShopData, DatasetManager
 from gnn_scheduler.metrics import Metric
 
@@ -75,6 +74,7 @@ class Trainer:
         metrics: Optional[list[Metric]] = None,
         primary_metric: Optional[str] = "Accuracy",
         early_stopping_patience: Optional[int] = None,
+        eval_every_n_epochs: int = 1,
         experiment_name: Optional[str] = None,
         project_name: str = "job-shop-imitation-learning",
         wandb_config: Optional[dict[str, Any]] = None,
@@ -158,7 +158,7 @@ class Trainer:
         )
         self.best_epoch = 0
         self.epochs_without_improvement = 0
-
+        self.eval_every_n_epochs = eval_every_n_epochs
         # Initialize W&B
         config = wandb_config or {}
         config.update(
@@ -179,6 +179,8 @@ class Trainer:
                 "grad_clip_val": self.grad_clip_val,
                 "metrics": [metric.name for metric in self.metrics],
                 "primary_metric": self.primary_metric,
+                "early_stopping_patience": self.early_stopping_patience,
+                "eval_every_n_epochs": eval_every_n_epochs,
             }
         )
         wandb.init(
@@ -233,8 +235,13 @@ class Trainer:
                 history[f"{val_key}_{metric.name}"] = []
 
         print(f"Starting training on {self.device}")
+        print(f"Evaluating every {self.eval_every_n_epochs} epochs.")
         early_stop = False
         try:
+            num_dataloaders = 1
+            if self.dataset_manager is not None:
+                num_dataloaders = len(self.dataset_manager)
+            total_epochs = self.epochs * num_dataloaders
             for i in range(self.epochs):
                 if early_stop:
                     break
@@ -270,24 +277,38 @@ class Trainer:
                     history["learning_rate"].append(current_lr)
 
                     # Validation phase
+                    metrics_to_log = {
+                        "train/loss": train_loss,
+                        "train/learning_rate": current_lr,
+                    }
+                    for name, value in train_metrics.items():
+                        metrics_to_log[f"train/{name}"] = value
+                    run_validation = (
+                        epoch % self.eval_every_n_epochs == 0
+                    ) or (epoch == total_epochs)
                     val_results: dict[str, ResultDict] = {}
-                    for (
-                        val_key,
-                        val_dataloader,
-                    ) in self.val_dataloaders.items():
-                        val_loss, val_metrics = self._validate_epoch(
-                            val_dataloader
-                        )
-                        val_results[val_key] = {
-                            "loss": val_loss,
-                            "metrics": val_metrics,
-                        }
-
-                        history[f"{val_key}_loss"].append(val_loss)
-                        for metric_name, metric_value in val_metrics.items():
-                            history[f"{val_key}_{metric_name}"].append(
-                                metric_value
+                    if run_validation:
+                        print(f"--- Running Validation for Epoch {epoch} ---")
+                        for (
+                            val_key,
+                            val_dataloader,
+                        ) in self.val_dataloaders.items():
+                            val_loss, val_metrics = self._validate_epoch(
+                                val_dataloader
                             )
+                            val_results[val_key] = {
+                                "loss": val_loss,
+                                "metrics": val_metrics,
+                            }
+
+                            history[f"{val_key}_loss"].append(val_loss)
+                            for (
+                                metric_name,
+                                metric_value,
+                            ) in val_metrics.items():
+                                history[f"{val_key}_{metric_name}"].append(
+                                    metric_value
+                                )
 
                     # Update learning rate scheduler if exists
                     if self.scheduler is not None:
@@ -295,6 +316,8 @@ class Trainer:
                             self.scheduler,
                             torch.optim.lr_scheduler.ReduceLROnPlateau,
                         ):
+                            if not run_validation:
+                                continue
                             # Use primary metric for scheduler if available
                             primary_val_dict = val_results[
                                 self.primary_val_key
@@ -483,7 +506,10 @@ class Trainer:
                 pbar.set_postfix({"loss": f"{batch_loss:.6f}"})
 
         # Calculate average loss for the epoch
-        n = len(train_dataloader) if self.n_batches_per_epoch is None else self.n_batches_per_epoch
+        if self.n_batches_per_epoch is None:
+            n = len(train_dataloader)
+        else:
+            n = self.n_batches_per_epoch
         avg_loss = epoch_loss / n
 
         # Compute final metrics
