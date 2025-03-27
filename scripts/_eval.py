@@ -4,7 +4,7 @@ import numpy as np
 from gnn_scheduler.utils import get_data_path
 
 
-def main(csv_name: str, only_taillard: bool = False):
+def main(csv_name: str, only_taillard: bool = False, model_name: str = "HGIN"):
     data_path = get_data_path()
     dpr_df = pd.read_csv(data_path / "dispatching_rule_performance.csv")
     # keep columns that start with "makespan" or "optimality_gap"
@@ -52,11 +52,13 @@ def main(csv_name: str, only_taillard: bool = False):
     # Create bar plot comparing the optimality gap of the model and each of
     # the dispatching rules for each problem size
     create_optimality_gap_plot(
-        merged_df_agg, csv_name, data_path, only_taillard_str
+        merged_df_agg, csv_name, data_path, only_taillard_str, model_name
     )
 
 
-def create_optimality_gap_plot(df, csv_name, data_path, only_taillard_str):
+def create_optimality_gap_plot(
+    df, csv_name, data_path, only_taillard_str, model_name="HGIN"
+):
     # Get all the optimality gap columns
     optimality_cols = [
         col for col in df.columns if col.startswith("optimality_gap")
@@ -84,7 +86,7 @@ def create_optimality_gap_plot(df, csv_name, data_path, only_taillard_str):
     for i, col in enumerate(optimality_cols):
         # Use a readable label: remove 'optimality_gap_' prefix and capitalize
         if col == "optimality_gap":
-            label = "Model"  # The model's optimality gap
+            label = f"{model_name} (Ours)"
         else:
             label = col.replace("optimality_gap_", "").upper()
 
@@ -118,4 +120,4 @@ def create_optimality_gap_plot(df, csv_name, data_path, only_taillard_str):
 
 
 if __name__ == "__main__":
-    main("experiment_5_results", only_taillard=True)
+    main("experiment15_results", only_taillard=True, model_name="HGIN")
