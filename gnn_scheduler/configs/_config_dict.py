@@ -60,3 +60,4 @@ class Config:
     store_each_n_steps: int = 1
     use_combined_dataset: bool = False
     combined_dataset_filename: str = "TRAIN_combined_dataset.pt"
+    val_dataset_filename: str = "instances10x10_eval_0.json"

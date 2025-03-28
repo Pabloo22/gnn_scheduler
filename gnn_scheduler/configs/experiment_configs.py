@@ -394,7 +394,7 @@ EXPERIMENT_28 = Config(
 EXPERIMENT_29 = Config(
     model_config=ModelConfig(
         aggregation="max",
-        num_layers=3,
+        num_layers=2,
         hidden_channels=32,
         use_batch_norm=False,
     ),
@@ -406,36 +406,37 @@ EXPERIMENT_29 = Config(
     early_stopping_patience=15,
     store_each_n_steps=31,
     use_combined_dataset=True,
+    val_dataset_filename="eval10to15x5to10.json",
 )
-EXPERIMENT_30 = Config(
-    model_config=ModelConfig(
-        aggregation="max",
-        num_layers=2,
-        hidden_channels=48,
-        use_batch_norm=False,
-    ),
-    experiment_name="experiment30",
-    batch_size=512,
-    train_jsons=TRAIN_JSONS,  # all train
-    lr=0.0001,
-    epochs=1000,
-    early_stopping_patience=15,
-    store_each_n_steps=31,
-    use_combined_dataset=True,
-)
-EXPERIMENT_31 = Config(
-    model_config=ModelConfig(
-        aggregation="max",
-        num_layers=3,
-        hidden_channels=48,
-        use_batch_norm=False,
-    ),
-    experiment_name="experiment31",
-    batch_size=512,
-    train_jsons=TRAIN_JSONS,  # all train
-    lr=0.0001,
-    epochs=1000,
-    early_stopping_patience=15,
-    store_each_n_steps=31,
-    use_combined_dataset=True,
-)
+# EXPERIMENT_30 = Config(
+#     model_config=ModelConfig(
+#         aggregation="max",
+#         num_layers=2,
+#         hidden_channels=48,
+#         use_batch_norm=False,
+#     ),
+#     experiment_name="experiment30",
+#     batch_size=512,
+#     train_jsons=TRAIN_JSONS,  # all train
+#     lr=0.0001,
+#     epochs=1000,
+#     early_stopping_patience=15,
+#     store_each_n_steps=31,
+#     use_combined_dataset=True,
+# )
+# EXPERIMENT_31 = Config(
+#     model_config=ModelConfig(
+#         aggregation="max",
+#         num_layers=3,
+#         hidden_channels=48,
+#         use_batch_norm=False,
+#     ),
+#     experiment_name="experiment31",
+#     batch_size=512,
+#     train_jsons=TRAIN_JSONS,  # all train
+#     lr=0.0001,
+#     epochs=1000,
+#     early_stopping_patience=15,
+#     store_each_n_steps=31,
+#     use_combined_dataset=True,
+# )
