@@ -168,8 +168,6 @@ def resume_training(
             "optimizer."
         )
 
-    best_val_metric = checkpoint.get("best_val_metric", None)
-
     # Create loss function
     criterion = torch.nn.BCEWithLogitsLoss()
 
@@ -189,6 +187,7 @@ def resume_training(
         early_stopping_patience=config.early_stopping_patience,
         experiment_name=wandb_run_name,
         n_batches_per_epoch=config.n_batches_per_epoch,
+        eval_instances=config.eval_instances,
     )
     if best_val_metric is None:
         raise ValueError(
