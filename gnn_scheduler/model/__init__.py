@@ -4,7 +4,7 @@ from ._gin import (
     initialize_hgin_layers,
 )
 from ._periodic_encoder import MultiPeriodicEncoder
-from ._gcn import initialize_hgcn_layers, HGCNLayer
+from ._gat import initialize_hgatv2_layers, HGATV2Layer
 from ._gnn import ResidualSchedulingGNN
 
 
@@ -14,6 +14,6 @@ __all__ = [
     "initialize_hgin_layers",
     "MultiPeriodicEncoder",
     "ResidualSchedulingGNN",
-    "HGCNLayer",
-    "initialize_hgcn_layers",
+    "HGATV2Layer",
+    "initialize_hgatv2_layers",
 ]

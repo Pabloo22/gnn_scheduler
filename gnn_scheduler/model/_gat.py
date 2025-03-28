@@ -1,16 +1,15 @@
-from typing import Dict, List, Optional, Tuple, Literal
-import itertools
+from typing import Dict
 import torch
 from torch import nn
-from torch_geometric.nn import GCNConv, HeteroConv
+from torch_geometric.nn import GATv2Conv, HeteroConv
 from torch_geometric.utils import dropout_edge
 
 from gnn_scheduler.model import HeteroMetadata
 
 
-class HGCNLayer(torch.nn.Module):
+class HGATV2Layer(torch.nn.Module):
     """Heterogeneous Graph Convolutional Network layer using PyG's built-in
-    GCNConv.
+    GATv2Conv.
 
     The ``__call__`` method of this module expects a dictionary of node
     features and a dictionary of edge indices.
@@ -24,18 +23,27 @@ class HGCNLayer(torch.nn.Module):
         use_batch_norm: bool = True,
         aggregation: str = "max",
         edge_dropout: float = 0.0,
+        heads: int = 1,
+        concat: bool = True,
+        dropout: float = 0.0,
+        residual: bool = True,
+        negative_slope: float = 0.2,
     ):
         super().__init__()
         self.edge_dropout = edge_dropout
 
-        # Create GCN convolutions for each edge type
+        # Create GATv2 convolutions for each edge type
         self.conv = HeteroConv(
             {
-                edge_type: GCNConv(
+                edge_type: GATv2Conv(
                     in_channels=in_channels_dict[edge_type[0]],
                     out_channels=out_channels,
-                    normalize=True,
-                    add_self_loops=True,
+                    heads=heads,
+                    concat=concat,
+                    dropout=dropout,
+                    residual=residual,
+                    negative_slope=negative_slope,
+                    add_self_loops=edge_type[0] == edge_type[2],
                 )
                 for edge_type in metadata.edge_types
             },
@@ -88,7 +96,7 @@ class HGCNLayer(torch.nn.Module):
         return out_dict
 
 
-def initialize_hgcn_layers(
+def initialize_hgatv2_layers(
     metadata: HeteroMetadata,
     in_channels_dict: Dict[str, int],
     hidden_channels: int,
@@ -96,6 +104,11 @@ def initialize_hgcn_layers(
     use_batch_norm: bool,
     aggregation: str = "max",
     edge_dropout: float = 0.0,
+    heads: int = 1,
+    concat: bool = True,
+    dropout: float = 0.0,
+    residual: bool = True,
+    negative_slope: float = 0.2,
 ) -> nn.ModuleList:
     """Returns a ``ModuleList`` of ``HGCNLayer`` instances."""
     convs = nn.ModuleList()
@@ -108,13 +121,18 @@ def initialize_hgcn_layers(
             }
         )
 
-        conv = HGCNLayer(
-            conv_in_channels,
-            hidden_channels,
-            metadata,
-            use_batch_norm,
-            aggregation,
-            edge_dropout,
+        conv = HGATV2Layer(
+            in_channels_dict=conv_in_channels,
+            out_channels=hidden_channels,
+            metadata=metadata,
+            use_batch_norm=use_batch_norm,
+            aggregation=aggregation,
+            edge_dropout=edge_dropout,
+            heads=heads,
+            concat=concat,
+            dropout=dropout,
+            residual=residual,
+            negative_slope=negative_slope,
         )
         convs.append(conv)
     return convs

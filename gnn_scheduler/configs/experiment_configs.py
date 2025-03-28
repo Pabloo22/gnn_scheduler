@@ -439,19 +439,24 @@ EXPERIMENT_30 = Config(
     val_dataset_filename="eval10to15x5to10.json",
 )
 
-# EXPERIMENT_31 = Config(
-#     model_config=ModelConfig(
-#         aggregation="max",
-#         num_layers=3,
-#         hidden_channels=48,
-#         use_batch_norm=False,
-#     ),
-#     experiment_name="experiment31",
-#     batch_size=512,
-#     train_jsons=TRAIN_JSONS,  # all train
-#     lr=0.0001,
-#     epochs=1000,
-#     early_stopping_patience=15,
-#     store_each_n_steps=31,
-#     use_combined_dataset=True,
-# )
+EXPERIMENT_31 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=32,
+        use_batch_norm=False,
+        gnn_type="HGATV2",
+    ),
+    experiment_name="experiment31",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=20,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    eval_instances=TAILLARD15X15_INSTANCES,
+    val_dataset_filename="eval10to15x5to10.json",
+    primary_val_key="eval10to15x5to10",
+    combined_dataset_filename="TRAIN_combined_dataset.pt",
+)

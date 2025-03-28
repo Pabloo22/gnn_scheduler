@@ -7,7 +7,7 @@ from gnn_scheduler.model import (
     initialize_hgin_layers,
     HeteroMetadata,
     MultiPeriodicEncoder,
-    initialize_hgcn_layers,
+    initialize_hgatv2_layers,
 )
 
 
@@ -105,8 +105,8 @@ class ResidualSchedulingGNN(nn.Module):
                 aggregation=aggregation,
                 edge_dropout=edge_dropout,
             )
-        elif gnn_type == "HGCN":
-            self.convs = initialize_hgcn_layers(
+        elif gnn_type == "HGATV2":
+            self.convs = initialize_hgatv2_layers(
                 metadata,
                 in_channels_dict={
                     node_type: initial_node_features_dim
