@@ -176,8 +176,8 @@ if __name__ == "__main__":
     #     )
     _main(
         100,
-        "eval10to20x5to15.json",
-        num_jobs=(10, 20),
-        num_machines=(5, 15),
+        "eval10to15x5to10.json",
+        num_jobs=(10, 15),
+        num_machines=(5, 10),
         seed=31,
     )
