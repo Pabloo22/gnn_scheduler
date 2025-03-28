@@ -104,7 +104,7 @@ class Trainer:
         if primary_val_key not in val_dataloaders:
             raise ValueError(
                 f"Primary validation key '{primary_val_key}' not found in "
-                "val_dataloaders"
+                f"val_dataloaders: {list(val_dataloaders.keys())}"
             )
         self.eval_instances = eval_instances
         if eval_instances is not None:

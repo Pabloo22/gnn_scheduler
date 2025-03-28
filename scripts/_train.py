@@ -54,7 +54,7 @@ def _main(config: Config):
         model=model,
         train_dataloader=dataset_manager_train,
         val_dataloaders={
-            "instances10x10_eval": val_dataloader_10x10,
+            config.primary_val_key: val_dataloader_10x10,
         },
         optimizer=optimizer,
         criterion=criterion,
@@ -152,7 +152,7 @@ def resume_training(
         )
 
     val_dataset = JobShopDataset(raw_filename=config.val_dataset_filename)
-    val_dataloader_10x10 = DataLoader(
+    val_dataloader = DataLoader(
         val_dataset, batch_size=config.batch_size
     )
 
@@ -176,7 +176,7 @@ def resume_training(
         model=best_model,
         train_dataloader=dataset_manager_train,
         val_dataloaders={
-            "instances10x10_eval": val_dataloader_10x10,
+            config.primary_val_key: val_dataloader,
         },
         optimizer=optimizer,
         criterion=criterion,
@@ -287,4 +287,4 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    _main(EXPERIMENT_30)
+    _main(EXPERIMENT_31)
