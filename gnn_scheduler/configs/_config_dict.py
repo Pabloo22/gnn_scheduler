@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from job_shop_lib import JobShopInstance
 from gnn_scheduler.model import HeteroMetadata
 from gnn_scheduler.metrics import Accuracy, Precision, Recall, F1Score, Metric
 
@@ -61,3 +62,4 @@ class Config:
     use_combined_dataset: bool = False
     combined_dataset_filename: str = "TRAIN_combined_dataset.pt"
     val_dataset_filename: str = "instances10x10_eval_0.json"
+    eval_instances: list[JobShopInstance] | None = None

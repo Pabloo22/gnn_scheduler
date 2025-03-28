@@ -65,6 +65,7 @@ def _main(config: Config):
         early_stopping_patience=config.early_stopping_patience,
         experiment_name=config.experiment_name,
         n_batches_per_epoch=config.n_batches_per_epoch,
+        eval_instances=config.eval_instances,
     )
 
     # Train the model
@@ -287,4 +288,4 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    resume_training(EXPERIMENT_29)
+    _main(EXPERIMENT_30)

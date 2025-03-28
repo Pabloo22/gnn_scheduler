@@ -1,10 +1,19 @@
 import os
 import random
-
-random_generator = random.Random(42)
+from job_shop_lib.benchmarking import load_all_benchmark_instances
 from gnn_scheduler.configs import Config, ModelConfig
 from gnn_scheduler.metrics import Accuracy, F1Score
 from gnn_scheduler.utils import get_data_path
+
+
+TAILLARD15X15_INSTANCES_NAMES = [f"ta{i:02d}" for i in range(1, 11)]
+TAILLARD15X15_INSTANCES = [
+    instance
+    for name, instance in load_all_benchmark_instances().items()
+    if name in TAILLARD15X15_INSTANCES_NAMES
+]
+
+random_generator = random.Random(42)
 
 # Get all json files under DATA / raw dir with "train" in their name
 TRAIN_JSONS = [
@@ -408,22 +417,26 @@ EXPERIMENT_29 = Config(
     use_combined_dataset=True,
     val_dataset_filename="eval10to15x5to10.json",
 )
-# EXPERIMENT_30 = Config(
-#     model_config=ModelConfig(
-#         aggregation="max",
-#         num_layers=2,
-#         hidden_channels=48,
-#         use_batch_norm=False,
-#     ),
-#     experiment_name="experiment30",
-#     batch_size=512,
-#     train_jsons=TRAIN_JSONS,  # all train
-#     lr=0.0001,
-#     epochs=1000,
-#     early_stopping_patience=15,
-#     store_each_n_steps=31,
-#     use_combined_dataset=True,
-# )
+
+EXPERIMENT_30 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=48,
+        use_batch_norm=False,
+    ),
+    experiment_name="experiment30",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    eval_instances=TAILLARD15X15_INSTANCES,
+    val_dataset_filename="eval10to15x5to10.json",
+)
+
 # EXPERIMENT_31 = Config(
 #     model_config=ModelConfig(
 #         aggregation="max",
