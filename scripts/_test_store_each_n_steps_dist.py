@@ -1,7 +1,7 @@
 
 
 n_elements = 10 * 5
-visit_each_n_steps = 33
+visit_each_n_steps = 99
 counter_of_visits = [0] * n_elements
 i = 0
 for _ in range(12500):

@@ -9,11 +9,11 @@ from gnn_scheduler.data import (
     DatasetManager,
     CombinedJobShopDataset,
 )
-from gnn_scheduler.eval import get_performance_dataframe
+from gnn_scheduler.eval import get_performance_dataframe, load_model
 from gnn_scheduler.trainer import Trainer
 from gnn_scheduler.configs import Config
 from gnn_scheduler.solve_jssp import solve_job_shop_with_gnn
-from gnn_scheduler.utils import get_data_path
+from gnn_scheduler.utils import get_data_path, get_project_path
 
 
 def _main(config: Config):
@@ -109,16 +109,66 @@ def _main(config: Config):
     wandb.finish()
 
 
-if __name__ == "__main__":
-    from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_28,
-        EXPERIMENT_29,
-        EXPERIMENT_30,
-        EXPERIMENT_31,
+def evaluate_model_in_crashed_run(config: Config):
+    name = config.experiment_name + "_evaluated"
+    wandb.init(project="job-shop-imitation-learning", name=name)
+    model_path = str(
+        get_project_path()
+        / "checkpoints"
+        / config.experiment_name
+        / "best_model.pth"
+    )
+    best_model = load_model(model_path, config)
 
+    gnn_solver = partial(
+        solve_job_shop_with_gnn,
+        model=best_model,
+    )
+    # Evaluate the model
+    performance_df = get_performance_dataframe(
+        gnn_solver,
+        load_all_benchmark_instances().values(),
+    )
+    print(performance_df)
+
+    # Save .csv file with results
+    performance_df.to_csv(
+        get_data_path() / f"{config.experiment_name}_results.csv",
+        index=False,
     )
 
-    _main(EXPERIMENT_28)
-    _main(EXPERIMENT_29)
-    _main(EXPERIMENT_30)
-    _main(EXPERIMENT_31)
+    # save performance metrics to wandb
+    wandb.log({"performance_metrics": performance_df})
+
+    # Save performance_df to csv
+    performance_df.to_csv(
+        get_data_path() / f"{config.experiment_name}_results.csv",
+        index=False,
+    )
+    wandb.finish()
+
+
+if __name__ == "__main__":
+    # from gnn_scheduler.configs.experiment_configs import (
+    #     EXPERIMENT_24,
+    #     EXPERIMENT_25,
+    #     EXPERIMENT_26,
+    #     EXPERIMENT_27,
+    # )
+
+    # _main(EXPERIMENT_24)
+    # _main(EXPERIMENT_25)
+    # _main(EXPERIMENT_26)
+    # _main(EXPERIMENT_27)
+
+    # Evaluate exp 24, 23 and 22 (in that order)
+
+    from gnn_scheduler.configs.experiment_configs import (
+        EXPERIMENT_22,
+        EXPERIMENT_23,
+        EXPERIMENT_24,
+    )
+
+    evaluate_model_in_crashed_run(EXPERIMENT_24)
+    evaluate_model_in_crashed_run(EXPERIMENT_23)
+    evaluate_model_in_crashed_run(EXPERIMENT_22)
