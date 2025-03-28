@@ -165,12 +165,19 @@ if __name__ == "__main__":
     #        seed=seed,
     #        duration_range=(50, 99),
     #    )
-    for seed in range(25, 30):
-        _main(
-            1_000,
-            f"instances10to15x5to10_train_{seed}.json",
-            num_jobs=(10, 15),
-            num_machines=(5, 10),
-            seed=seed,
-            duration_range=(50, 99),
-        )
+    # for seed in range(25, 30):
+    #     _main(
+    #         1_000,
+    #         f"instances10to15x5to10_train_{seed}.json",
+    #         num_jobs=(10, 15),
+    #         num_machines=(5, 10),
+    #         seed=seed,
+    #         duration_range=(50, 99),
+    #     )
+    _main(
+        100,
+        "eval10to20x5to15.json",
+        num_jobs=(10, 20),
+        num_machines=(5, 15),
+        seed=31,
+    )
