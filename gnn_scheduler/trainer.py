@@ -377,14 +377,13 @@ class Trainer:
                                 metric_value
                             )
 
-                    wandb.log(metrics_to_log, step=epoch)
                     # Check if this is the best model on primary validation set
                     is_best = False
                     if self.eval_instances is not None:
                         total_optimality_gap = 0.0
                         for instance in tqdm(self.eval_instances, desc="Eval"):
                             schedule = solve_job_shop_with_gnn(
-                                self.model, instance
+                                instance, self.model
                             )
                             makespan = schedule.makespan()
                             optimal_makespan = instance.metadata["optimum"]
@@ -395,6 +394,21 @@ class Trainer:
                         avg_optimality_gap = total_optimality_gap / len(
                             self.eval_instances
                         )
+                        # Add optimality gap to metrics to log
+                        metrics_to_log["val/val_instances/optimality_gap"] = (
+                            avg_optimality_gap
+                        )
+                        # Add to val results
+                        if run_validation:
+
+                            val_results["eval_instances"] = {
+                                "metrics": {},
+                                "loss": -1,
+                            }
+                            val_results["eval_instances"]["metrics"] = {}
+                            val_results["eval_instances"]["metrics"][
+                                "optimality_gap"
+                            ] = avg_optimality_gap
                         is_best = avg_optimality_gap < self.best_metric_value
                         if is_best:
                             print(
@@ -461,7 +475,7 @@ class Trainer:
                             self._save_checkpoint(
                                 epoch, val_loss, is_best=False
                             )
-
+                    wandb.log(metrics_to_log, step=epoch)
                     # Print epoch summary
                     self._print_epoch_summary(
                         epoch, train_loss, train_metrics, val_results
