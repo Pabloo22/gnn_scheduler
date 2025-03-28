@@ -1,11 +1,13 @@
 import torch
 from torch import nn
+import warnings
 
 from gnn_scheduler.data import JobShopData
 from gnn_scheduler.model import (
     initialize_hgin_layers,
     HeteroMetadata,
     MultiPeriodicEncoder,
+    initialize_hgcn_layers,
 )
 
 
@@ -43,6 +45,7 @@ class ResidualSchedulingGNN(nn.Module):
         no_message_passing: bool = False,
         use_mlp_encoder: bool = False,
         edge_dropout: float = 0.0,
+        gnn_type: str = "HGIN",
     ):
         super().__init__()
 
@@ -56,7 +59,8 @@ class ResidualSchedulingGNN(nn.Module):
             hidden_channels = initial_node_features_dim
 
         self.use_mlp_encoder = use_mlp_encoder
-
+        if use_batch_norm:
+            warnings.warn("Batch normalization is highly discouraged!")
         if not use_mlp_encoder:
             self.encoders = nn.ModuleDict(
                 {
@@ -87,18 +91,35 @@ class ResidualSchedulingGNN(nn.Module):
                     for node_type in metadata.node_types
                 }
             )
-        self.convs = initialize_hgin_layers(
-            metadata,
-            in_channels_dict={
-                node_type: initial_node_features_dim
-                for node_type in metadata.node_types
-            },
-            hidden_channels=hidden_channels,
-            num_layers=num_layers,
-            use_batch_norm=use_batch_norm,
-            aggregation=aggregation,
-            edge_dropout=edge_dropout,
-        )
+        self.gnn_type = gnn_type
+        if gnn_type == "HGIN":
+            self.convs = initialize_hgin_layers(
+                metadata,
+                in_channels_dict={
+                    node_type: initial_node_features_dim
+                    for node_type in metadata.node_types
+                },
+                hidden_channels=hidden_channels,
+                num_layers=num_layers,
+                use_batch_norm=use_batch_norm,
+                aggregation=aggregation,
+                edge_dropout=edge_dropout,
+            )
+        elif gnn_type == "HGCN":
+            self.convs = initialize_hgcn_layers(
+                metadata,
+                in_channels_dict={
+                    node_type: initial_node_features_dim
+                    for node_type in metadata.node_types
+                },
+                hidden_channels=hidden_channels,
+                num_layers=num_layers,
+                use_batch_norm=use_batch_norm,
+                aggregation=aggregation,
+                edge_dropout=edge_dropout,
+            )
+        else:
+            raise ValueError(f"Unknown GNN type: {gnn_type}")
 
         # Score function MLP
         score_in_channels = hidden_channels * len(metadata.node_types)
