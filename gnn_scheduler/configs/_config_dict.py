@@ -66,3 +66,4 @@ class Config:
     combined_dataset_filename: str = "TRAIN_combined_dataset.pt"
     val_dataset_filename: str = "instances10x10_eval_0.json"
     eval_instances: list[JobShopInstance] | None = None
+    allow_operation_reservation: bool = False

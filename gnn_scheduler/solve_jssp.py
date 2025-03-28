@@ -9,14 +9,14 @@ from job_shop_lib.reinforcement_learning import (
     ResourceTaskGraphObservationDict,
 )
 from job_shop_lib.dispatching import (
-    create_composite_operation_filter,
+    ready_operations_filter_factory,
     ReadyOperationsFilterType,
 )
 from gnn_scheduler.data import JobShopData, DEFAULT_FEATURE_OBSERVERS_TYPES
 
 
 def setup_environment(
-    job_shop_instance,
+    job_shop_instance, allow_operation_reservation: bool = False
 ) -> tuple[
     ResourceTaskGraphObservation[SingleJobShopGraphEnv],
     ResourceTaskGraphObservationDict,
@@ -35,16 +35,16 @@ def setup_environment(
     # Build a graph from the job shop instance
     graph = build_resource_task_graph(job_shop_instance)
 
+    if allow_operation_reservation:
+        filter = ReadyOperationsFilterType.DOMINATED_OPERATIONS
+    else:
+        filter = ReadyOperationsFilterType.NON_IMMEDIATE_OPERATIONS
+
     # Create an environment
     env = SingleJobShopGraphEnv(
         graph,
         feature_observer_configs=DEFAULT_FEATURE_OBSERVERS_TYPES,
-        ready_operations_filter=create_composite_operation_filter(
-            [
-                ReadyOperationsFilterType.DOMINATED_OPERATIONS,
-                ReadyOperationsFilterType.NON_IMMEDIATE_OPERATIONS,
-            ]
-        ),
+        ready_operations_filter=ready_operations_filter_factory(filter),
     )
 
     # Wrap the environment with the observation wrapper
@@ -175,18 +175,24 @@ def map_to_original_action(
     return (job_id, machine_id)  # Return in format expected by env.step()
 
 
-def solve_job_shop_with_gnn(job_shop_instance, model):
+def solve_job_shop_with_gnn(
+    job_shop_instance, model, allow_operation_reservation: bool = False
+):
     """
     Solve a job shop scheduling instance using a GNN model to select actions.
 
     Args:
         job_shop_instance: The job shop instance to solve
         model: The trained GNN model for action selection
+        allow_operation_reservation: Whether to allow operation reservation
 
     Returns:
         Schedule: The final schedule produced by the solver
     """
-    wrapped_env, obs, info = setup_environment(job_shop_instance)
+    wrapped_env, obs, info = setup_environment(
+        job_shop_instance,
+        allow_operation_reservation=allow_operation_reservation,
+    )
     device = next(model.parameters()).device
     done = False
     while not done:

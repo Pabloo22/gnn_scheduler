@@ -188,6 +188,7 @@ def resume_training(
         experiment_name=wandb_run_name,
         n_batches_per_epoch=config.n_batches_per_epoch,
         eval_instances=config.eval_instances,
+        allow_operation_reservation=config.allow_operation_reservation,
     )
     if best_val_metric is None:
         raise ValueError(
@@ -287,4 +288,5 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    _main(EXPERIMENT_31)
+    _main(EXPERIMENT_34)
+    _main(EXPERIMENT_33)

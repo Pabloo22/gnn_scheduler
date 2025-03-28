@@ -89,7 +89,9 @@ class Trainer:
         wandb_config: Optional[dict[str, Any]] = None,
         n_batches_per_epoch: Optional[int] = None,
         eval_instances: Optional[list[JobShopInstance]] = None,
+        allow_operation_reservation: bool = False,
     ):
+        self.allow_operation_reservation = allow_operation_reservation
         self.n_batches_per_epoch = n_batches_per_epoch
         self.model = model
         self.dataset_manager: Optional[DatasetManager] = None
@@ -383,7 +385,11 @@ class Trainer:
                         total_optimality_gap = 0.0
                         for instance in tqdm(self.eval_instances, desc="Eval"):
                             schedule = solve_job_shop_with_gnn(
-                                instance, self.model
+                                instance,
+                                self.model,
+                                allow_operation_reservation=(
+                                    self.allow_operation_reservation
+                                ),
                             )
                             makespan = schedule.makespan()
                             optimal_makespan = instance.metadata["optimum"]
