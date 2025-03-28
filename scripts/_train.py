@@ -41,11 +41,9 @@ def _main(config: Config):
             combined_dataset, batch_size=config.batch_size, shuffle=True
         )
 
-    val_dataset_10x10 = JobShopDataset(
-        raw_filename="instances10x10_eval_0.json"
-    )
+    val_dataset = JobShopDataset(raw_filename=config.val_dataset_filename)
     val_dataloader_10x10 = DataLoader(
-        val_dataset_10x10, batch_size=config.batch_size
+        val_dataset, batch_size=config.batch_size
     )
     # Set up optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr)
@@ -165,4 +163,4 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    evaluate_model_in_crashed_run(EXPERIMENT_28)
+    _main(EXPERIMENT_29)
