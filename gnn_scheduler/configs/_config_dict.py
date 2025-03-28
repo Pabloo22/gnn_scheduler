@@ -23,6 +23,7 @@ class ModelConfig:
     no_message_passing: bool = False
     use_mlp_encoder: bool = False
     edge_dropout: float = 0.0
+    gnn_type: str = "HGIN"
 
     def to_dict(self):
         return {
@@ -36,6 +37,8 @@ class ModelConfig:
             "aggregation": self.aggregation,
             "no_message_passing": self.no_message_passing,
             "use_mlp_encoder": self.use_mlp_encoder,
+            "edge_dropout": self.edge_dropout,
+            "gnn_type": self.gnn_type,
         }
 
 
