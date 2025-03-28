@@ -349,6 +349,8 @@ EXPERIMENT_25 = Config(
     store_each_n_steps=31,
     use_combined_dataset=True,
     combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
+    eval_instances=TAILLARD15X15_INSTANCES,
+    val_dataset_filename="eval10to15x5to10.json",
 )
 EXPERIMENT_26 = Config(
     model_config=ModelConfig(
