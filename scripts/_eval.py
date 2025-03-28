@@ -120,4 +120,4 @@ def create_optimality_gap_plot(
 
 
 if __name__ == "__main__":
-    main("experiment28_results", only_taillard=True, model_name="HGIN")
+    main("experiment29_results", only_taillard=True, model_name="HGIN")
