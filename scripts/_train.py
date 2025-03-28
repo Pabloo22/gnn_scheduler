@@ -163,12 +163,6 @@ if __name__ == "__main__":
 
     # Evaluate exp 24, 23 and 22 (in that order)
 
-    from gnn_scheduler.configs.experiment_configs import (
-        EXPERIMENT_22,
-        EXPERIMENT_23,
-        EXPERIMENT_24,
-    )
+    from gnn_scheduler.configs.experiment_configs import *
 
-    evaluate_model_in_crashed_run(EXPERIMENT_24)
-    evaluate_model_in_crashed_run(EXPERIMENT_23)
-    evaluate_model_in_crashed_run(EXPERIMENT_22)
+    evaluate_model_in_crashed_run(EXPERIMENT_28)
