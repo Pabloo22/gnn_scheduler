@@ -530,3 +530,20 @@ EXPERIMENT_34 = Config(
     combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
     allow_operation_reservation=True,
 )
+
+EXPERIMENT_35 = Config(
+    model_config=ModelConfig(
+        use_batch_norm=False,
+        no_message_passing=True,
+    ),
+    experiment_name="experiment35",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,  # all train
+    lr=0.0001,
+    epochs=1000,
+    early_stopping_patience=15,
+    store_each_n_steps=31,
+    use_combined_dataset=True,
+    eval_instances=TAILLARD15X15_INSTANCES,
+    val_dataset_filename="eval10to15x5to10.json",
+)

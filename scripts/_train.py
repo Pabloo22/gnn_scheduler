@@ -288,5 +288,4 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    _main(EXPERIMENT_34)
-    _main(EXPERIMENT_33)
+    _main(EXPERIMENT_35)
