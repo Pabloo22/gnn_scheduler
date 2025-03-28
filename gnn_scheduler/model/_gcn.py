@@ -7,6 +7,7 @@ from torch_geometric.utils import dropout_edge
 
 from gnn_scheduler.model import HeteroMetadata
 
+
 class HGCNLayer(torch.nn.Module):
     """Heterogeneous Graph Convolutional Network layer using PyG's built-in
     GCNConv.
@@ -21,7 +22,7 @@ class HGCNLayer(torch.nn.Module):
         out_channels: int,
         metadata: HeteroMetadata,
         use_batch_norm: bool = True,
-        aggregation: str = "sum",
+        aggregation: str = "max",
         edge_dropout: float = 0.0,
     ):
         super().__init__()
@@ -48,7 +49,7 @@ class HGCNLayer(torch.nn.Module):
                 self.batch_norms[node_type] = nn.BatchNorm1d(out_channels)
 
         # ReLU activation
-        self.relu = nn.ReLU()
+        self.elu = nn.ELU()
 
     def forward(self, x_dict, edge_index_dict):
         # Apply edge dropout during training
@@ -82,7 +83,7 @@ class HGCNLayer(torch.nn.Module):
 
         # Apply ReLU activation
         for node_type in out_dict.keys():
-            out_dict[node_type] = self.relu(out_dict[node_type])
+            out_dict[node_type] = self.elu(out_dict[node_type])
 
         return out_dict
 
@@ -93,7 +94,7 @@ def initialize_hgcn_layers(
     hidden_channels: int,
     num_layers: int,
     use_batch_norm: bool,
-    aggregation: str = "sum",
+    aggregation: str = "max",
     edge_dropout: float = 0.0,
 ) -> nn.ModuleList:
     """Returns a ``ModuleList`` of ``HGCNLayer`` instances."""
