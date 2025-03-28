@@ -1,12 +1,13 @@
 import os
 from typing import Optional, Any, TypedDict
 import torch
-
+from job_shop_lib import JobShopInstance
 from tqdm import tqdm
 from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
 import wandb
 from gnn_scheduler.data import JobShopData, DatasetManager
 from gnn_scheduler.metrics import Metric
+from gnn_scheduler.solve_jssp import solve_job_shop_with_gnn
 
 
 class ResultDict(TypedDict):
@@ -55,6 +56,14 @@ class Trainer:
             Name for W&B project
         wandb_config:
             Additional config parameters to log to W&B
+        n_batches_per_epoch:
+            Number of batches to process per epoch (optional)
+        eval_instances:
+            Used as an extra metric for evaluation, if used it automatically
+            becomes the primary metric. It is a list of JobShopInstance
+            objects that we be solved. Then, the avg optimality gap will be
+            calculated. The model with the lowest gap will be saved as the best
+            one. They should have "optimum" in the metadata dict attribute set.
     """
 
     def __init__(
@@ -79,6 +88,7 @@ class Trainer:
         project_name: str = "job-shop-imitation-learning",
         wandb_config: Optional[dict[str, Any]] = None,
         n_batches_per_epoch: Optional[int] = None,
+        eval_instances: Optional[list[JobShopInstance]] = None,
     ):
         self.n_batches_per_epoch = n_batches_per_epoch
         self.model = model
@@ -96,6 +106,15 @@ class Trainer:
                 f"Primary validation key '{primary_val_key}' not found in "
                 "val_dataloaders"
             )
+        self.eval_instances = eval_instances
+        if eval_instances is not None:
+            # Check if eval_instances have "optimum" in metadata
+            for instance in eval_instances:
+                if "optimum" not in instance.metadata:
+                    raise ValueError(
+                        "Eval instances must have 'optimum' in metadata"
+                    )
+                metric_mode = "min"
         self.primary_val_key = primary_val_key
 
         self.criterion = criterion
@@ -127,7 +146,8 @@ class Trainer:
         if metric_mode not in ["max", "min"]:
             raise ValueError("metric_mode must be either 'max' or 'min'")
         self.metric_mode = metric_mode
-
+        if self.eval_instances is not None:
+            self.metric_mode = "min"
         self.grad_clip_val = grad_clip_val
 
         # Initialize metrics
@@ -360,7 +380,39 @@ class Trainer:
                     wandb.log(metrics_to_log, step=epoch)
                     # Check if this is the best model on primary validation set
                     is_best = False
-                    if self.primary_metric:
+                    if self.eval_instances is not None:
+                        total_optimality_gap = 0.0
+                        for instance in tqdm(self.eval_instances, desc="Eval"):
+                            schedule = solve_job_shop_with_gnn(
+                                self.model, instance
+                            )
+                            makespan = schedule.makespan()
+                            optimal_makespan = instance.metadata["optimum"]
+                            optimality_gap = (
+                                makespan - optimal_makespan
+                            ) / optimal_makespan
+                            total_optimality_gap += optimality_gap
+                        avg_optimality_gap = total_optimality_gap / len(
+                            self.eval_instances
+                        )
+                        is_best = avg_optimality_gap < self.best_metric_value
+                        if is_best:
+                            print(
+                                f"New best model with {self.primary_val_key} "
+                                f"avg optimality gap: {avg_optimality_gap:.6f}"
+                            )
+                            self.best_metric_value = avg_optimality_gap
+                            self.best_epoch = epoch
+                            self.epochs_without_improvement = 0
+                            self._save_checkpoint(
+                                epoch, avg_optimality_gap, is_best=True
+                            )
+                        else:
+                            self.epochs_without_improvement += 1
+                            self._save_checkpoint(
+                                epoch, avg_optimality_gap, is_best=False
+                            )
+                    elif self.primary_metric:
                         # Use the primary metric if available
                         primary_val = val_results[self.primary_val_key][
                             "metrics"
