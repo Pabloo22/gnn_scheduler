@@ -67,3 +67,4 @@ class Config:
     val_dataset_filename: str = "instances10x10_eval_0.json"
     eval_instances: list[JobShopInstance] | None = None
     allow_operation_reservation: bool = False
+    neighbor_sampling: int | None = None

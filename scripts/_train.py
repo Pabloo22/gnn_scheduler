@@ -1,6 +1,9 @@
 from functools import partial
 import torch
-from torch_geometric.loader import DataLoader  # type: ignore[import-untyped]
+from torch_geometric.loader import (  # type: ignore[import-untyped]
+    DataLoader,
+    NeighborLoader,
+)
 from job_shop_lib.benchmarking import load_all_benchmark_instances
 import wandb
 from gnn_scheduler.model import ResidualSchedulingGNN
@@ -37,14 +40,32 @@ def _main(config: Config):
             dataset_manager_train,
             processed_filename=config.combined_dataset_filename,
         )
-        dataset_manager_train = DataLoader(
-            combined_dataset, batch_size=config.batch_size, shuffle=True
-        )
+        if config.neighbor_sampling is None:
+            dataset_manager_train = DataLoader(
+                combined_dataset, batch_size=config.batch_size, shuffle=True
+            )
+        else:
+            dataset_manager_train = NeighborLoader(
+                combined_dataset,
+                num_neighbors=[config.neighbor_sampling]
+                * config.model_config.num_layers,
+                batch_size=config.batch_size,
+                shuffle=True,
+            )
 
     val_dataset = JobShopDataset(raw_filename=config.val_dataset_filename)
-    val_dataloader_10x10 = DataLoader(
-        val_dataset, batch_size=config.batch_size
-    )
+    if config.neighbor_sampling is None:
+        val_dataloader = DataLoader(
+            val_dataset, batch_size=config.batch_size
+        )
+    else:
+        val_dataloader = NeighborLoader(
+            val_dataset,
+            num_neighbors=[config.neighbor_sampling]
+            * config.model_config.num_layers,
+            batch_size=config.batch_size,
+            shuffle=True,
+        )
     # Set up optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.lr)
 
@@ -54,7 +75,7 @@ def _main(config: Config):
         model=model,
         train_dataloader=dataset_manager_train,
         val_dataloaders={
-            config.primary_val_key: val_dataloader_10x10,
+            config.primary_val_key: val_dataloader,
         },
         optimizer=optimizer,
         criterion=criterion,
@@ -73,7 +94,9 @@ def _main(config: Config):
     best_model = trainer.model
     gnn_solver = partial(
         solve_job_shop_with_gnn,
-        model=best_model,
+        model=best_model,  # type: ignore[arg-type]
+        allow_operation_reservation=config.allow_operation_reservation,
+        neighborhood_sampling=config.neighbor_sampling,
     )
     # Evaluate the model
     performance_df = get_performance_dataframe(
@@ -288,4 +311,6 @@ if __name__ == "__main__":
 
     from gnn_scheduler.configs.experiment_configs import *
 
-    _main(EXPERIMENT_35)
+    _main(EXPERIMENT_36)
+    _main(EXPERIMENT_37)
+    _main(EXPERIMENT_38)

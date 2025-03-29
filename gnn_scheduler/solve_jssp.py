@@ -12,8 +12,9 @@ from job_shop_lib.dispatching import (
     ready_operations_filter_factory,
     ReadyOperationsFilterType,
 )
+from torch_geometric.loader import NeighborLoader
 from gnn_scheduler.data import JobShopData, DEFAULT_FEATURE_OBSERVERS_TYPES
-
+from gnn_scheduler.model import ResidualSchedulingGNN
 
 def setup_environment(
     job_shop_instance, allow_operation_reservation: bool = False
@@ -176,7 +177,10 @@ def map_to_original_action(
 
 
 def solve_job_shop_with_gnn(
-    job_shop_instance, model, allow_operation_reservation: bool = False
+    job_shop_instance,
+    model: ResidualSchedulingGNN,
+    allow_operation_reservation: bool = False,
+    neighborhood_sampling: int | None = None,
 ):
     """
     Solve a job shop scheduling instance using a GNN model to select actions.
@@ -206,6 +210,13 @@ def solve_job_shop_with_gnn(
         if len(available_ops) == 1:
             best_action_idx = 0
         else:
+            if neighborhood_sampling:
+                temp_dataset = [job_shop_data]
+                sampler = NeighborLoader(
+                    temp_dataset,
+                    [neighborhood_sampling] * model.num_layers,
+                )
+                job_shop_data = next(iter(sampler))
             best_action_idx, _ = predict_best_action(model, job_shop_data)
         best_action_tuple = job_shop_data["valid_pairs"][
             best_action_idx
