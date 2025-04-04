@@ -19,7 +19,7 @@ from gnn_scheduler.solve_jssp import solve_job_shop_with_gnn
 from gnn_scheduler.utils import get_data_path, get_project_path
 
 
-def _main(config: Config):
+def _run_experiment(config: Config):
     # Create or load your model
     model = ResidualSchedulingGNN(
         **config.model_config.to_dict(),
@@ -133,7 +133,7 @@ def _main(config: Config):
 
 def resume_training(
     config: Config,
-    checkpoint_path: str = None,
+    checkpoint_path: str | None = None,
     best_val_metric: float | None = None,
 ):
     """
@@ -294,23 +294,19 @@ def evaluate_model_in_crashed_run(config: Config):
     wandb.finish()
 
 
+def _main(config: Config):
+    num_runs = config.num_runs
+    original_experiment_name = config.experiment_name
+    for run in range(1, num_runs + 1):
+        if num_runs > 1:
+            config.experiment_name = f"{original_experiment_name}_run_{run}"
+        _run_experiment(config)
+
+
 if __name__ == "__main__":
-    # from gnn_scheduler.configs.experiment_configs import (
-    #     EXPERIMENT_24,
-    #     EXPERIMENT_25,
-    #     EXPERIMENT_26,
-    #     EXPERIMENT_27,
-    # )
-
-    # _main(EXPERIMENT_24)
-    # _main(EXPERIMENT_25)
-    # _main(EXPERIMENT_26)
-    # _main(EXPERIMENT_27)
-
-    # Evaluate exp 24, 23 and 22 (in that order)
-
     from gnn_scheduler.configs.experiment_configs import *
 
-    _main(EXPERIMENT_36)
-    _main(EXPERIMENT_37)
-    _main(EXPERIMENT_38)
+    _main(EXPERIMENT_39)
+    _main(EXPERIMENT_40)
+    _main(EXPERIMENT_41)
+    _main(EXPERIMENT_42)
