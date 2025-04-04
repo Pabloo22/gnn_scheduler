@@ -628,8 +628,7 @@ EXPERIMENT_39 = Config(
     ),
     experiment_name="experiment39",
     batch_size=512,
-    train_jsons=ONLY_10X10_TRAIN_JSONS,  # CHANGEE
-    lr=0.0001,
+    train_jsons=ONLY_10X10_TRAIN_JSONS,
     epochs=1000,
     early_stopping_patience=10,
     store_each_n_steps=31,  # CHANGEEE
@@ -637,7 +636,7 @@ EXPERIMENT_39 = Config(
     eval_instances=TAILLARD15X15_INSTANCES,
     val_dataset_filename="eval10to15x5to10.json",
     primary_val_key="eval10to15x5to10",
-    combined_dataset_filename="TRAIN_combined_dataset_subset11.pt",
+    combined_dataset_filename="TRAIN_10X10_combined_dataset.pt",
     num_runs=2,
 )
 EXPERIMENT_40 = Config(
@@ -702,6 +701,28 @@ EXPERIMENT_42 = Config(
     epochs=1000,
     early_stopping_patience=10,
     store_each_n_steps=11,
+    use_combined_dataset=True,
+    eval_instances=TAILLARD15X15_INSTANCES,
+    val_dataset_filename="eval10to15x5to10.json",
+    primary_val_key="eval10to15x5to10",
+    combined_dataset_filename="TRAIN_combined_dataset_subset11.pt",
+    num_runs=2,
+)
+EXPERIMENT_43 = Config(
+    model_config=ModelConfig(
+        aggregation="max",
+        num_layers=2,
+        hidden_channels=256,
+        use_batch_norm=False,
+        gnn_type="HGATV2",
+        edge_dropout=0.1,
+    ),
+    experiment_name="experiment43",
+    batch_size=512,
+    train_jsons=TRAIN_JSONS,
+    epochs=1000,
+    early_stopping_patience=10,
+    store_each_n_steps=31,
     use_combined_dataset=True,
     eval_instances=TAILLARD15X15_INSTANCES,
     val_dataset_filename="eval10to15x5to10.json",
