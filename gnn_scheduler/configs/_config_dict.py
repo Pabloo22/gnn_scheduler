@@ -68,3 +68,4 @@ class Config:
     eval_instances: list[JobShopInstance] | None = None
     allow_operation_reservation: bool = False
     neighbor_sampling: int | None = None
+    num_runs: int = 1
