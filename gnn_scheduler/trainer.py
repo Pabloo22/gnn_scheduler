@@ -89,8 +89,9 @@ class Trainer:
         wandb_config: Optional[dict[str, Any]] = None,
         n_batches_per_epoch: Optional[int] = None,
         eval_instances: Optional[list[JobShopInstance]] = None,
-        allow_operation_reservation: bool = False,
+        allow_operation_reservation: bool = False,  # Deprecated
     ):
+        # Deprecated (eval with and without)
         self.allow_operation_reservation = allow_operation_reservation
         self.n_batches_per_epoch = n_batches_per_epoch
         self.model = model
@@ -382,14 +383,31 @@ class Trainer:
                     # Check if this is the best model on primary validation set
                     is_best = False
                     if self.eval_instances is not None:
+                        total_optimality_gap_nr = 0.0
                         total_optimality_gap = 0.0
-                        for instance in tqdm(self.eval_instances, desc="Eval"):
+                        for instance in tqdm(
+                            self.eval_instances,
+                            desc="Computing optimality gap (No reservation)",
+                        ):
                             schedule = solve_job_shop_with_gnn(
                                 instance,
-                                self.model,
-                                allow_operation_reservation=(
-                                    self.allow_operation_reservation
-                                ),
+                                self.model,  # type: ignore[arg-type]
+                                allow_operation_reservation=False,
+                            )
+                            makespan = schedule.makespan()
+                            optimal_makespan = instance.metadata["optimum"]
+                            optimality_gap = (
+                                makespan - optimal_makespan
+                            ) / optimal_makespan
+                            total_optimality_gap_nr += optimality_gap
+                        for instance in tqdm(
+                            self.eval_instances,
+                            desc="Computing optimality gap",
+                        ):
+                            schedule = solve_job_shop_with_gnn(
+                                instance,
+                                self.model,  # type: ignore[arg-type]
+                                allow_operation_reservation=True,
                             )
                             makespan = schedule.makespan()
                             optimal_makespan = instance.metadata["optimum"]
@@ -397,10 +415,16 @@ class Trainer:
                                 makespan - optimal_makespan
                             ) / optimal_makespan
                             total_optimality_gap += optimality_gap
+                        avg_optimality_gap_nr = total_optimality_gap_nr / len(
+                            self.eval_instances
+                        )
                         avg_optimality_gap = total_optimality_gap / len(
                             self.eval_instances
                         )
                         # Add optimality gap to metrics to log
+                        metrics_to_log[
+                            "val/val_instances/optimality_gap_nr"
+                        ] = avg_optimality_gap_nr
                         metrics_to_log["val/val_instances/optimality_gap"] = (
                             avg_optimality_gap
                         )
@@ -413,24 +437,40 @@ class Trainer:
                             }
                             val_results["eval_instances"]["metrics"] = {}
                             val_results["eval_instances"]["metrics"][
+                                "optimality_gap_nr"
+                            ] = avg_optimality_gap_nr
+                            val_results["eval_instances"]["metrics"][
                                 "optimality_gap"
                             ] = avg_optimality_gap
-                        is_best = avg_optimality_gap < self.best_metric_value
+                        lowest_optimality_gap = min(
+                            avg_optimality_gap_nr, avg_optimality_gap
+                        )
+                        is_best = (
+                            lowest_optimality_gap < self.best_metric_value
+                        )
                         if is_best:
-                            print(
-                                f"New best model with {self.primary_val_key} "
-                                f"avg optimality gap: {avg_optimality_gap:.6f}"
+                            indication_str = (
+                                "(with operation reservation)"
+                                if (
+                                    lowest_optimality_gap == avg_optimality_gap
+                                )
+                                else "(without operation reservation)"
                             )
-                            self.best_metric_value = avg_optimality_gap
+                            print(
+                                f"New best model with avg optimality gap "
+                                f"{indication_str}: "
+                                f"{lowest_optimality_gap:.6f}"
+                            )
+                            self.best_metric_value = lowest_optimality_gap
                             self.best_epoch = epoch
                             self.epochs_without_improvement = 0
                             self._save_checkpoint(
-                                epoch, avg_optimality_gap, is_best=True
+                                epoch, lowest_optimality_gap, is_best=True
                             )
                         else:
                             self.epochs_without_improvement += 1
                             self._save_checkpoint(
-                                epoch, avg_optimality_gap, is_best=False
+                                epoch, lowest_optimality_gap, is_best=False
                             )
                     elif self.primary_metric:
                         # Use the primary metric if available
