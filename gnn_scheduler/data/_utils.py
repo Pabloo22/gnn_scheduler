@@ -225,7 +225,7 @@ def get_observation_action_pairs_from_schedule(
     int
 ]:
     observations: list[ResourceTaskGraphObservationDict] = []
-    action_probabilities_sequence: list[dict[tuple[int, int, int], float]] = []
+    actions_optimality_sequence: list[dict[tuple[int, int, int], float]] = []
     graph = build_resource_task_graph(schedule.instance)
     env = SingleJobShopGraphEnv(
         graph,
@@ -239,33 +239,45 @@ def get_observation_action_pairs_from_schedule(
     obs, info = wrapped_env.reset()
     done = False
     while not done:
-        action_probs = get_optimal_actions(
+        actions_optimality = get_optimal_actions(
             optimal_ops_observer,
             map_available_ops_ids_to_original(
                 info["available_operations_with_ids"],
                 obs["original_ids_dict"],
             ),
         )
-        if len(action_probs) > 1 and i % store_each_n_steps == 0:
+        save_pair = len(actions_optimality) > 1 and i % store_each_n_steps == 0
+        if save_pair:
             obs["node_features_dict"] = normalize_features(
                 obs["node_features_dict"]
             )
             observations.append(obs)
-            action_probs_adjusted: dict[tuple[int, int, int], float] = {}
-            assert len(info["available_operations_with_ids"]) == len(
-                action_probs
-            )
-            for key, value in zip(
+            actions_optimality_with_wrapped_ids = _replace_dict_keys(
+                actions_optimality,
                 info["available_operations_with_ids"],
-                action_probs.values(),
-            ):
-                action_probs_adjusted[key] = value
-            action_probabilities_sequence.append(action_probs_adjusted)
+            )
+            actions_optimality_sequence.append(
+                actions_optimality_with_wrapped_ids
+            )
         optimal_actions = [
-            action for action, value in action_probs.items() if value == 1.0
+            action
+            for action, value in actions_optimality.items()
+            if value == 1.0
         ]
         action_choice = random.choice(optimal_actions)
         _, machine_id, job_id = action_choice
         obs, _, done, _, info = wrapped_env.step((job_id, machine_id))
         i += 1
-    return observations, action_probabilities_sequence, i
+    return observations, actions_optimality_sequence, i
+
+
+def _replace_dict_keys(
+    available_actions_optimality: dict[tuple[int, int, int], int],
+    available_operations_with_ids: list[tuple[int, int, int]],
+) -> dict[tuple[int, int, int], float]:
+    adjusted_available_actions_optimality = {}
+    for key, value in zip(
+        available_operations_with_ids, available_actions_optimality.values()
+    ):
+        adjusted_available_actions_optimality[key] = float(value)
+    return adjusted_available_actions_optimality

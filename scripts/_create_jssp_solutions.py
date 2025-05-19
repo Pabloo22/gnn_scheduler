@@ -86,7 +86,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=5,
     #     seed=5,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     25_000,
@@ -94,7 +93,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=5,
     #     seed=6,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     25_000,
@@ -102,7 +100,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=(5, 10),
     #     seed=7,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     25_000,
@@ -117,7 +114,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=(5, 10),
     #     seed=9,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     25_000,
@@ -132,7 +128,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=5,
     #     seed=11,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     100,
@@ -147,7 +142,6 @@ if __name__ == "__main__":
     #     num_jobs=10,
     #     num_machines=5,
     #     seed=13,
-    #     duration_range=(50, 99),
     # )
     # _main(
     #     100,
@@ -163,7 +157,6 @@ if __name__ == "__main__":
     #        num_jobs=8,
     #        num_machines=8,
     #        seed=seed,
-    #        duration_range=(50, 99),
     #    )
     # for seed in range(25, 30):
     #     _main(
@@ -172,7 +165,6 @@ if __name__ == "__main__":
     #         num_jobs=(10, 15),
     #         num_machines=(5, 10),
     #         seed=seed,
-    #         duration_range=(50, 99),
     #     )
     _main(
         100,
